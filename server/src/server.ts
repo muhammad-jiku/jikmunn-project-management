@@ -1,7 +1,6 @@
 import { Server } from 'http';
 import app from './app';
-
-const port = 5001;
+import config from './config';
 
 process.on('uncaughtException', (error) => {
   console.error(error);
@@ -9,8 +8,8 @@ process.on('uncaughtException', (error) => {
 });
 
 async function bootstrap() {
-  const server: Server = app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+  const server: Server = app.listen(config.port, () => {
+    console.log(`Server running on http://localhost:${config.port}`);
   });
 
   const exitHandler = () => {
