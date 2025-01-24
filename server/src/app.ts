@@ -5,6 +5,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import httpStatus from 'http-status';
 import morgan from 'morgan';
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
 
 const app: Application = express();
 
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // api initialization
 
 // global error handler
+app.use(globalErrorHandler);
 
 // handle not found
 app.use((req: Request, res: Response, next: NextFunction) => {
