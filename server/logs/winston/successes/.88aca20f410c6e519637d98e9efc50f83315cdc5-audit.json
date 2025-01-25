@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\_my_portfolio_\\Full Stack\\NEXT\\1. Project Management\\jikmunn-project-management\\server\\logs\\winston\\successes\\.88aca20f410c6e519637d98e9efc50f83315cdc5-audit.json",
+    "files": [
+        {
+            "date": 1737790669855,
+            "name": "D:\\_my_portfolio_\\Full Stack\\NEXT\\1. Project Management\\jikmunn-project-management\\server\\logs\\winston\\successes\\jikmunn-project-management-2025-25-01-13-success.log",
+            "hash": "1abdb55c1106b3f57acc4ca8d26c1900982a5cf9c8eef870eb4b671f3228869e"
+        }
+    ],
+    "hashType": "sha256"
+}
