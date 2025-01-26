@@ -1,6 +1,6 @@
-export type IProjectFilterRequest = {
+export type ITaskFilterRequest = {
   searchTerm?: string | undefined;
   // id?: number | undefined;
-  name?: string | undefined;
+  title?: string | undefined;
   description?: string | undefined;
 };

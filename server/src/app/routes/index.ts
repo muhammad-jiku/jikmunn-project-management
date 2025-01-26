@@ -1,5 +1,6 @@
 import express from 'express';
 import { ProjectRoutes } from '../modules/project/project.routes';
+import { TaskRoutes } from '../modules/task/task.routes';
 
 const routes = express.Router();
 
@@ -8,6 +9,10 @@ const moduleRoutes = [
   {
     path: '/projects',
     route: ProjectRoutes,
+  },
+  {
+    path: '/tasks',
+    route: TaskRoutes,
   },
 ];
 

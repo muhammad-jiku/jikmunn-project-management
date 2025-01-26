@@ -9,12 +9,8 @@ const createProject = z.object({
       description: z.string({
         required_error: 'Description is required',
       }),
-      startDate: z.string({
-        required_error: 'Start Date is required',
-      }),
-      endDate: z.string({
-        required_error: 'End date is required',
-      }),
+      startDate: z.string().optional(),
+      endDate: z.string().optional(),
     })
     .strict(),
 });
