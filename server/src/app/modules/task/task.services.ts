@@ -102,27 +102,6 @@ const getAllFromDB = async (
   }
 };
 
-const updateTaskStatusInDB = async (
-  taskId: number,
-  status: string
-): Promise<Task> => {
-  try {
-    const updatedTask = await prisma.task.update({
-      where: {
-        id: taskId,
-      },
-      data: {
-        status,
-      },
-    });
-
-    return updatedTask;
-  } catch (error) {
-    console.error('Error updating task status:', error);
-    throw new ApiError(httpStatus.CONFLICT, 'Failed to update task status!');
-  }
-};
-
 const getUserTasksFromDB = async (userId: number): Promise<Task[]> => {
   try {
     const tasks = await prisma.task.findMany({
@@ -142,6 +121,27 @@ const getUserTasksFromDB = async (userId: number): Promise<Task[]> => {
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to retrieve user tasks!'
     );
+  }
+};
+
+const updateTaskStatusInDB = async (
+  taskId: number,
+  status: string
+): Promise<Task> => {
+  try {
+    const updatedTask = await prisma.task.update({
+      where: {
+        id: taskId,
+      },
+      data: {
+        status,
+      },
+    });
+
+    return updatedTask;
+  } catch (error) {
+    console.error('Error updating task status:', error);
+    throw new ApiError(httpStatus.CONFLICT, 'Failed to update task status!');
   }
 };
 
@@ -168,9 +168,9 @@ const deleteFromDB = async (taskId: number): Promise<Task> => {
 };
 
 export const TaskServices = {
-  getAllFromDB,
   insertIntoDB,
-  updateTaskStatusInDB,
+  getAllFromDB,
   getUserTasksFromDB,
+  updateTaskStatusInDB,
   deleteFromDB,
 };

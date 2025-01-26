@@ -1,22 +1,22 @@
-import { Task } from '@prisma/client';
+import { User } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { paginationFields } from '../../../constants/pagination';
 import { catchAsync } from '../../../shared/catchAsync';
 import { pick } from '../../../shared/pick';
 import { sendResponse } from '../../../shared/sendResponse';
-import { taskFilterableFields } from './task.constants';
-import { TaskServices } from './task.services';
+import { userFilterableFields } from './user.constants';
+import { UserServices } from './user.services';
 
 const insertIntoDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await TaskServices.insertIntoDB(req.body);
+      const result = await UserServices.insertIntoDB(req.body);
 
-      sendResponse<Task>(res, {
+      sendResponse<User>(res, {
         statusCode: httpStatus.CREATED,
         success: true,
-        message: 'Task created successfully!',
+        message: 'User created successfully!',
         data: result,
       });
     } catch (error) {
@@ -28,20 +28,15 @@ const insertIntoDB = catchAsync(
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { projectId } = req.params;
-      const filters = pick(req.query, taskFilterableFields);
+      const filters = pick(req.query, userFilterableFields);
       const options = pick(req.query, paginationFields);
 
-      const result = await TaskServices.getAllFromDB(
-        Number(projectId),
-        filters,
-        options
-      );
+      const result = await UserServices.getAllFromDB(filters, options);
 
-      sendResponse<Task[]>(res, {
+      sendResponse<User[]>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Tasks data retrieved successfully!',
+        message: 'Users data retrieved successfully!',
         meta: result.meta,
         data: result.data,
       });
@@ -51,17 +46,17 @@ const getAllFromDB = catchAsync(
   }
 );
 
-const getUserTasksFromDB = catchAsync(
+const getByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { userId } = req.params;
+      const { id } = req.params;
 
-      const result = await TaskServices.getUserTasksFromDB(Number(userId));
+      const result = await UserServices.getByIdFromDB(id);
 
-      sendResponse<Task[]>(res, {
+      sendResponse<User>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User tasks retrieved successfully!',
+        message: 'User data retrieved successfully!',
         data: result,
       });
     } catch (error) {
@@ -70,21 +65,17 @@ const getUserTasksFromDB = catchAsync(
   }
 );
 
-const updateTaskStatusInDB = catchAsync(
+const updateIntoDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
 
-      const result = await TaskServices.updateTaskStatusInDB(
-        Number(id),
-        status
-      );
+      const result = await UserServices.updateIntoDB(id, req.body);
 
-      sendResponse<Task>(res, {
+      sendResponse<User>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Task status updated successfully!',
+        message: 'User data updated successfully!',
         data: result,
       });
     } catch (error) {
@@ -98,12 +89,12 @@ const deleteFromDB = catchAsync(
     try {
       const { id } = req.params;
 
-      const result = await TaskServices.deleteFromDB(Number(id));
+      const result = await UserServices.deleteFromDB(id);
 
-      sendResponse<Task>(res, {
+      sendResponse<User>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Task deleted successfully!',
+        message: 'User deleted successfully!',
         data: result,
       });
     } catch (error) {
@@ -112,10 +103,10 @@ const deleteFromDB = catchAsync(
   }
 );
 
-export const TaskControllers = {
+export const UserControllers = {
   insertIntoDB,
   getAllFromDB,
-  getUserTasksFromDB,
-  updateTaskStatusInDB,
+  getByIdFromDB,
+  updateIntoDB,
   deleteFromDB,
 };
