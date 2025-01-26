@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import httpStatus from 'http-status';
 import morgan from 'morgan';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import routes from './app/routes';
 
 const app: Application = express();
 
@@ -22,6 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // api initialization
+app.use('/api/v1', routes);
 
 // global error handler
 app.use(globalErrorHandler);

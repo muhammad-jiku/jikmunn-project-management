@@ -3,10 +3,14 @@ export const projectFilterableFields: string[] = [
   // 'id',
   'name',
   'description',
+  'startDate',
+  'endDate',
 ];
 
 export const projectSearchableFields: string[] = [
   // 'id',
   'name',
   'description',
+  'startDate',
+  'endDate',
 ];
