@@ -14,11 +14,13 @@ datasource db {
 }
 
 model User {
-  userId            Int     @id @default(autoincrement())
-  cognitoId         String  @unique
-  username          String  @unique
+  userId            Int      @id @default(autoincrement())
+  cognitoId         String   @unique
+  username          String   @unique
   profilePictureUrl String?
   teamId            Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   authoredTasks   Task[]           @relation("TaskAuthor")
   assignedTasks   Task[]           @relation("TaskAssignee")
@@ -29,30 +31,40 @@ model User {
 }
 
 model Team {
-  id                   Int           @id @default(autoincrement())
+  id                   Int      @id @default(autoincrement())
   teamName             String
   productOwnerUserId   Int?
   projectManagerUserId Int?
-  projectTeams         ProjectTeam[]
-  user                 User[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  projectTeams ProjectTeam[]
+  user         User[]
 }
 
 model Project {
-  id           Int           @id @default(autoincrement())
-  name         String
-  description  String?
-  startDate    DateTime?
-  endDate      DateTime?
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
   tasks        Task[]
   projectTeams ProjectTeam[]
 }
 
 model ProjectTeam {
-  id        Int     @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   teamId    Int
   projectId Int
-  team      Team    @relation(fields: [teamId], references: [id])
-  project   Project @relation(fields: [projectId], references: [id])
+
+  team    Team    @relation(fields: [teamId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Task {
@@ -69,9 +81,12 @@ model Task {
   authorUserId   Int
   assignedUserId Int?
 
-  project         Project          @relation(fields: [projectId], references: [id])
-  author          User             @relation("TaskAuthor", fields: [authorUserId], references: [userId])
-  assignee        User?            @relation("TaskAssignee", fields: [assignedUserId], references: [userId])
+  project   Project  @relation(fields: [projectId], references: [id])
+  author    User     @relation("TaskAuthor", fields: [authorUserId], references: [userId])
+  assignee  User?    @relation("TaskAssignee", fields: [assignedUserId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   taskAssignments TaskAssignment[]
   attachments     Attachment[]
   comments        Comment[]
@@ -84,6 +99,9 @@ model TaskAssignment {
 
   user User @relation(fields: [userId], references: [userId])
   task Task @relation(fields: [taskId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Attachment {
@@ -95,6 +113,9 @@ model Attachment {
 
   task       Task @relation(fields: [taskId], references: [id])
   uploadedBy User @relation(fields: [uploadedById], references: [userId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Comment {
@@ -105,4 +126,7 @@ model Comment {
 
   task Task @relation(fields: [taskId], references: [id])
   user User @relation(fields: [userId], references: [userId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
