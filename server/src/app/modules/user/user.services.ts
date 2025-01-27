@@ -113,7 +113,7 @@ const getByIdFromDB = async (cognitoId: string): Promise<User | null> => {
 
 const updateIntoDB = async (
   cognitoId: string,
-  payload: User
+  payload: Partial<User>
 ): Promise<User> => {
   try {
     const updatedUser = await prisma.user.update({
