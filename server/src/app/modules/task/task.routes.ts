@@ -12,7 +12,7 @@ router
     TaskControllers.insertIntoDB
   );
 
-router.route('/').get(TaskControllers.getAllFromDB);
+router.route('/:projectId').get(TaskControllers.getAllFromDB);
 
 router
   .route('/:id')
