@@ -1,11 +1,11 @@
 'use client';
 
 import ModalNewTask from '@/_components/modals/ModalNewTask';
-import BoardView from '@/_components/products/BoardView';
-import ListView from '@/_components/products/ListView';
-import ProjectHeader from '@/_components/products/ProjectHeader';
-import TableView from '@/_components/products/TableView';
-import TimelineView from '@/_components/products/TimeLineView';
+import BoardView from '@/_components/projects/BoardView';
+import ListView from '@/_components/projects/ListView';
+import ProjectHeader from '@/_components/projects/ProjectHeader';
+import TableView from '@/_components/projects/TableView';
+import TimelineView from '@/_components/projects/TimeLineView';
 import { useState } from 'react';
 
 type Props = {

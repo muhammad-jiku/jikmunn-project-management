@@ -1,7 +1,7 @@
 'use client';
 
 import Header from '@/_components/Header';
-import ProjectCard from '@/_components/products/ProjectCard';
+import ProjectCard from '@/_components/projects/ProjectCard';
 import TaskCard from '@/_components/tasks/TaskCard';
 import UserCard from '@/_components/users/UserCard';
 import {
