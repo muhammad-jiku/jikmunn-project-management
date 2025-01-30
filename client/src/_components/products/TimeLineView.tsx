@@ -24,7 +24,7 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
 
   const ganttTasks = useMemo(() => {
     return (
-      data?.map((task) => ({
+      data?.data?.map((task) => ({
         start: new Date(task.startDate as string),
         end: new Date(task.dueDate as string),
         name: task.title,

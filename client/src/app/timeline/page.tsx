@@ -11,7 +11,7 @@ type TaskTypeItems = 'task' | 'milestone' | 'project';
 
 const Timeline = () => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  const { data, isLoading, isError } = useGetProjectsQuery();
+  const { data, isLoading, isError } = useGetProjectsQuery({});
 
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
@@ -20,7 +20,7 @@ const Timeline = () => {
 
   const ganttTasks = useMemo(() => {
     return (
-      data?.map((project) => ({
+      data?.data?.map((project) => ({
         start: new Date(project.startDate as string),
         end: new Date(project.endDate as string),
         name: project.name,

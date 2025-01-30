@@ -90,7 +90,7 @@ const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
         />
       </div>
       <DataGrid
-        rows={data || []}
+        rows={data?.data || []}
         columns={columns}
         className={dataGridClassNames}
         sx={dataGridSxStyles(isDarkMode)}

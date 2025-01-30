@@ -37,7 +37,7 @@ const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
           <TaskColumn
             key={status}
             status={status}
-            tasks={data || []}
+            tasks={data?.data || []}
             moveTask={moveTask}
             setIsModalNewTaskOpen={setIsModalNewTaskOpen}
           />

@@ -1,4 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export interface Pagination {
+  page?: number;
+  limit?: number;
+}
+
+export interface SearchFilter {
+  searchTerm?: string;
+  [key: string]: any;
+}
 
 export interface Project {
   id: number;
@@ -60,11 +71,11 @@ export interface Task {
   attachments?: Attachment[];
 }
 
-export interface SearchResults {
-  tasks?: Task[];
-  projects?: Project[];
-  users?: User[];
-}
+// export interface SearchResults {
+//   tasks?: Task[];
+//   projects?: Project[];
+//   users?: User[];
+// }
 
 export interface Team {
   teamId: number;
@@ -88,16 +99,38 @@ export const api = createApi({
       }),
       invalidatesTags: ['Projects'],
     }),
-    getProjects: build.query<Project[], void>({
-      query: () => '/projects',
+    // getProjects: build.query<Project[], void>({
+    //   query: () => '/projects',
+    //   providesTags: ['Projects'],
+    // }),
+    // getTasks: build.query<Task[], { projectId: number }>({
+    //   query: ({ projectId }) => `/tasks?projectId=${projectId}`,
+    //   providesTags: (result) =>
+    //     result
+    //       ? result.map(({ id }) => ({ type: 'Tasks' as const, id }))
+    //       : [{ type: 'Tasks' as const }],
+    // }),
+    getProjects: build.query<
+      { meta: Pagination; data: Project[] },
+      SearchFilter & Pagination
+    >({
+      query: (filters) => ({
+        url: '/projects',
+        method: 'GET',
+        params: filters,
+      }),
       providesTags: ['Projects'],
     }),
-    getTasks: build.query<Task[], { projectId: number }>({
-      query: ({ projectId }) => `/tasks?projectId=${projectId}`,
-      providesTags: (result) =>
-        result
-          ? result.map(({ id }) => ({ type: 'Tasks' as const, id }))
-          : [{ type: 'Tasks' as const }],
+    getTasks: build.query<
+      { meta: Pagination; data: Task[] },
+      { projectId: number } & SearchFilter & Pagination
+    >({
+      query: ({ projectId, ...filters }) => ({
+        url: `/tasks`,
+        method: 'GET',
+        params: { projectId, ...filters },
+      }),
+      providesTags: ['Tasks'],
     }),
     getTasksByUser: build.query<Task[], number>({
       query: (userId) => `/tasks/user/${userId}`,
@@ -124,8 +157,19 @@ export const api = createApi({
         { type: 'Tasks', id: taskId },
       ],
     }),
-    getUsers: build.query<User[], void>({
-      query: () => '/users',
+    // getUsers: build.query<User[], void>({
+    //   query: () => '/users',
+    //   providesTags: ['Users'],
+    // }),
+    getUsers: build.query<
+      { meta: Pagination; data: User[] },
+      SearchFilter & Pagination
+    >({
+      query: (filters) => ({
+        url: '/users',
+        method: 'GET',
+        params: filters,
+      }),
       providesTags: ['Users'],
     }),
     getTeams: build.query<Team[], void>({
