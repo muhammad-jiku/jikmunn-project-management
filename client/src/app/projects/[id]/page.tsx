@@ -1,12 +1,12 @@
 'use client';
 
 import ModalNewTask from '@/_components/modals/ModalNewTask';
-import ProjectHeader from '@/app/projects/ProjectHeader';
+import BoardView from '@/_components/products/BoardView';
+import ListView from '@/_components/products/ListView';
+import ProjectHeader from '@/_components/products/ProjectHeader';
+import TableView from '@/_components/products/TableView';
+import TimelineView from '@/_components/products/TimeLineView';
 import { useState } from 'react';
-import Board from '../BoardView';
-import List from '../ListView';
-import Table from '../TableView';
-import Timeline from '../TimelineView';
 
 type Props = {
   params: { id: string };
@@ -26,16 +26,16 @@ const Project = ({ params }: Props) => {
       />
       <ProjectHeader activeTab={activeTab} setActiveTab={setActiveTab} />
       {activeTab === 'Board' && (
-        <Board id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
+        <BoardView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
       )}
       {activeTab === 'List' && (
-        <List id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
+        <ListView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
       )}
       {activeTab === 'Timeline' && (
-        <Timeline id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
+        <TimelineView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
       )}
       {activeTab === 'Table' && (
-        <Table id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
+        <TableView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
       )}
     </div>
   );

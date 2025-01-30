@@ -1,6 +1,6 @@
-import Header from '@/_components/Header';
-import TaskCard from '@/_components/TaskCard';
 import { Task, useGetTasksQuery } from '@/state/api';
+import Header from '../Header';
+import TaskCard from '../tasks/TaskCard';
 
 type Props = {
   id: string;
@@ -13,7 +13,7 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
   });
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred while fetching tasks</div>;
+  if (error || !data) return <div>An error occurred while fetching tasks</div>;
 
   return (
     <div className='px-4 pb-8 xl:px-6'>

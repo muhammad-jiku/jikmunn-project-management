@@ -1,4 +1,3 @@
-import Header from '@/_components/Header';
 import {
   Clock,
   Filter,
@@ -9,7 +8,8 @@ import {
   Table,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import ModalNewProject from './ModalNewProject';
+import Header from '../Header';
+import ModalNewProject from '../modals/ModalNewProject';
 
 type Props = {
   activeTab: string;

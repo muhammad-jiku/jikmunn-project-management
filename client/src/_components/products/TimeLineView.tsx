@@ -11,7 +11,7 @@ type Props = {
 
 type TaskTypeItems = 'task' | 'milestone' | 'project';
 
-const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
+const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
   const { data, error, isLoading } = useGetTasksQuery({
     projectId: Number(id),
@@ -55,11 +55,7 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
           Project Tasks Timeline
         </h1>
         <div className='relative inline-block w-64'>
-          <label htmlFor='view-mode-select' className='sr-only'>
-            Select View Mode
-          </label>
           <select
-            id='view-mode-select'
             className='focus:shadow-outline block w-full appearance-none rounded border border-gray-400 bg-white px-4 py-2 pr-8 leading-tight shadow hover:border-gray-500 focus:outline-none dark:border-dark-secondary dark:bg-dark-secondary dark:text-white'
             value={displayOptions.viewMode}
             onChange={handleViewModeChange}
@@ -95,4 +91,4 @@ const Timeline = ({ id, setIsModalNewTaskOpen }: Props) => {
   );
 };
 
-export default Timeline;
+export default TimelineView;

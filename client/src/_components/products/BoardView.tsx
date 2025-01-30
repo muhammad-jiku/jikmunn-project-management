@@ -23,13 +23,12 @@ const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
   });
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
-  console.log('tasks data', data);
   const moveTask = (taskId: number, toStatus: string) => {
     updateTaskStatus({ taskId, status: toStatus });
   };
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred while fetching tasks</div>;
+  if (error || !data) return <div>An error occurred while fetching tasks</div>;
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -101,18 +100,12 @@ const TaskColumn = ({
             </span>
           </h3>
           <div className='flex items-center gap-1'>
-            <button
-              className='flex h-6 w-5 items-center justify-center dark:text-neutral-500'
-              title='More options'
-              aria-label='More options'
-            >
+            <button className='flex h-6 w-5 items-center justify-center dark:text-neutral-500'>
               <EllipsisVertical size={26} />
             </button>
             <button
               className='flex h-6 w-6 items-center justify-center rounded bg-gray-200 dark:bg-dark-tertiary dark:text-white'
               onClick={() => setIsModalNewTaskOpen(true)}
-              title='Add new task'
-              aria-label='Add new task'
             >
               <Plus size={16} />
             </button>
@@ -182,7 +175,7 @@ const Task = ({ task }: TaskProps) => {
     >
       {task.attachments && task.attachments.length > 0 && (
         <Image
-          src={`../../../../public/i1.jpg`}
+          src={`../../../public/i1.jpg`}
           alt={task.attachments[0].fileName}
           width={400}
           height={200}
@@ -205,11 +198,7 @@ const Task = ({ task }: TaskProps) => {
               ))}
             </div>
           </div>
-          <button
-            className='flex h-6 w-4 flex-shrink-0 items-center justify-center dark:text-neutral-500'
-            title='More options'
-            aria-label='More options'
-          >
+          <button className='flex h-6 w-4 flex-shrink-0 items-center justify-center dark:text-neutral-500'>
             <EllipsisVertical size={26} />
           </button>
         </div>
@@ -238,7 +227,7 @@ const Task = ({ task }: TaskProps) => {
             {task.assignee && (
               <Image
                 key={task.assignee.userId}
-                src={`../../../../public/p3.jpeg`}
+                src={`../../../public/p3.jpeg`}
                 alt={task.assignee.username}
                 width={30}
                 height={30}
@@ -248,7 +237,7 @@ const Task = ({ task }: TaskProps) => {
             {task.author && (
               <Image
                 key={task.author.userId}
-                src={`../../../../public/p7.jpeg`}
+                src={`../../../public/p7.jpeg`}
                 alt={task.author.username}
                 width={30}
                 height={30}

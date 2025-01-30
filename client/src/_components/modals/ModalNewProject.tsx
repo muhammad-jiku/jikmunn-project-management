@@ -1,7 +1,7 @@
-import Modal from '@/_components/modals/Modal';
 import { useCreateProjectMutation } from '@/state/api';
 import { formatISO } from 'date-fns';
 import { useState } from 'react';
+import Modal from './Modal';
 
 type Props = {
   isOpen: boolean;
