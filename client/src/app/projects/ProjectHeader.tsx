@@ -9,6 +9,7 @@ import {
   Table,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import ModalNewProject from './ModalNewProject';
 
 type Props = {
   activeTab: string;
@@ -18,13 +19,12 @@ type Props = {
 const ProjectHeader = ({ activeTab, setActiveTab }: Props) => {
   const [isModalNewProjectOpen, setIsModalNewProjectOpen] = useState(false);
 
-  console.log('is modal new project open', isModalNewProjectOpen);
   return (
     <div className='px-4 xl:px-6'>
-      {/* <ModalNewProject
+      <ModalNewProject
         isOpen={isModalNewProjectOpen}
         onClose={() => setIsModalNewProjectOpen(false)}
-      /> */}
+      />
       <div className='pb-6 pt-6 lg:pb-4 lg:pt-8'>
         <Header
           name='Product Design Development'
@@ -68,16 +68,10 @@ const ProjectHeader = ({ activeTab, setActiveTab }: Props) => {
           />
         </div>
         <div className='flex items-center gap-2'>
-          <button
-            className='text-gray-500 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-gray-300'
-            aria-label='Filter'
-          >
+          <button className='text-gray-500 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-gray-300'>
             <Filter className='h-5 w-5' />
           </button>
-          <button
-            className='text-gray-500 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-gray-300'
-            aria-label='Share'
-          >
+          <button className='text-gray-500 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-gray-300'>
             <Share2 className='h-5 w-5' />
           </button>
           <div className='relative'>
