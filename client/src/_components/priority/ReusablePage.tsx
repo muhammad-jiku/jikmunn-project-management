@@ -68,7 +68,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const ReusablePriorityPage = ({ priority }: Props) => {
+const ReusablePage = ({ priority }: Props) => {
   const [view, setView] = useState('list');
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
@@ -148,4 +148,4 @@ const ReusablePriorityPage = ({ priority }: Props) => {
   );
 };
 
-export default ReusablePriorityPage;
+export default ReusablePage;
