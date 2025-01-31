@@ -172,8 +172,12 @@ export const api = createApi({
       }),
       providesTags: ['Users'],
     }),
-    getTeams: build.query<Team[], void>({
-      query: () => '/teams',
+    getTeams: build.query<{ meta: Pagination; data: Team[] }, Pagination>({
+      query: (filters) => ({
+        url: '/teams',
+        method: 'GET',
+        params: filters,
+      }),
       providesTags: ['Teams'],
     }),
     // search: build.query<SearchResults, string>({
