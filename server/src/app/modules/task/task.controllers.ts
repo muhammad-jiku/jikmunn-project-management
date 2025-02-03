@@ -32,6 +32,10 @@ const getAllFromDB = catchAsync(
       const filters = pick(req.query, taskFilterableFields);
       const options = pick(req.query, paginationFields);
 
+      console.log('project id..', projectId);
+      console.log('filters..', filters);
+      console.log('options..', options);
+
       const result = await TaskServices.getAllFromDB(
         Number(projectId),
         filters,

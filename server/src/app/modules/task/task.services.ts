@@ -33,6 +33,7 @@ const getAllFromDB = async (
   options: IPaginationOptions
 ): Promise<IGenericResponse<Task[]>> => {
   try {
+    console.log('project id', projectId);
     const { limit, page, skip } =
       paginationHelpers.calculatePagination(options);
     const { searchTerm, ...filterData } = filters;

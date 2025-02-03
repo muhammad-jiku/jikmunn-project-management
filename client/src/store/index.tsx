@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import globalReducer from '@/state';
+import { api } from '@/state/api'; // ✅ Import your RTK Query API slice
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { useRef } from 'react';
@@ -10,47 +10,75 @@ import {
   useDispatch,
   useSelector,
 } from 'react-redux';
-
 import { persistReducer, persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 
-/* REDUX PERSISTENCE */
-const createNoopStorage = () => {
-  return {
-    getItem(_key: any) {
-      return Promise.resolve(null);
-    },
-    setItem(_key: any, value: any) {
-      return Promise.resolve(value);
-    },
-    removeItem(_key: any) {
-      return Promise.resolve();
-    },
-  };
-};
+// const createNoopStorage = () => ({
+//   getItem: async () => null,
+//   setItem: async (_key: any, value: any) => Promise.resolve(value),
+//   removeItem: async () => Promise.resolve(),
+// });
+
+// const storage =
+//   typeof window === 'undefined'
+//     ? createNoopStorage()
+//     : createWebStorage('local');
+
+// const persistConfig = {
+//   key: 'root',
+//   storage,
+//   whitelist: ['global'], // You can add 'api' if you want to persist API cache
+// };
+
+// const persistConfig = {
+//   key: 'root',
+//   storage:
+//     typeof window !== 'undefined' ? createWebStorage('local') : undefined,
+//   whitelist: ['global'],
+// };
+
+const createNoopStorage = () => ({
+  getItem: async () => null,
+  setItem: async (_key: any, value: any) => Promise.resolve(value),
+  removeItem: async () => Promise.resolve(),
+});
 
 const storage =
-  typeof window === 'undefined'
-    ? createNoopStorage()
-    : createWebStorage('local');
+  typeof window !== 'undefined'
+    ? createWebStorage('local') // ✅ Use localStorage on the client
+    : createNoopStorage(); // ✅ Noop storage for SSR
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['global'],
+  whitelist: ['global'], // You can add 'api' if you want to persist API cache
 };
+
 const rootReducer = combineReducers({
   global: globalReducer,
+  [api.reducerPath]: api.reducer, // ✅ Add API reducer
 });
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-/* REDUX STORE */
 export const makeStore = () => {
-  return configureStore({
+  const store = configureStore({
     reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        },
+      }).concat(api.middleware), // ✅ Add API middleware
   });
+
+  setupListeners(store.dispatch); // ✅ Ensures API listeners are set up
+  return store;
 };
+
+export const store = makeStore();
+export const persistor = persistStore(store);
 
 /* REDUX TYPES */
 export type AppStore = ReturnType<typeof makeStore>;

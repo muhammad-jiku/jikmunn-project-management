@@ -126,7 +126,7 @@ export const api = createApi({
       { projectId: number } & SearchFilter & Pagination
     >({
       query: ({ projectId, ...filters }) => ({
-        url: `/tasks`,
+        url: `/tasks/${projectId}`,
         method: 'GET',
         params: { projectId, ...filters },
       }),
