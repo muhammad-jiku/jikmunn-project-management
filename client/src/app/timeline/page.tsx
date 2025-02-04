@@ -12,7 +12,7 @@ type TaskTypeItems = 'task' | 'milestone' | 'project';
 const Timeline = () => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
   const { data, isLoading, isError } = useGetProjectsQuery({});
-
+  console.log('timeline page projects data', data);
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
     locale: 'en-US',
@@ -32,6 +32,7 @@ const Timeline = () => {
     );
   }, [data]);
 
+  console.log('timeline page ganttasks', ganttTasks);
   const handleViewModeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
