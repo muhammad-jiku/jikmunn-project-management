@@ -73,11 +73,13 @@ const HomePage = () => {
     },
     {}
   );
+  console.log('status count', statusCount);
 
   const projectStatus = Object.keys(statusCount).map((key) => ({
     name: key,
     count: statusCount[key],
   }));
+  console.log('project status', projectStatus);
 
   const chartColors = isDarkMode
     ? {

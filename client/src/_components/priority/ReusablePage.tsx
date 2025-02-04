@@ -76,14 +76,15 @@ const ReusablePage = ({ priority }: Props) => {
     data: tasks,
     isLoading,
     isError: isTasksError,
-  } = useGetTasksByUserQuery(0, {});
+  } = useGetTasksByUserQuery(1, {});
+  console.log('priority page tasks data', tasks);
 
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
-  const filteredTasks = tasks?.filter(
+  const filteredTasks = tasks?.data?.filter(
     (task: Task) => task.priority === priority
   );
-
+  console.log('priority page filtered tasks data', filteredTasks);
   if (isTasksError || !tasks) return <div>Error fetching tasks</div>;
 
   return (

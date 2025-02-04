@@ -132,12 +132,27 @@ export const api = createApi({
       }),
       providesTags: ['Tasks'],
     }),
-    getTasksByUser: build.query<Task[], number>({
+    getTasksByUser: build.query<{ data: Task[] }, number>({
       query: (userId) => `/tasks/user/${userId}`,
       providesTags: (result, error, userId) =>
         result
-          ? result.map(({ id }) => ({ type: 'Tasks', id }))
+          ? result?.data?.map(({ id }) => ({ type: 'Tasks', id }))
           : [{ type: 'Tasks', id: userId }],
+      // async transformResponse(response: any) {
+      //   if (!response) {
+      //     console.error('API returned null or undefined');
+      //     return [];
+      //   }
+      //   return response;
+      // },
+      // providesTags: (result, error, userId) => {
+      //   console.log('API result:', result);
+      //   if (!Array.isArray(result)) {
+      //     console.error('Expected an array but got:', result);
+      //     return [{ type: 'Tasks', id: userId }];
+      //   }
+      //   return result.map(({ id }) => ({ type: 'Tasks', id }));
+      // },
     }),
     createTask: build.mutation<Task, Partial<Task>>({
       query: (task) => ({
