@@ -69,6 +69,9 @@ const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const { data, error, isLoading } = useGetTasksQuery({
     projectId: Number(id),
   });
+  // console.log('table view param id', id);
+  // console.log('table view modal check', setIsModalNewTaskOpen);
+  // console.log('table view tasks data', data);
 
   if (isLoading) return <div>Loading...</div>;
   if (error || !data) return <div>An error occurred while fetching tasks</div>;

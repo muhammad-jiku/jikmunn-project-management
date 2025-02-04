@@ -12,6 +12,7 @@ import {
   GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import Image from 'next/image';
+import p11 from '../../../public/p11.jpeg';
 
 const CustomToolbar = () => (
   <GridToolbarContainer className='toolbar flex gap-2'>
@@ -31,7 +32,7 @@ const columns: GridColDef[] = [
       <div className='flex h-full w-full items-center justify-center'>
         <div className='h-9 w-9'>
           <Image
-            src={`../../../public/p11.jpeg`}
+            src={p11}
             alt={params.row.username}
             width={100}
             height={50}

@@ -16,6 +16,9 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const { data, error, isLoading } = useGetTasksQuery({
     projectId: Number(id),
   });
+  // console.log('timeline view param id', id);
+  // console.log('timeline view modal check', setIsModalNewTaskOpen);
+  // console.log('timeline view tasks data', data);
 
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
@@ -35,6 +38,8 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
       })) || []
     );
   }, [data]);
+
+  console.log('timeline view tasks ganttTasks', ganttTasks);
 
   const handleViewModeChange = (
     event: React.ChangeEvent<HTMLSelectElement>

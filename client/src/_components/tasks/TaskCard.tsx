@@ -1,6 +1,7 @@
 import { Task } from '@/state/api';
 import { format } from 'date-fns';
 import Image from 'next/image';
+import i1 from '../../../public/i1.jpg';
 
 type Props = {
   task: Task;
@@ -15,7 +16,7 @@ const TaskCard = ({ task }: Props) => {
           <div className='flex flex-wrap'>
             {task.attachments && task.attachments.length > 0 && (
               <Image
-                src={`../../public/i1.jpg`}
+                src={i1}
                 alt={task.attachments[0].fileName}
                 width={400}
                 height={200}

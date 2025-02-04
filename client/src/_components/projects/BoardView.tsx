@@ -9,6 +9,9 @@ import { EllipsisVertical, MessageSquareMore, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import i1 from '../../../public/i1.jpg';
+import p3 from '../../../public/p3.jpeg';
+import p7 from '../../../public/p7.jpeg';
 
 type BoardProps = {
   id: string;
@@ -21,9 +24,14 @@ const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
   const { data, isLoading, error } = useGetTasksQuery({
     projectId: Number(id),
   });
+  // console.log('board view param id', id);
+  // console.log('board view modal check', setIsModalNewTaskOpen);
+  // console.log('board view tasks data', data);
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
   const moveTask = (taskId: number, toStatus: string) => {
+    // console.log('board view task id', taskId);
+    // console.log('board view task status', toStatus);
     updateTaskStatus({ taskId, status: toStatus });
   };
 
@@ -175,7 +183,7 @@ const Task = ({ task }: TaskProps) => {
     >
       {task.attachments && task.attachments.length > 0 && (
         <Image
-          src={`../../../public/i1.jpg`}
+          src={i1}
           alt={task.attachments[0].fileName}
           width={400}
           height={200}
@@ -227,7 +235,7 @@ const Task = ({ task }: TaskProps) => {
             {task.assignee && (
               <Image
                 key={task.assignee.userId}
-                src={`../../../public/p3.jpeg`}
+                src={p3}
                 alt={task.assignee.username}
                 width={30}
                 height={30}
@@ -237,7 +245,7 @@ const Task = ({ task }: TaskProps) => {
             {task.author && (
               <Image
                 key={task.author.userId}
-                src={`../../../public/p7.jpeg`}
+                src={p7}
                 alt={task.author.username}
                 width={30}
                 height={30}

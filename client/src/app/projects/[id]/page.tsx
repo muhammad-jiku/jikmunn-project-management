@@ -6,14 +6,27 @@ import ListView from '@/_components/projects/ListView';
 import ProjectHeader from '@/_components/projects/ProjectHeader';
 import TableView from '@/_components/projects/TableView';
 import TimelineView from '@/_components/projects/TimeLineView';
-import { useState } from 'react';
+import { use, useState } from 'react';
+
+type Params = {
+  id: string;
+};
 
 type Props = {
-  params: { id: string };
+  // params might be a Promise or an object
+  params: Promise<Params> | Params;
 };
 
 const Project = ({ params }: Props) => {
-  const { id } = params;
+  // If params is a Promise, unwrap it using the experimental use() hook.
+  const resolvedParams: Params =
+    typeof (params as Promise<Params>).then === 'function'
+      ? use(params as Promise<Params>)
+      : (params as Params);
+
+  const { id } = resolvedParams;
+
+  // const { id } = params;
   const [activeTab, setActiveTab] = useState('Board');
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 

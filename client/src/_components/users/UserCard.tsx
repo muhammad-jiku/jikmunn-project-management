@@ -1,5 +1,6 @@
 import { User } from '@/state/api';
 import Image from 'next/image';
+import p3 from '../../../public/p3.jpeg';
 
 type Props = {
   user: User;
@@ -10,7 +11,7 @@ const UserCard = ({ user }: Props) => {
     <div className='flex items-center rounded border p-4 shadow'>
       {user.profilePictureUrl && (
         <Image
-          src={`../../../public/p3.jpeg`}
+          src={p3}
           alt='profile picture'
           width={32}
           height={32}
