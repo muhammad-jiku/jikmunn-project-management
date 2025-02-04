@@ -46,6 +46,7 @@ const columns: GridColDef[] = [
 
 const Users = () => {
   const { data, isLoading, isError } = useGetUsersQuery({});
+  console.log('users page data', data);
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
   if (isLoading) return <div>Loading...</div>;
