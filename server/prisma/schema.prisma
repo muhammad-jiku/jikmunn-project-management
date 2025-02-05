@@ -13,28 +13,109 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Registrant {
+  id           String   @id @default(uuid())
+  registrantId String   @unique
+  firstName    String
+  lastName     String
+  middleName   String?
+  profileImage String?
+  username     String   @unique
+  email        String   @unique
+  contact      String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User?    @relation("RegistrantUser")
+
+  @@map("tblregistrant")
+}
+
+model Manager {
+  id           String   @id @default(uuid())
+  managerId    String   @unique
+  firstName    String
+  lastName     String
+  middleName   String?
+  profileImage String?
+  username     String   @unique
+  email        String   @unique
+  contact      String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User?    @relation("ManagerUser")
+
+  @@map("tblmanager")
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  adminId      String   @unique
+  firstName    String
+  lastName     String
+  middleName   String?
+  profileImage String?
+  username     String   @unique
+  email        String   @unique
+  contact      String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User?    @relation("AdminUser")
+
+  @@map("tbladmin")
+}
+
+model SuperAdmin {
+  id           String   @id @default(uuid())
+  superAdminId String   @unique
+  firstName    String
+  lastName     String
+  middleName   String?
+  profileImage String?
+  username     String   @unique
+  email        String   @unique
+  contact      String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User?    @relation("SuperAdminUser")
+
+  @@map("tblsuperadmin")
+}
+
 model User {
-  userId            Int      @id @default(autoincrement())
-  cognitoId         String   @unique
-  username          String   @unique
-  profilePictureUrl String?
-  teamId            Int?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                  String      @id @default(uuid())
+  userId              String      @unique
+  role                UserRole
+  password            String
+  needsPasswordChange Boolean     @default(true)
+  passwordChangedAt   DateTime?
+  registrantId        String?     @unique
+  registrant          Registrant? @relation("RegistrantUser", fields: [registrantId], references: [registrantId])
+  managerId           String?     @unique
+  manager             Manager?    @relation("ManagerUser", fields: [managerId], references: [managerId])
+  adminId             String?     @unique
+  admin               Admin?      @relation("AdminUser", fields: [adminId], references: [adminId])
+  superAdminId        String?     @unique
+  superAdmin          SuperAdmin? @relation("SuperAdminUser", fields: [superAdminId], references: [superAdminId])
+  teamId              Int?
+  team                Team?       @relation(fields: [teamId], references: [id])
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 
   authoredTasks   Task[]           @relation("TaskAuthor")
   assignedTasks   Task[]           @relation("TaskAssignee")
   taskAssignments TaskAssignment[]
   attachments     Attachment[]
   comments        Comment[]
-  team            Team?            @relation(fields: [teamId], references: [id])
+
+  @@unique([registrantId, managerId, adminId, superAdminId])
+  @@map("tbluser")
 }
 
 model Team {
   id                   Int      @id @default(autoincrement())
-  teamName             String
-  productOwnerUserId   Int?
-  projectManagerUserId Int?
+  name                 String
+  productOwnerUserId   String?
+  projectManagerUserId String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
@@ -44,7 +125,7 @@ model Team {
 
 model Project {
   id          Int       @id @default(autoincrement())
-  name        String
+  title       String
   description String?
   startDate   DateTime?
   endDate     DateTime?
@@ -78,8 +159,8 @@ model Task {
   dueDate        DateTime?
   points         Int?
   projectId      Int
-  authorUserId   Int
-  assignedUserId Int?
+  authorUserId   String // Changed from Int to String
+  assignedUserId String? // Changed from Int to String
 
   project   Project  @relation(fields: [projectId], references: [id])
   author    User     @relation("TaskAuthor", fields: [authorUserId], references: [userId])
@@ -93,8 +174,8 @@ model Task {
 }
 
 model TaskAssignment {
-  id     Int @id @default(autoincrement())
-  userId Int
+  id     Int    @id @default(autoincrement())
+  userId String // Changed from Int to String
   taskId Int
 
   user User @relation(fields: [userId], references: [userId])
@@ -109,7 +190,7 @@ model Attachment {
   fileURL      String
   fileName     String?
   taskId       Int
-  uploadedById Int
+  uploadedById String // Changed from Int to String
 
   task       Task @relation(fields: [taskId], references: [id])
   uploadedBy User @relation(fields: [uploadedById], references: [userId])
@@ -122,11 +203,19 @@ model Comment {
   id     Int    @id @default(autoincrement())
   text   String
   taskId Int
-  userId Int
+  userId String // Changed from Int to String
 
   task Task @relation(fields: [taskId], references: [id])
   user User @relation(fields: [userId], references: [userId])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Enums
+enum UserRole {
+  REGISTRANT
+  MANAGER
+  ADMIN
+  SUPER_ADMIN
 }

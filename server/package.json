@@ -21,7 +21,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "^6.3.1",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
@@ -54,7 +54,7 @@
     "http-status": "1.5.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "prisma": "^6.2.1",
+    "prisma": "^6.3.1",
     "redis": "^4.7.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0",
