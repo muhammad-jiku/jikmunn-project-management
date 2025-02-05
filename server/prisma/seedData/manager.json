@@ -1,0 +1,11 @@
+[
+  {
+    "managerId": "M-00001",
+    "firstName": "Bob",
+    "lastName": "Smith",
+    "middleName": "S",
+    "username": "sbobsmith",
+    "email": "bob@example.com",
+    "contact": "0123456788"
+  }
+]

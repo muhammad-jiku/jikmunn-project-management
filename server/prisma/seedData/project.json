@@ -1,72 +1,82 @@
 [
   {
     "id": 1,
-    "name": "Apollo",
+    "title": "Apollo",
     "description": "A space exploration project.",
     "startDate": "2023-01-01T00:00:00Z",
-    "endDate": "2023-12-31T00:00:00Z"
+    "endDate": "2023-12-31T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 2,
-    "name": "Beacon",
+    "title": "Beacon",
     "description": "Developing advanced navigation systems.",
     "startDate": "2023-02-01T00:00:00Z",
-    "endDate": "2023-10-15T00:00:00Z"
+    "endDate": "2023-10-15T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 3,
-    "name": "Catalyst",
+    "title": "Catalyst",
     "description": "A project to boost renewable energy use.",
     "startDate": "2023-03-05T00:00:00Z",
-    "endDate": "2024-03-05T00:00:00Z"
+    "endDate": "2024-03-05T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 4,
-    "name": "Delta",
+    "title": "Delta",
     "description": "Delta project for new software development techniques.",
     "startDate": "2023-01-20T00:00:00Z",
-    "endDate": "2023-09-20T00:00:00Z"
+    "endDate": "2023-09-20T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 5,
-    "name": "Echo",
+    "title": "Echo",
     "description": "Echo project focused on AI advancements.",
     "startDate": "2023-04-15T00:00:00Z",
-    "endDate": "2023-11-30T00:00:00Z"
+    "endDate": "2023-11-30T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 6,
-    "name": "Foxtrot",
+    "title": "Foxtrot",
     "description": "Exploring cutting-edge biotechnology.",
     "startDate": "2023-02-25T00:00:00Z",
-    "endDate": "2023-08-25T00:00:00Z"
+    "endDate": "2023-08-25T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 7,
-    "name": "Golf",
+    "title": "Golf",
     "description": "Development of new golf equipment using AI.",
     "startDate": "2023-05-10T00:00:00Z",
-    "endDate": "2023-12-10T00:00:00Z"
+    "endDate": "2023-12-10T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 8,
-    "name": "Hotel",
+    "title": "Hotel",
     "description": "Hotel management system overhaul.",
     "startDate": "2023-03-01T00:00:00Z",
-    "endDate": "2024-01-01T00:00:00Z"
+    "endDate": "2024-01-01T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 9,
-    "name": "India",
+    "title": "India",
     "description": "Telecommunication infrastructure upgrade.",
     "startDate": "2023-06-01T00:00:00Z",
-    "endDate": "2023-12-01T00:00:00Z"
+    "endDate": "2023-12-01T00:00:00Z",
+    "projectOwnerId": "M-00001"
   },
   {
     "id": 10,
-    "name": "Juliet",
+    "title": "Juliet",
     "description": "Initiative to enhance cyber-security measures.",
     "startDate": "2023-07-01T00:00:00Z",
-    "endDate": "2024-02-01T00:00:00Z"
+    "endDate": "2024-02-01T00:00:00Z",
+    "projectOwnerId": "M-00001"
   }
 ]

@@ -1,32 +1,242 @@
 [
-  { "id": 1, "userId": 1, "taskId": 1 },
-  { "id": 2, "userId": 2, "taskId": 2 },
-  { "id": 3, "userId": 3, "taskId": 3 },
-  { "id": 4, "userId": 4, "taskId": 4 },
-  { "id": 5, "userId": 5, "taskId": 5 },
-  { "id": 6, "userId": 6, "taskId": 6 },
-  { "id": 7, "userId": 7, "taskId": 7 },
-  { "id": 8, "userId": 8, "taskId": 8 },
-  { "id": 9, "userId": 9, "taskId": 9 },
-  { "id": 10, "userId": 10, "taskId": 10 },
-  { "id": 11, "userId": 11, "taskId": 11 },
-  { "id": 12, "userId": 12, "taskId": 12 },
-  { "id": 13, "userId": 13, "taskId": 13 },
-  { "id": 14, "userId": 14, "taskId": 14 },
-  { "id": 15, "userId": 15, "taskId": 15 },
-  { "id": 16, "userId": 16, "taskId": 16 },
-  { "id": 17, "userId": 17, "taskId": 17 },
-  { "id": 18, "userId": 18, "taskId": 18 },
-  { "id": 19, "userId": 19, "taskId": 19 },
-  { "id": 20, "userId": 20, "taskId": 20 },
-  { "id": 21, "userId": 1, "taskId": 21 },
-  { "id": 22, "userId": 2, "taskId": 22 },
-  { "id": 23, "userId": 3, "taskId": 23 },
-  { "id": 24, "userId": 4, "taskId": 24 },
-  { "id": 25, "userId": 5, "taskId": 25 },
-  { "id": 26, "userId": 6, "taskId": 26 },
-  { "id": 27, "userId": 7, "taskId": 27 },
-  { "id": 28, "userId": 8, "taskId": 28 },
-  { "id": 29, "userId": 9, "taskId": 29 },
-  { "id": 30, "userId": 10, "taskId": 30 }
+  {
+    "id": 1,
+    "userId": "M-00001",
+    "taskId": 1,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 2,
+    "userId": "M-00001",
+    "taskId": 2,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 3,
+    "userId": "M-00001",
+    "taskId": 3,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 4,
+    "userId": "M-00001",
+    "taskId": 4,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 5,
+    "userId": "M-00001",
+    "taskId": 5,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "taskId": 6,
+    "userId": "M-00001",
+    "id": 6,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 7,
+    "userId": "M-00001",
+    "taskId": 7,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 8,
+    "userId": "M-00001",
+    "taskId": 8,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 9,
+    "userId": "M-00001",
+    "taskId": 9,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 10,
+    "userId": "M-00001",
+    "taskId": 10,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 11,
+    "userId": "M-00001",
+    "taskId": 11,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 12,
+    "userId": "M-00001",
+    "taskId": 12,
+    "status": "TO_DO"
+  },
+  {
+    "id": 13,
+    "userId": "M-00001",
+    "taskId": 13,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 14,
+    "userId": "M-00001",
+    "taskId": 14,
+    "status": "TO_DO"
+  },
+  {
+    "id": 15,
+    "userId": "M-00001",
+    "taskId": 15,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 16,
+    "userId": "M-00001",
+    "taskId": 16,
+    "status": "TO_DO"
+  },
+  {
+    "id": 17,
+    "userId": "M-00001",
+    "taskId": 17,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 18,
+    "userId": "M-00001",
+    "taskId": 18,
+    "status": "TO_DO"
+  },
+  {
+    "id": 19,
+    "userId": "M-00001",
+    "taskId": 19,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 20,
+    "userId": "M-00001",
+    "taskId": 20,
+    "status": "TO_DO"
+  },
+  {
+    "id": 21,
+    "userId": "M-00001",
+    "taskId": 21,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 22,
+    "userId": "M-00001",
+    "taskId": 22,
+    "status": "TO_DO"
+  },
+  {
+    "id": 23,
+    "userId": "M-00001",
+    "taskId": 23,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 24,
+    "userId": "M-00001",
+    "taskId": 24,
+    "status": "TO_DO"
+  },
+  {
+    "id": 25,
+    "userId": "M-00001",
+    "taskId": 25,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 26,
+    "userId": "M-00001",
+    "taskId": 26,
+    "status": "TO_DO"
+  },
+  {
+    "id": 27,
+    "userId": "M-00001",
+    "taskId": 27,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 28,
+    "userId": "M-00001",
+    "taskId": 28,
+    "status": "TO_DO"
+  },
+  {
+    "id": 29,
+    "userId": "M-00001",
+    "taskId": 29,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 30,
+    "userId": "M-00001",
+    "taskId": 30,
+    "status": "TO_DO"
+  },
+  {
+    "id": 31,
+    "userId": "M-00001",
+    "taskId": 31,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 32,
+    "userId": "M-00001",
+    "taskId": 32,
+    "status": "TO_DO"
+  },
+  {
+    "id": 33,
+    "userId": "M-00001",
+    "taskId": 33,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 34,
+    "userId": "M-00001",
+    "taskId": 34,
+    "status": "TO_DO"
+  },
+  {
+    "id": 35,
+    "userId": "M-00001",
+    "taskId": 35,
+    "status": "WORK_IN_PROGRESS"
+  },
+  {
+    "id": 36,
+    "userId": "M-00001",
+    "taskId": 36,
+    "status": "TO_DO"
+  },
+  {
+    "id": 37,
+    "userId": "M-00001",
+    "taskId": 37,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 38,
+    "userId": "M-00001",
+    "taskId": 38,
+    "status": "TO_DO"
+  },
+  {
+    "id": 39,
+    "userId": "M-00001",
+    "taskId": 39,
+    "status": "COMPLETED"
+  },
+  {
+    "id": 40,
+    "userId": "M-00001",
+    "taskId": 40,
+    "status": "TO_DO"
+  }
 ]

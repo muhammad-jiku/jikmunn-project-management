@@ -1,0 +1,7 @@
+[
+  { "id": 1, "teamId": 5, "userId": "M-00001" },
+  { "id": 2, "teamId": 4, "userId": "D-00001" },
+  { "id": 3, "teamId": 3, "userId": "M-00001" },
+  { "id": 4, "teamId": 2, "userId": "D-00001" },
+  { "id": 5, "teamId": 1, "userId": "M-00001" }
+]

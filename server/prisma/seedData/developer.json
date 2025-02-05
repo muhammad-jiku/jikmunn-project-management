@@ -1,0 +1,12 @@
+[
+  {
+    "developerId": "D-00001",
+    "firstName": "John",
+    "lastName": "Doe",
+    "middleName": "A.",
+    "profileImage": "https://example.com/profile1.jpg",
+    "username": "johndoe",
+    "email": "john.doe@example.com",
+    "contact": "+8801234567890"
+  }
+]

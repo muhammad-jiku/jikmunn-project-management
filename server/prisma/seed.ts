@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
+
 const prisma = new PrismaClient();
 
 async function deleteAllData(orderedFileNames: string[]) {
@@ -22,16 +23,20 @@ async function deleteAllData(orderedFileNames: string[]) {
 
 async function main() {
   const dataDirectory = path.join(__dirname, 'seedData');
-
   const orderedFileNames = [
+    'developer.json',
+    'manager.json',
+    'admin.json',
+    'superAdmin.json',
+    'user.json',
     'team.json',
+    'teamMember.json',
     'project.json',
     'projectTeam.json',
-    'user.json',
     'task.json',
+    'taskAssignment.json',
     'attachment.json',
     'comment.json',
-    'taskAssignment.json',
   ];
 
   await deleteAllData(orderedFileNames);
@@ -44,7 +49,7 @@ async function main() {
 
     try {
       for (const data of jsonData) {
-        await model.create({ data });
+        await model.create({ data }); // Ensure you're using the correct method for your Prisma version
       }
       console.log(`Seeded ${modelName} with data from ${fileName}`);
     } catch (error) {

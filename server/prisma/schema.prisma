@@ -13,154 +13,183 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Registrant {
-  id           String   @id @default(uuid())
-  registrantId String   @unique
+model Developer {
+  id           String  @id @default(uuid())
+  developerId  String  @unique
   firstName    String
   lastName     String
   middleName   String?
   profileImage String?
-  username     String   @unique
-  email        String   @unique
-  contact      String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User?    @relation("RegistrantUser")
+  username     String  @unique
+  email        String  @unique
+  contact      String  @unique
 
-  @@map("tblregistrant")
+  user      User?    @relation("DeveloperUser")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tbldeveloper")
 }
 
 model Manager {
-  id           String   @id @default(uuid())
-  managerId    String   @unique
+  id           String  @id @default(uuid())
+  managerId    String  @unique
   firstName    String
   lastName     String
   middleName   String?
   profileImage String?
-  username     String   @unique
-  email        String   @unique
-  contact      String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User?    @relation("ManagerUser")
+  username     String  @unique
+  email        String  @unique
+  contact      String  @unique
+
+  user      User?    @relation("ManagerUser")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("tblmanager")
 }
 
 model Admin {
-  id           String   @id @default(uuid())
-  adminId      String   @unique
+  id           String  @id @default(uuid())
+  adminId      String  @unique
   firstName    String
   lastName     String
   middleName   String?
   profileImage String?
-  username     String   @unique
-  email        String   @unique
-  contact      String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User?    @relation("AdminUser")
+  username     String  @unique
+  email        String  @unique
+  contact      String  @unique
+
+  user      User?    @relation("AdminUser")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("tbladmin")
 }
 
 model SuperAdmin {
-  id           String   @id @default(uuid())
-  superAdminId String   @unique
+  id           String  @id @default(uuid())
+  superAdminId String  @unique
   firstName    String
   lastName     String
   middleName   String?
   profileImage String?
-  username     String   @unique
-  email        String   @unique
-  contact      String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User?    @relation("SuperAdminUser")
+  username     String  @unique
+  email        String  @unique
+  contact      String  @unique
+
+  user      User?    @relation("SuperAdminUser")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("tblsuperadmin")
 }
 
 model User {
-  id                  String      @id @default(uuid())
-  userId              String      @unique
+  id                  String    @id @default(uuid())
+  userId              String    @unique
   role                UserRole
   password            String
-  needsPasswordChange Boolean     @default(true)
+  needsPasswordChange Boolean   @default(true)
   passwordChangedAt   DateTime?
-  registrantId        String?     @unique
-  registrant          Registrant? @relation("RegistrantUser", fields: [registrantId], references: [registrantId])
-  managerId           String?     @unique
-  manager             Manager?    @relation("ManagerUser", fields: [managerId], references: [managerId])
-  adminId             String?     @unique
-  admin               Admin?      @relation("AdminUser", fields: [adminId], references: [adminId])
-  superAdminId        String?     @unique
-  superAdmin          SuperAdmin? @relation("SuperAdminUser", fields: [superAdminId], references: [superAdminId])
-  teamId              Int?
-  team                Team?       @relation(fields: [teamId], references: [id])
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  developerId         String?   @unique
+  managerId           String?   @unique
+  adminId             String?   @unique
+  superAdminId        String?   @unique
 
-  authoredTasks   Task[]           @relation("TaskAuthor")
-  assignedTasks   Task[]           @relation("TaskAssignee")
-  taskAssignments TaskAssignment[]
-  attachments     Attachment[]
-  comments        Comment[]
+  developer  Developer?  @relation("DeveloperUser", fields: [developerId], references: [developerId])
+  manager    Manager?    @relation("ManagerUser", fields: [managerId], references: [managerId])
+  admin      Admin?      @relation("AdminUser", fields: [adminId], references: [adminId])
+  superAdmin SuperAdmin? @relation("SuperAdminUser", fields: [superAdminId], references: [superAdminId])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
-  @@unique([registrantId, managerId, adminId, superAdminId])
+  authoredTasks  Task[]           @relation("TaskAuthor")
+  assignedTasks  Task[]           @relation("TaskAssignee")
+  ownedTeams     Team[]           @relation("TeamOwner")
+  assignedTeams  TeamMember[]
+  Project        Project[]
+  Attachment     Attachment[]
+  Comment        Comment[]
+  TaskAssignment TaskAssignment[]
+
+  @@unique([role, developerId, managerId, adminId, superAdminId])
   @@map("tbluser")
 }
 
 model Team {
-  id                   Int      @id @default(autoincrement())
-  name                 String
-  productOwnerUserId   String?
-  projectManagerUserId String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id          Int    @id @default(autoincrement())
+  name        String
+  teamOwnerId String // Must be a Manager
 
+  owner     User     @relation("TeamOwner", fields: [teamOwnerId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members      TeamMember[]
   projectTeams ProjectTeam[]
-  user         User[]
+
+  @@map("tblteam")
+}
+
+model TeamMember {
+  id     Int    @id @default(autoincrement())
+  teamId Int
+  userId String // Can be a Manager or Developer
+
+  team      Team     @relation(fields: [teamId], references: [id])
+  user      User     @relation(fields: [userId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tblteammember")
 }
 
 model Project {
-  id          Int       @id @default(autoincrement())
-  title       String
-  description String?
-  startDate   DateTime?
-  endDate     DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String?
+  startDate      DateTime?
+  endDate        DateTime?
+  projectOwnerId String // Must be a Manager
+
+  owner     User     @relation(fields: [projectOwnerId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   tasks        Task[]
   projectTeams ProjectTeam[]
+
+  @@map("tblproject")
 }
 
 model ProjectTeam {
   id        Int @id @default(autoincrement())
-  teamId    Int
   projectId Int
+  teamId    Int
 
-  team    Team    @relation(fields: [teamId], references: [id])
-  project Project @relation(fields: [projectId], references: [id])
-
+  project   Project  @relation(fields: [projectId], references: [id])
+  team      Team     @relation(fields: [teamId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([projectId, teamId]) // Prevent duplicate project-team associations
+  @@map("tblprojectteam")
 }
 
 model Task {
-  id             Int       @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   title          String
   description    String?
-  status         String?
+  status         TaskStatus?
   priority       String?
   tags           String?
   startDate      DateTime?
   dueDate        DateTime?
   points         Int?
   projectId      Int
-  authorUserId   String // Changed from Int to String
-  assignedUserId String? // Changed from Int to String
+  authorUserId   String // Must be a Manager or Developer
+  assignedUserId String? // Usually a Developer
 
   project   Project  @relation(fields: [projectId], references: [id])
   author    User     @relation("TaskAuthor", fields: [authorUserId], references: [userId])
@@ -168,21 +197,27 @@ model Task {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  taskAssignments TaskAssignment[]
-  attachments     Attachment[]
-  comments        Comment[]
+  attachments    Attachment[]
+  comments       Comment[]
+  TaskAssignment TaskAssignment[]
+
+  @@map("tbltask")
 }
 
 model TaskAssignment {
-  id     Int    @id @default(autoincrement())
-  userId String // Changed from Int to String
-  taskId Int
+  id         Int        @id @default(autoincrement())
+  taskId     Int
+  userId     String // Can be a Developer or Manager
+  assignedAt DateTime   @default(now())
+  status     TaskStatus // e.g. "to-do", "work-in-progress", "completed"
+  dueDate    DateTime?
 
-  user User @relation(fields: [userId], references: [userId])
-  task Task @relation(fields: [taskId], references: [id])
-
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [userId])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("tbltaskassignment")
 }
 
 model Attachment {
@@ -190,32 +225,40 @@ model Attachment {
   fileURL      String
   fileName     String?
   taskId       Int
-  uploadedById String // Changed from Int to String
+  uploadedById String // Must be a Manager or Developer
 
-  task       Task @relation(fields: [taskId], references: [id])
-  uploadedBy User @relation(fields: [uploadedById], references: [userId])
+  task       Task     @relation(fields: [taskId], references: [id])
+  uploadedBy User     @relation(fields: [uploadedById], references: [userId])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("tblattachment")
 }
 
 model Comment {
   id     Int    @id @default(autoincrement())
   text   String
   taskId Int
-  userId String // Changed from Int to String
+  userId String // Must be a Manager or Developer
 
-  task Task @relation(fields: [taskId], references: [id])
-  user User @relation(fields: [userId], references: [userId])
-
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [userId])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("tblcomment")
 }
 
 // Enums
 enum UserRole {
-  REGISTRANT
+  DEVELOPER
   MANAGER
   ADMIN
   SUPER_ADMIN
+}
+
+enum TaskStatus {
+  TO_DO
+  WORK_IN_PROGRESS
+  COMPLETED
 }
