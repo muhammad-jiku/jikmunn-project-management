@@ -2,6 +2,7 @@ import express from 'express';
 import { AdminRoutes } from '../modules/admin/admin.routes';
 import { AuthRoutes } from '../modules/auth/auth.routes';
 import { DeveloperRoutes } from '../modules/developer/developer.routes';
+import { ManagerRoutes } from '../modules/manager/manager.routes';
 import { ProjectRoutes } from '../modules/project/project.routes';
 import { SuperAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { TaskRoutes } from '../modules/task/task.routes';
@@ -23,6 +24,10 @@ const moduleRoutes = [
   {
     path: '/developers',
     route: DeveloperRoutes,
+  },
+  {
+    path: '/managers',
+    route: ManagerRoutes,
   },
   {
     path: '/admins',

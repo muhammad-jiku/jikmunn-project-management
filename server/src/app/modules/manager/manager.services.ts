@@ -1,18 +1,18 @@
-import { Developer, Prisma } from '@prisma/client';
+import { Manager, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/handleApiError';
 import { paginationHelpers } from '../../../helpers/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { prisma } from '../../../shared/prisma';
-import { developerSearchableFields } from './developer.constants';
-import { IDeveloperFilterRequest } from './developer.interfaces';
+import { managerSearchableFields } from './manager.constants';
+import { IManagerFilterRequest } from './manager.interfaces';
 
-// Get all developers
+// Get all managers
 const getAllFromDB = async (
-  filters: IDeveloperFilterRequest,
+  filters: IManagerFilterRequest,
   options: IPaginationOptions
-): Promise<IGenericResponse<Developer[]>> => {
+): Promise<IGenericResponse<Manager[]>> => {
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
   const { searchTerm, ...filterData } = filters;
 
@@ -20,7 +20,7 @@ const getAllFromDB = async (
 
   if (searchTerm) {
     andConditions.push({
-      OR: developerSearchableFields.map((field) => ({
+      OR: managerSearchableFields.map((field) => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -41,10 +41,10 @@ const getAllFromDB = async (
     });
   }
 
-  const whereConditions: Prisma.DeveloperWhereInput =
+  const whereConditions: Prisma.ManagerWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
-  const result = await prisma.developer.findMany({
+  const result = await prisma.manager.findMany({
     where: whereConditions,
     skip,
     take: limit,
@@ -55,7 +55,7 @@ const getAllFromDB = async (
             createdAt: 'desc',
           },
   });
-  const total = await prisma.developer.count({
+  const total = await prisma.manager.count({
     where: whereConditions,
   });
 
@@ -69,40 +69,40 @@ const getAllFromDB = async (
   };
 };
 
-// Get a single developer by ID
-const getByIdFromDB = async (id: string): Promise<Developer | null> => {
-  const result = await prisma.developer.findUnique({
+// Get a single manager by ID
+const getByIdFromDB = async (id: string): Promise<Manager | null> => {
+  const result = await prisma.manager.findUnique({
     where: {
-      developerId: id,
+      managerId: id,
     },
   });
 
   if (!result) {
     throw new ApiError(
       httpStatus.NOT_FOUND,
-      'Sorry, the developer does not exist!'
+      'Sorry, the manager does not exist!'
     );
   }
 
   return result;
 };
 
-// Update a developer by ID
+// Update a manager by ID
 const updateOneInDB = async (
   id: string,
-  payload: Prisma.DeveloperUpdateInput
-): Promise<Developer | null> => {
-  // First check if developer exists
-  const existingDeveloper = await prisma.developer.findUnique({
-    where: { developerId: id },
+  payload: Prisma.ManagerUpdateInput
+): Promise<Manager | null> => {
+  // First check if manager exists
+  const existingManager = await prisma.manager.findUnique({
+    where: { managerId: id },
   });
 
-  if (!existingDeveloper) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Developer not found!');
+  if (!existingManager) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Manager not found!');
   }
 
-  const result = await prisma.developer.update({
-    where: { developerId: id },
+  const result = await prisma.manager.update({
+    where: { managerId: id },
     data: payload,
   });
 
@@ -113,31 +113,31 @@ const updateOneInDB = async (
   return result;
 };
 
-// Delete a developer by ID
-const deleteByIdFromDB = async (id: string): Promise<Developer | null> => {
+// Delete a manager by ID
+const deleteByIdFromDB = async (id: string): Promise<Manager | null> => {
   return await prisma.$transaction(async (tx) => {
-    const developer = await tx.developer.findUnique({
-      where: { developerId: id },
+    const manager = await tx.manager.findUnique({
+      where: { managerId: id },
       include: { user: true },
     });
 
-    if (!developer) {
+    if (!manager) {
       throw new ApiError(
         httpStatus.NOT_FOUND,
-        'Sorry, the developer does not exist!'
+        'Sorry, the manager does not exist!'
       );
     }
 
-    console.log('developer ', developer);
-    console.log('user', developer.user);
-    if (developer.user) {
+    console.log('manager ', manager);
+    console.log('user', manager.user);
+    if (manager.user) {
       await tx.user.delete({
-        where: { userId: developer.user.userId },
+        where: { userId: manager.user.userId },
       });
     }
 
-    const result = await tx.developer.delete({
-      where: { developerId: id },
+    const result = await tx.manager.delete({
+      where: { managerId: id },
     });
 
     if (!result) {
@@ -148,7 +148,7 @@ const deleteByIdFromDB = async (id: string): Promise<Developer | null> => {
   });
 };
 
-export const DeveloperServices = {
+export const ManagerServices = {
   getAllFromDB,
   getByIdFromDB,
   updateOneInDB,
