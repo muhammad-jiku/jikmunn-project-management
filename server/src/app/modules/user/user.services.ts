@@ -10,6 +10,7 @@ import httpStatus from 'http-status';
 import config from '../../../config';
 import ApiError from '../../../errors/handleApiError';
 import { prisma } from '../../../shared/prisma';
+import { hashPassword } from '../auth/auth.utils';
 import {
   generateAdminId,
   generateDeveloperId,
@@ -174,9 +175,10 @@ const insertDeveloperIntoDB = async (
   }
 
   // Hash the password before saving
-  // userData.password = await hashPassword(userData.password);
-  userData.password = userData.password;
+  userData.password = await hashPassword(userData.password);
   userData.role = UserRole.DEVELOPER;
+  userData.username = userData.username;
+  userData.email = userData.email;
 
   try {
     // Step 1: Generate a unique developer ID
@@ -222,9 +224,10 @@ const insertManagerIntoDB = async (
   }
 
   // Hash the password before saving
-  // userData.password = await hashPassword(userData.password);
-  userData.password = userData.password;
+  userData.password = await hashPassword(userData.password);
   userData.role = UserRole.MANAGER;
+  userData.username = userData.username;
+  userData.email = userData.email;
 
   try {
     // Step 1: Generate a unique manager ID
@@ -270,9 +273,10 @@ const insertAdminIntoDB = async (
   }
 
   // Hash the password before saving
-  // userData.password = await hashPassword(userData.password);
-  userData.password = userData.password;
+  userData.password = await hashPassword(userData.password);
   userData.role = UserRole.ADMIN;
+  userData.username = userData.username;
+  userData.email = userData.email;
 
   try {
     // Step 1: Generate a unique admin ID
@@ -318,9 +322,10 @@ const insertSuperAdminIntoDB = async (
   }
 
   // Hash the password before saving
-  // userData.password = await hashPassword(userData.password);
-  userData.password = userData.password;
+  userData.password = await hashPassword(userData.password);
   userData.role = UserRole.SUPER_ADMIN;
+  userData.username = userData.username;
+  userData.email = userData.email;
 
   try {
     // Step 1: Generate a unique superAdmin ID

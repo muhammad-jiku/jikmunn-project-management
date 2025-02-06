@@ -20,8 +20,6 @@ model Developer {
   lastName     String
   middleName   String?
   profileImage String?
-  username     String  @unique
-  email        String  @unique
   contact      String  @unique
 
   user      User?    @relation("DeveloperUser")
@@ -38,8 +36,6 @@ model Manager {
   lastName     String
   middleName   String?
   profileImage String?
-  username     String  @unique
-  email        String  @unique
   contact      String  @unique
 
   user      User?    @relation("ManagerUser")
@@ -56,8 +52,6 @@ model Admin {
   lastName     String
   middleName   String?
   profileImage String?
-  username     String  @unique
-  email        String  @unique
   contact      String  @unique
 
   user      User?    @relation("AdminUser")
@@ -74,8 +68,6 @@ model SuperAdmin {
   lastName     String
   middleName   String?
   profileImage String?
-  username     String  @unique
-  email        String  @unique
   contact      String  @unique
 
   user      User?    @relation("SuperAdminUser")
@@ -86,16 +78,20 @@ model SuperAdmin {
 }
 
 model User {
-  id                  String    @id @default(uuid())
-  userId              String    @unique
-  role                UserRole
-  password            String
-  needsPasswordChange Boolean   @default(true)
-  passwordChangedAt   DateTime?
-  developerId         String?   @unique
-  managerId           String?   @unique
-  adminId             String?   @unique
-  superAdminId        String?   @unique
+  id                   String    @id @default(uuid())
+  userId               String    @unique
+  username             String    @unique
+  email                String    @unique
+  role                 UserRole
+  password             String
+  needsPasswordChange  Boolean   @default(true)
+  passwordChangedAt    DateTime?
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+  developerId          String?   @unique
+  managerId            String?   @unique
+  adminId              String?   @unique
+  superAdminId         String?   @unique
 
   developer  Developer?  @relation("DeveloperUser", fields: [developerId], references: [developerId])
   manager    Manager?    @relation("ManagerUser", fields: [managerId], references: [managerId])
@@ -113,7 +109,7 @@ model User {
   Comment        Comment[]
   TaskAssignment TaskAssignment[]
 
-  @@unique([role, developerId, managerId, adminId, superAdminId])
+  @@unique([username, email, role, developerId, managerId, adminId, superAdminId])
   @@map("tbluser")
 }
 

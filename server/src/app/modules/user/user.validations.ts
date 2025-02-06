@@ -30,6 +30,15 @@ import { z } from 'zod';
 const createDeveloper = z.object({
   body: z
     .object({
+      password: z.string().optional(),
+      username: z.string({
+        required_error: 'Username is required',
+      }),
+      email: z
+        .string({
+          required_error: 'Email is required',
+        })
+        .email('Invalid email format'),
       developer: z
         .object({
           firstName: z.string({
@@ -40,14 +49,6 @@ const createDeveloper = z.object({
           }),
           middleName: z.string().optional(),
           profileImage: z.string().optional(),
-          username: z.string({
-            required_error: 'Username is required',
-          }),
-          email: z
-            .string({
-              required_error: 'Email is required',
-            })
-            .email('Invalid email format'),
           contact: z.string({
             required_error: 'Contact number is required',
           }),
@@ -60,6 +61,15 @@ const createDeveloper = z.object({
 const createManager = z.object({
   body: z
     .object({
+      password: z.string().optional(),
+      username: z.string({
+        required_error: 'Username is required',
+      }),
+      email: z
+        .string({
+          required_error: 'Email is required',
+        })
+        .email('Invalid email format'),
       manager: z
         .object({
           firstName: z.string({
@@ -70,14 +80,6 @@ const createManager = z.object({
           }),
           middleName: z.string().optional(),
           profileImage: z.string().optional(),
-          username: z.string({
-            required_error: 'Username is required',
-          }),
-          email: z
-            .string({
-              required_error: 'Email is required',
-            })
-            .email('Invalid email format'),
           contact: z.string({
             required_error: 'Contact number is required',
           }),
@@ -90,6 +92,15 @@ const createManager = z.object({
 const createAdmin = z.object({
   body: z
     .object({
+      password: z.string().optional(),
+      username: z.string({
+        required_error: 'Username is required',
+      }),
+      email: z
+        .string({
+          required_error: 'Email is required',
+        })
+        .email('Invalid email format'),
       admin: z
         .object({
           firstName: z.string({
@@ -100,14 +111,6 @@ const createAdmin = z.object({
           }),
           middleName: z.string().optional(),
           profileImage: z.string().optional(),
-          username: z.string({
-            required_error: 'Username is required',
-          }),
-          email: z
-            .string({
-              required_error: 'Email is required',
-            })
-            .email('Invalid email format'),
           contact: z.string({
             required_error: 'Contact number is required',
           }),
@@ -120,6 +123,15 @@ const createAdmin = z.object({
 const createSuperAdmin = z.object({
   body: z
     .object({
+      password: z.string().optional(),
+      username: z.string({
+        required_error: 'Username is required',
+      }),
+      email: z
+        .string({
+          required_error: 'Email is required',
+        })
+        .email('Invalid email format'),
       superAdmin: z
         .object({
           firstName: z.string({
@@ -130,14 +142,6 @@ const createSuperAdmin = z.object({
           }),
           middleName: z.string().optional(),
           profileImage: z.string().optional(),
-          username: z.string({
-            required_error: 'Username is required',
-          }),
-          email: z
-            .string({
-              required_error: 'Email is required',
-            })
-            .email('Invalid email format'),
           contact: z.string({
             required_error: 'Contact number is required',
           }),

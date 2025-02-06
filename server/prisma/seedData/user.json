@@ -2,24 +2,32 @@
   {
     "userId": "D-00001",
     "developerId": "D-00001",
+    "username": "johndoe",
+    "email": "john.doe@example.com",
     "role": "DEVELOPER",
     "password": "$2b$12$MM//fpPn/ezdMbav0AfV3.7LQdNk9rrpekfTi88r2Dj9Ozp6wsfwG"
   },
   {
     "userId": "M-00001",
     "managerId": "M-00001",
+    "username": "sbobsmith",
+    "email": "bob@example.com",
     "role": "MANAGER",
     "password": "$2b$12$csTzuCCdbwR5Hk6ASgI4DebCXFUnjanJV3n1gEmPXVlDhLzSrgUuG"
   },
   {
     "userId": "A-00001",
     "adminId": "A-00001",
+    "username": "walt@walter",
+    "email": "carol@example.com",
     "role": "ADMIN",
     "password": "$2b$12$8VsQYWnOni/K4DxvWoYy5u5jzsNf3g4w2gyxdHEHd3FNaXIP00F8."
   },
   {
     "userId": "SA-00001",
     "superAdminId": "SA-00001",
+    "username": "dbrowne",
+    "email": "dave@example.com",
     "role": "SUPER_ADMIN",
     "password": "$2b$12$HOuvoogSyv.nco.cKT9xOuIafEFSP577f.oKthR0KqM8x/zHHuoR2"
   }

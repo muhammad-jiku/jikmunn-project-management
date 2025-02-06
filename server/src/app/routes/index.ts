@@ -1,4 +1,5 @@
 import express from 'express';
+import { AuthRoutes } from '../modules/auth/auth.routes';
 import { ProjectRoutes } from '../modules/project/project.routes';
 import { TaskRoutes } from '../modules/task/task.routes';
 import { TeamRoutes } from '../modules/team/team.routes';
@@ -9,6 +10,14 @@ const routes = express.Router();
 const moduleRoutes = [
   // ... routes
   {
+    path: '/users',
+    route: UserRoutes,
+  },
+  {
+    path: '/auth',
+    route: AuthRoutes,
+  },
+  {
     path: '/projects',
     route: ProjectRoutes,
   },
@@ -16,10 +25,7 @@ const moduleRoutes = [
     path: '/tasks',
     route: TaskRoutes,
   },
-  {
-    path: '/users',
-    route: UserRoutes,
-  },
+
   {
     path: '/teams',
     route: TeamRoutes,
