@@ -3,4 +3,9 @@ export type ITaskFilterRequest = {
   // id?: number | undefined;
   title?: string | undefined;
   description?: string | undefined;
+  status?: string | undefined;
+  priority?: string | undefined;
+  projectId?: number | undefined;
+  authorUserId?: string | undefined;
+  assignedUserId?: string | undefined;
 };

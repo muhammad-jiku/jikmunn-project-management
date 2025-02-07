@@ -16,7 +16,7 @@ const insertIntoDB = catchAsync(
       sendResponse<Task>(res, {
         statusCode: httpStatus.CREATED,
         success: true,
-        message: 'Task created successfully!',
+        message: 'Task created successfully',
         data: result,
       });
     } catch (error) {
@@ -28,16 +28,13 @@ const insertIntoDB = catchAsync(
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { projectId } = req.params;
+      const user = req.user!;
+
       const filters = pick(req.query, taskFilterableFields);
       const options = pick(req.query, paginationFields);
 
-      console.log('project id..', projectId);
-      console.log('filters..', filters);
-      console.log('options..', options);
-
       const result = await TaskServices.getAllFromDB(
-        Number(projectId),
+        user.userId,
         filters,
         options
       );
@@ -45,7 +42,7 @@ const getAllFromDB = catchAsync(
       sendResponse<Task[]>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Tasks data retrieved successfully!',
+        message: 'Tasks retrieved successfully',
         meta: result.meta,
         data: result.data,
       });
@@ -59,13 +56,12 @@ const getUserTasksFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = req.params;
-
-      const result = await TaskServices.getUserTasksFromDB(Number(userId));
+      const result = await TaskServices.getUserTasksFromDB(userId);
 
       sendResponse<Task[]>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User tasks retrieved successfully!',
+        message: 'User tasks retrieved successfully',
         data: result,
       });
     } catch (error) {
@@ -88,7 +84,7 @@ const updateTaskStatusInDB = catchAsync(
       sendResponse<Task>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Task status updated successfully!',
+        message: 'Task status updated successfully',
         data: result,
       });
     } catch (error) {
@@ -97,17 +93,16 @@ const updateTaskStatusInDB = catchAsync(
   }
 );
 
-const deleteFromDB = catchAsync(
+const deleteByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-
-      const result = await TaskServices.deleteFromDB(Number(id));
+      const result = await TaskServices.deleteByIdFromDB(Number(id));
 
       sendResponse<Task>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Task deleted successfully!',
+        message: 'Task deleted successfully',
         data: result,
       });
     } catch (error) {
@@ -121,5 +116,5 @@ export const TaskControllers = {
   getAllFromDB,
   getUserTasksFromDB,
   updateTaskStatusInDB,
-  deleteFromDB,
+  deleteByIdFromDB,
 };

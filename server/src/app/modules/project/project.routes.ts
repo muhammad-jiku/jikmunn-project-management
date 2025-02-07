@@ -1,4 +1,6 @@
 import express from 'express';
+import { USER_ROLES } from '../../../enums/user';
+import { auth } from '../../middlewares/auth';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { ProjectControllers } from './project.controllers';
 import { ProjectValidations } from './project.validations';
@@ -9,25 +11,38 @@ router
   .route('/create')
   .post(
     validateRequest(ProjectValidations.createProject),
+    auth(USER_ROLES.MANAGER),
     ProjectControllers.insertIntoDB
   );
 
-router.route('/').get(ProjectControllers.getAllFromDB);
+router
+  .route('/')
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    ProjectControllers.getAllFromDB
+  );
 
 router
   .route('/:id')
-  .get(ProjectControllers.getByIdFromDB)
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    ProjectControllers.getByIdFromDB
+  )
   .patch(
     validateRequest(ProjectValidations.updateProject),
+    auth(USER_ROLES.MANAGER),
     ProjectControllers.updateIntoDB
   )
-  .delete(ProjectControllers.deleteFromDB);
+  .delete(
+    auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.MANAGER),
+    ProjectControllers.deleteFromDB
+  );
 
-// Add the new route for updating project teams
 router
   .route('/teams/update')
   .post(
     validateRequest(ProjectValidations.updateProjectTeams),
+    auth(USER_ROLES.MANAGER),
     ProjectControllers.updateProjectTeamsById
   );
 

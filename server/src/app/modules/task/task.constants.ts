@@ -1,12 +1,17 @@
-export const taskFilterableFields: string[] = [
-  'searchTerm',
-  // 'id',
+export const taskSearchableFields = [
   'title',
   'description',
+  'status',
+  'priority',
+  'tags',
 ];
 
-export const taskSearchableFields: string[] = [
-  // 'id',
+export const taskFilterableFields = [
+  'searchTerm',
   'title',
-  'description',
+  'status',
+  'priority',
+  'projectId',
+  'authorUserId',
+  'assignedUserId',
 ];
