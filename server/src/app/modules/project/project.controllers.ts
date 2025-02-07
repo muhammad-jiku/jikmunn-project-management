@@ -71,7 +71,7 @@ const updateIntoDB = catchAsync(
       const { id } = req.params;
       const payload = await req.body;
 
-      const result = await ProjectServices.updateIntoDB(Number(id), payload);
+      const result = await ProjectServices.updateOneInDB(Number(id), payload);
 
       sendResponse<Project>(res, {
         statusCode: httpStatus.OK,
@@ -85,12 +85,34 @@ const updateIntoDB = catchAsync(
   }
 );
 
+const updateProjectTeamsById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { projectId, teamIds } = req.body;
+
+      const result = await ProjectServices.updateProjectTeamsById(
+        Number(projectId),
+        teamIds
+      );
+
+      sendResponse<Project>(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Project teams updated successfully!',
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
+
 const deleteFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
 
-      const result = await ProjectServices.deleteFromDB(Number(id));
+      const result = await ProjectServices.deleteByIdFromDB(Number(id));
 
       sendResponse<Project>(res, {
         statusCode: httpStatus.OK,
@@ -109,5 +131,6 @@ export const ProjectControllers = {
   getAllFromDB,
   getByIdFromDB,
   updateIntoDB,
+  updateProjectTeamsById,
   deleteFromDB,
 };

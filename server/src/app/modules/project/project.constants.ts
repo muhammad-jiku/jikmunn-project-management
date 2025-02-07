@@ -1,12 +1,7 @@
 export const projectFilterableFields: string[] = [
   'searchTerm',
-  // 'id',
-  'name',
+  'title',
   'description',
 ];
 
-export const projectSearchableFields: string[] = [
-  // 'id',
-  'name',
-  'description',
-];
+export const projectSearchableFields: string[] = ['title', 'description'];

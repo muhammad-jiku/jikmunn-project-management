@@ -23,4 +23,12 @@ router
   )
   .delete(ProjectControllers.deleteFromDB);
 
+// Add the new route for updating project teams
+router
+  .route('/teams/update')
+  .post(
+    validateRequest(ProjectValidations.updateProjectTeams),
+    ProjectControllers.updateProjectTeamsById
+  );
+
 export const ProjectRoutes = router;

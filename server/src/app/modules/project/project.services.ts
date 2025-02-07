@@ -8,27 +8,42 @@ import { prisma } from '../../../shared/prisma';
 import { projectSearchableFields } from './project.constants';
 import { IProjectFilterRequest } from './project.interfaces';
 
+// Create a new project
 const insertIntoDB = async (payload: Project): Promise<Project | null> => {
-  try {
-    //
-    const newProject = await prisma.project.create({
-      data: {
-        ...payload,
+  return await prisma.$transaction(async (tx) => {
+    // Check if project owner exists
+    const ownerExists = await tx.user.findUnique({
+      where: { userId: payload.projectOwnerId },
+    });
+
+    if (!ownerExists) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        'Project owner (manager) does not exist!'
+      );
+    }
+
+    const result = await tx.project.create({
+      data: payload,
+      include: {
+        owner: true,
+        tasks: true,
+        projectTeams: true,
       },
     });
 
-    console.log('Project created', newProject);
+    if (!result) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Failed to create project!'
+      );
+    }
 
-    return newProject;
-  } catch (error) {
-    console.error('Error during user creation:', error);
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Failed to create project!'
-    );
-  }
+    return result;
+  });
 };
 
+// Get all projects with filtering and pagination
 const getAllFromDB = async (
   filters: IProjectFilterRequest,
   options: IPaginationOptions
@@ -51,13 +66,11 @@ const getAllFromDB = async (
 
   if (Object.keys(filterData).length > 0) {
     andConditions.push({
-      AND: Object.keys(filterData).map((key) => {
-        return {
-          [key]: {
-            equals: (filterData as any)[key],
-          },
-        };
-      }),
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
     });
   }
 
@@ -71,10 +84,18 @@ const getAllFromDB = async (
     orderBy:
       options.sortBy && options.sortOrder
         ? { [options.sortBy]: options.sortOrder }
-        : {
-            createdAt: 'desc',
-          },
+        : { createdAt: 'desc' },
+    include: {
+      owner: true,
+      tasks: true,
+      projectTeams: {
+        include: {
+          team: true,
+        },
+      },
+    },
   });
+
   const total = await prisma.project.count({
     where: whereConditions,
   });
@@ -89,10 +110,18 @@ const getAllFromDB = async (
   };
 };
 
+// Get a single project by ID
 const getByIdFromDB = async (id: number): Promise<Project | null> => {
   const result = await prisma.project.findUnique({
-    where: {
-      id,
+    where: { id },
+    include: {
+      owner: true,
+      tasks: true,
+      projectTeams: {
+        include: {
+          team: true,
+        },
+      },
     },
   });
 
@@ -106,42 +135,166 @@ const getByIdFromDB = async (id: number): Promise<Project | null> => {
   return result;
 };
 
-const updateIntoDB = async (
+// Update a project
+const updateOneInDB = async (
   id: number,
-  payload: Partial<Project>
+  payload: Prisma.ProjectUpdateInput
 ): Promise<Project> => {
-  const result = await prisma.project.update({
-    where: {
-      id,
-    },
-    data: payload,
+  return await prisma.$transaction(async (tx) => {
+    // Check if project exists
+    const existingProject = await tx.project.findUnique({
+      where: { id },
+    });
+
+    if (!existingProject) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Project not found!');
+    }
+
+    // If updating project owner, verify the new owner exists
+    if (payload.owner) {
+      const ownerExists = await tx.user.findUnique({
+        where: {
+          userId: (payload.owner as { connect: { userId: string } }).connect
+            .userId,
+        },
+      });
+
+      if (!ownerExists) {
+        throw new ApiError(
+          httpStatus.NOT_FOUND,
+          'New project owner (manager) does not exist!'
+        );
+      }
+    }
+
+    const result = await tx.project.update({
+      where: { id },
+      data: payload,
+      include: {
+        owner: true,
+        tasks: true,
+        projectTeams: {
+          include: {
+            team: true,
+          },
+        },
+      },
+    });
+
+    if (!result) {
+      throw new ApiError(httpStatus.CONFLICT, 'Sorry, failed to update!');
+    }
+
+    return result;
   });
-
-  if (!result) {
-    throw new ApiError(httpStatus.CONFLICT, 'Sorry, failed to update!');
-  }
-
-  return result;
 };
 
-const deleteFromDB = async (id: number): Promise<Project | null> => {
-  const result = await prisma.project.delete({
-    where: {
-      id,
-    },
+// Update project teams by ID
+const updateProjectTeamsById = async (
+  projectId: number,
+  teamIds: number[]
+): Promise<Project> => {
+  return await prisma.$transaction(async (tx) => {
+    // Check if project exists
+    const existingProject = await tx.project.findUnique({
+      where: { id: projectId },
+      include: {
+        projectTeams: true,
+      },
+    });
+
+    if (!existingProject) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Project not found!');
+    }
+
+    // Delete existing team associations
+    await tx.projectTeam.deleteMany({
+      where: {
+        projectId,
+      },
+    });
+
+    // Create new team associations
+    const project = await tx.project.update({
+      where: { id: projectId },
+      data: {
+        projectTeams: {
+          create: teamIds.map((teamId) => ({
+            team: {
+              connect: { id: teamId },
+            },
+          })),
+        },
+      },
+      include: {
+        owner: true,
+        tasks: true,
+        projectTeams: {
+          include: {
+            team: true,
+          },
+        },
+      },
+    });
+
+    return project;
   });
+};
 
-  if (!result) {
-    throw new ApiError(httpStatus.CONFLICT, 'Sorry, failed to delete!');
-  }
+// Delete a project by ID
+const deleteByIdFromDB = async (id: number): Promise<Project | null> => {
+  return await prisma.$transaction(async (tx) => {
+    const project = await tx.project.findUnique({
+      where: { id },
+      include: {
+        tasks: true,
+        projectTeams: true,
+      },
+    });
 
-  return result;
+    if (!project) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        'Sorry, the project does not exist!'
+      );
+    }
+
+    // Delete related tasks
+    if (project.tasks.length > 0) {
+      await tx.task.deleteMany({
+        where: { projectId: id },
+      });
+    }
+
+    // Delete project team associations
+    if (project.projectTeams.length > 0) {
+      await tx.projectTeam.deleteMany({
+        where: { projectId: id },
+      });
+    }
+
+    const result = await tx.project.delete({
+      where: { id },
+      include: {
+        owner: true,
+        tasks: true,
+        projectTeams: true,
+      },
+    });
+
+    if (!result) {
+      throw new ApiError(httpStatus.CONFLICT, 'Sorry, failed to delete!');
+    }
+
+    return result;
+  });
 };
 
 export const ProjectServices = {
   insertIntoDB,
   getAllFromDB,
   getByIdFromDB,
-  updateIntoDB,
-  deleteFromDB,
+  updateOneInDB,
+  updateProjectTeamsById,
+  deleteByIdFromDB,
 };
