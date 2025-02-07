@@ -7,71 +7,62 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import { prisma } from '../../../shared/prisma';
 
 const insertIntoDB = async (payload: Team): Promise<Team> => {
-  try {
-    const newTeam = await prisma.team.create({
-      data: payload,
-    });
+  // Verify team owner exists
+  const ownerExists = await prisma.user.findUnique({
+    where: {
+      userId: payload.teamOwnerId,
+      role: 'MANAGER',
+    },
+  });
 
-    return newTeam;
-  } catch (error) {
-    console.error('Error creating team:', error);
+  if (!ownerExists) {
     throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Failed to create team!'
+      httpStatus.NOT_FOUND,
+      'Team owner must be a manager and must exist!'
     );
   }
+
+  return await prisma.team.create({
+    data: payload,
+    include: {
+      owner: true,
+      members: true,
+      projectTeams: true,
+    },
+  });
 };
 
 const getAllFromDB = async (
   options: IPaginationOptions
 ): Promise<IGenericResponse<Team[]>> => {
-  try {
-    const { limit, page, skip } =
-      paginationHelpers.calculatePagination(options);
-    const teams = await prisma.team.findMany({ skip, take: limit });
+  const { limit, page, skip } = paginationHelpers.calculatePagination(options);
 
-    const teamsWithUsernames = await Promise.all(
-      teams.map(async (team: Team) => {
-        const productOwner = await prisma.user.findUnique({
-          where: { userId: team.productOwnerUserId! },
-          select: { username: true },
-        });
+  const teams = await prisma.team.findMany({
+    skip,
+    take: limit,
+    include: {
+      owner: true,
+      members: true,
+      projectTeams: true,
+    },
+  });
 
-        const projectManager = await prisma.user.findUnique({
-          where: { userId: team.projectManagerUserId! },
-          select: { username: true },
-        });
+  const total = await prisma.team.count();
 
-        return {
-          ...team,
-          productOwnerUsername: productOwner?.username,
-          projectManagerUsername: projectManager?.username,
-        };
-      })
-    );
-
-    const total = await prisma.team.count({});
-
-    return {
-      meta: {
-        total,
-        page,
-        limit,
-      },
-      data: teamsWithUsernames,
-    };
-  } catch (error) {
-    console.error('Error retrieving teams:', error);
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Failed to retrieve teams!'
-    );
-  }
+  return {
+    meta: { total, page, limit },
+    data: teams,
+  };
 };
 
 const getByIdFromDB = async (id: number): Promise<Team | null> => {
   const team = await prisma.team.findUnique({
     where: { id },
+    include: {
+      owner: true,
+      members: true,
+      projectTeams: true,
+    },
   });
 
   if (!team) {
@@ -81,53 +72,61 @@ const getByIdFromDB = async (id: number): Promise<Team | null> => {
   return team;
 };
 
-const updateIntoDB = async (
+const updateOneInDB = async (
   id: number,
   payload: Partial<Team>
 ): Promise<Team> => {
-  try {
-    const updatedTeam = await prisma.team.update({
-      where: { id },
-      data: payload,
+  // If updating owner, verify new owner exists and is a manager
+  if (payload.teamOwnerId) {
+    const ownerExists = await prisma.user.findUnique({
+      where: {
+        userId: payload.teamOwnerId as string,
+        role: 'MANAGER',
+      },
     });
 
-    if (!updatedTeam) {
+    if (!ownerExists) {
       throw new ApiError(
-        httpStatus.CONFLICT,
-        'Failed to update the team. Team may not exist!'
+        httpStatus.NOT_FOUND,
+        'New team owner must be a manager and must exist!'
       );
     }
-
-    return updatedTeam;
-  } catch (error) {
-    console.error('Error updating team:', error);
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      'Failed to update team!'
-    );
   }
+
+  return await prisma.team.update({
+    where: { id },
+    data: payload,
+    include: {
+      owner: true,
+      members: true,
+      projectTeams: true,
+    },
+  });
 };
 
-const deleteFromDB = async (id: number): Promise<Team | null> => {
-  try {
-    const deletedTeam = await prisma.team.delete({
-      where: { id },
+const deleteByIdFromDB = async (id: number): Promise<Team | null> => {
+  return await prisma.$transaction(async (tx) => {
+    // Delete associated team members
+    await tx.teamMember.deleteMany({
+      where: { teamId: id },
     });
 
-    return deletedTeam;
-  } catch (error) {
-    console.error('Error deleting team:', error);
-    throw new ApiError(
-      httpStatus.CONFLICT,
-      'Failed to delete the team. It may not exist!'
-    );
-  }
+    // Delete associated project teams
+    await tx.projectTeam.deleteMany({
+      where: { teamId: id },
+    });
+
+    // Delete the team
+    return await tx.team.delete({
+      where: { id },
+    });
+  });
 };
 
 export const TeamServices = {
   insertIntoDB,
   getAllFromDB,
   getByIdFromDB,
-  updateIntoDB,
-  deleteFromDB,
+  updateOneInDB,
+  deleteByIdFromDB,
 };

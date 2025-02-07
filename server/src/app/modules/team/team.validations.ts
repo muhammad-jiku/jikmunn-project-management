@@ -3,21 +3,12 @@ import { z } from 'zod';
 const createTeam = z.object({
   body: z
     .object({
-      teamName: z.string({
+      name: z.string({
         required_error: 'Team name is required',
       }),
-      productOwnerUserId: z
-        .number()
-        .optional()
-        .refine((id) => id === undefined || id > 0, {
-          message: 'Product Owner User ID must be a positive number',
-        }),
-      projectManagerUserId: z
-        .number()
-        .optional()
-        .refine((id) => id === undefined || id > 0, {
-          message: 'Project Manager User ID must be a positive number',
-        }),
+      teamOwnerId: z.string({
+        required_error: 'Team owner ID is required',
+      }),
     })
     .strict(),
 });
@@ -25,19 +16,8 @@ const createTeam = z.object({
 const updateTeam = z.object({
   body: z
     .object({
-      teamName: z.string().optional(),
-      productOwnerUserId: z
-        .number()
-        .optional()
-        .refine((id) => id === undefined || id > 0, {
-          message: 'Product Owner User ID must be a positive number',
-        }),
-      projectManagerUserId: z
-        .number()
-        .optional()
-        .refine((id) => id === undefined || id > 0, {
-          message: 'Project Manager User ID must be a positive number',
-        }),
+      name: z.string().optional(),
+      teamOwnerId: z.string().optional(),
     })
     .strict()
     .optional(),

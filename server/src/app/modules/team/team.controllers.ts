@@ -15,7 +15,7 @@ const insertIntoDB = catchAsync(
       sendResponse<Team>(res, {
         statusCode: httpStatus.CREATED,
         success: true,
-        message: 'Team data created successfully!',
+        message: 'Team created successfully!',
         data: result,
       });
     } catch (error) {
@@ -34,7 +34,7 @@ const getAllFromDB = catchAsync(
       sendResponse<Team[]>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Teams data fetched successfully!',
+        message: 'Teams retrieved successfully!',
         meta: result.meta,
         data: result.data,
       });
@@ -48,13 +48,12 @@ const getByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-
       const result = await TeamServices.getByIdFromDB(Number(id));
 
       sendResponse<Team>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Team data fetched successfully!',
+        message: 'Team retrieved successfully!',
         data: result,
       });
     } catch (error) {
@@ -63,18 +62,16 @@ const getByIdFromDB = catchAsync(
   }
 );
 
-const updateIntoDB = catchAsync(
+const updateOneInDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const payload = req.body;
-
-      const result = await TeamServices.updateIntoDB(Number(id), payload);
+      const result = await TeamServices.updateOneInDB(Number(id), req.body);
 
       sendResponse<Team>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Team data updated successfully!',
+        message: 'Team updated successfully!',
         data: result,
       });
     } catch (error) {
@@ -83,17 +80,16 @@ const updateIntoDB = catchAsync(
   }
 );
 
-const deleteFromDB = catchAsync(
+const deleteByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-
-      const result = await TeamServices.deleteFromDB(Number(id));
+      const result = await TeamServices.deleteByIdFromDB(Number(id));
 
       sendResponse<Team>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Team data deleted successfully!',
+        message: 'Team deleted successfully!',
         data: result,
       });
     } catch (error) {
@@ -106,6 +102,6 @@ export const TeamControllers = {
   insertIntoDB,
   getAllFromDB,
   getByIdFromDB,
-  updateIntoDB,
-  deleteFromDB,
+  updateOneInDB,
+  deleteByIdFromDB,
 };
