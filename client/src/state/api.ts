@@ -11,204 +11,132 @@ export interface SearchFilter {
   [key: string]: any;
 }
 
-export interface Project {
-  id: number;
-  name: string;
-  description?: string;
-  startDate?: string;
-  endDate?: string;
-}
-
-export enum Priority {
-  Urgent = 'Urgent',
-  High = 'High',
-  Medium = 'Medium',
-  Low = 'Low',
-  Backlog = 'Backlog',
-}
-
-export enum Status {
-  ToDo = 'To Do',
-  WorkInProgress = 'Work In Progress',
-  UnderReview = 'Under Review',
-  Completed = 'Completed',
-}
-
 export interface User {
-  userId?: number;
+  userId: string;
   username: string;
   email: string;
-  profilePictureUrl?: string;
-  cognitoId?: string;
-  teamId?: number;
-}
-
-export interface Attachment {
-  id: number;
-  fileURL: string;
-  fileName: string;
-  taskId: number;
-  uploadedById: number;
+  role: string;
+  profileImage?: string;
+  developerId?: string;
+  managerId?: string;
+  adminId?: string;
+  superAdminId?: string;
 }
 
 export interface Task {
   id: number;
   title: string;
   description?: string;
-  status?: Status;
-  priority?: Priority;
+  status?: string;
+  priority?: string;
   tags?: string;
   startDate?: string;
   dueDate?: string;
   points?: number;
   projectId: number;
-  authorUserId?: number;
-  assignedUserId?: number;
-
-  author?: User;
-  assignee?: User;
-  comments?: Comment[];
-  attachments?: Attachment[];
+  authorUserId?: string;
+  assignedUserId?: string;
 }
 
-// export interface SearchResults {
-//   tasks?: Task[];
-//   projects?: Project[];
-//   users?: User[];
-// }
+export interface Project {
+  id: number;
+  title: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  projectOwnerId: string;
+}
 
 export interface Team {
-  teamId: number;
-  teamName: string;
-  productOwnerUserId?: number;
-  projectManagerUserId?: number;
+  id: number;
+  name: string;
+  teamOwnerId: string;
 }
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+    credentials: 'include', // Include cookies in requests
   }),
   reducerPath: 'api',
-  tagTypes: ['Projects', 'Tasks', 'Users', 'Teams'],
+  tagTypes: ['User', 'Task', 'Project', 'Team'],
   endpoints: (build) => ({
-    createProject: build.mutation<Project, Partial<Project>>({
-      query: (project) => ({
-        url: '/projects/create',
+    login: build.mutation<
+      { accessToken: string; user: User },
+      { email: string; password: string }
+    >({
+      query: (credentials) => ({
+        url: '/auth/login',
         method: 'POST',
-        body: project,
+        body: credentials,
       }),
-      invalidatesTags: ['Projects'],
+      invalidatesTags: ['User'],
     }),
-    // getProjects: build.query<Project[], void>({
-    //   query: () => '/projects',
-    //   providesTags: ['Projects'],
-    // }),
-    // getTasks: build.query<Task[], { projectId: number }>({
-    //   query: ({ projectId }) => `/tasks?projectId=${projectId}`,
-    //   providesTags: (result) =>
-    //     result
-    //       ? result.map(({ id }) => ({ type: 'Tasks' as const, id }))
-    //       : [{ type: 'Tasks' as const }],
-    // }),
-    getProjects: build.query<
-      { meta: Pagination; data: Project[] },
-      SearchFilter & Pagination
+    signupDeveloper: build.mutation<
+      User,
+      { developerData: any; userData: any }
     >({
-      query: (filters) => ({
-        url: '/projects',
-        method: 'GET',
-        params: filters,
-      }),
-      providesTags: ['Projects'],
-    }),
-    getTasks: build.query<
-      { meta: Pagination; data: Task[] },
-      { projectId: number } & SearchFilter & Pagination
-    >({
-      query: ({ projectId, ...filters }) => ({
-        url: `/tasks/${projectId}`,
-        method: 'GET',
-        params: { projectId, ...filters },
-      }),
-      providesTags: ['Tasks'],
-    }),
-    getTasksByUser: build.query<{ data: Task[] }, number>({
-      query: (userId) => `/tasks/user/${userId}`,
-      providesTags: (result, error, userId) =>
-        result
-          ? result?.data?.map(({ id }) => ({ type: 'Tasks', id }))
-          : [{ type: 'Tasks', id: userId }],
-      // async transformResponse(response: any) {
-      //   if (!response) {
-      //     console.error('API returned null or undefined');
-      //     return [];
-      //   }
-      //   return response;
-      // },
-      // providesTags: (result, error, userId) => {
-      //   console.log('API result:', result);
-      //   if (!Array.isArray(result)) {
-      //     console.error('Expected an array but got:', result);
-      //     return [{ type: 'Tasks', id: userId }];
-      //   }
-      //   return result.map(({ id }) => ({ type: 'Tasks', id }));
-      // },
-    }),
-    createTask: build.mutation<Task, Partial<Task>>({
-      query: (task) => ({
-        url: '/tasks/create',
+      query: (payload) => ({
+        url: '/users/create-developer',
         method: 'POST',
-        body: task,
+        body: payload,
       }),
-      invalidatesTags: ['Tasks'],
+      invalidatesTags: ['User'],
     }),
-    updateTaskStatus: build.mutation<Task, { taskId: number; status: string }>({
-      query: ({ taskId, status }) => ({
-        url: `/tasks/${taskId}`,
-        method: 'PATCH',
-        body: { status },
+    signupManager: build.mutation<User, { managerData: any; userData: any }>({
+      query: (payload) => ({
+        url: '/users/create-manager',
+        method: 'POST',
+        body: payload,
       }),
-      invalidatesTags: (result, error, { taskId }) => [
-        { type: 'Tasks', id: taskId },
-      ],
+      invalidatesTags: ['User'],
     }),
-    // getUsers: build.query<User[], void>({
-    //   query: () => '/users',
-    //   providesTags: ['Users'],
-    // }),
-    getUsers: build.query<
-      { meta: Pagination; data: User[] },
-      SearchFilter & Pagination
+    signupAdmin: build.mutation<User, { adminData: any; userData: any }>({
+      query: (payload) => ({
+        url: '/users/create-admin',
+        method: 'POST',
+        body: payload,
+      }),
+      invalidatesTags: ['User'],
+    }),
+    signupSuperAdmin: build.mutation<
+      User,
+      { superAdminData: any; userData: any }
     >({
-      query: (filters) => ({
-        url: '/users',
-        method: 'GET',
-        params: filters,
+      query: (payload) => ({
+        url: '/users/create-super-admin',
+        method: 'POST',
+        body: payload,
       }),
-      providesTags: ['Users'],
+      invalidatesTags: ['User'],
     }),
-    getTeams: build.query<{ meta: Pagination; data: Team[] }, Pagination>({
-      query: (filters) => ({
-        url: '/teams',
-        method: 'GET',
-        params: filters,
-      }),
-      providesTags: ['Teams'],
+    getCurrentUser: build.query<User, void>({
+      query: () => '/auth/me',
+      providesTags: ['User'],
     }),
-    // search: build.query<SearchResults, string>({
-    //   query: (query) => `search?query=${query}`,
-    // }),
+    getTasks: build.query<Task[], void>({
+      query: () => '/tasks',
+      providesTags: ['Task'],
+    }),
+    getProjects: build.query<Project[], void>({
+      query: () => '/projects',
+      providesTags: ['Project'],
+    }),
+    getTeams: build.query<Team[], void>({
+      query: () => '/teams',
+      providesTags: ['Team'],
+    }),
   }),
 });
 
 export const {
-  useGetProjectsQuery,
-  useCreateProjectMutation,
+  useLoginMutation,
+  useSignupDeveloperMutation,
+  useSignupManagerMutation,
+  useSignupAdminMutation,
+  useSignupSuperAdminMutation,
+  useGetCurrentUserQuery,
   useGetTasksQuery,
-  useCreateTaskMutation,
-  useUpdateTaskStatusMutation,
-  // useSearchQuery,
-  useGetUsersQuery,
+  useGetProjectsQuery,
   useGetTeamsQuery,
-  useGetTasksByUserQuery,
 } = api;
