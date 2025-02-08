@@ -78,20 +78,23 @@ model SuperAdmin {
 }
 
 model User {
-  id                   String    @id @default(uuid())
-  userId               String    @unique
-  username             String    @unique
-  email                String    @unique
-  role                 UserRole
-  password             String
-  needsPasswordChange  Boolean   @default(true)
-  passwordChangedAt    DateTime?
-  passwordResetToken   String?
-  passwordResetExpires DateTime?
-  developerId          String?   @unique
-  managerId            String?   @unique
-  adminId              String?   @unique
-  superAdminId         String?   @unique
+  id                       String    @id @default(uuid())
+  userId                   String    @unique
+  username                 String    @unique
+  email                    String    @unique
+  role                     UserRole
+  password                 String
+  needsPasswordChange      Boolean   @default(true)
+  emailVerificationToken   String?
+  emailVerificationExpires DateTime?
+  emailVerified            Boolean   @default(false)
+  passwordChangedAt        DateTime?
+  passwordResetToken       String?
+  passwordResetExpires     DateTime?
+  developerId              String?   @unique
+  managerId                String?   @unique
+  adminId                  String?   @unique
+  superAdminId             String?   @unique
 
   developer  Developer?  @relation("DeveloperUser", fields: [developerId], references: [developerId])
   manager    Manager?    @relation("ManagerUser", fields: [managerId], references: [managerId])

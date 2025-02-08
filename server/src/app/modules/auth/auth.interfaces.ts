@@ -13,6 +13,13 @@ export interface IRefreshTokenResponse {
   accessToken: string;
 }
 
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  needsEmailVerification?: boolean;
+  needsPasswordChange?: boolean;
+}
+
 export interface IChangePassword {
   oldPassword: string;
   newPassword: string;

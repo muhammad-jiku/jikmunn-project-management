@@ -32,6 +32,22 @@ export async function isPasswordMatch(
   return bcrypt.compare(givenPassword, savedPassword);
 }
 
+export const createEmailVerificationToken = (): {
+  verificationToken: string;
+  hashedToken: string;
+} => {
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+
+  return {
+    verificationToken,
+    hashedToken,
+  };
+};
+
 export const createPasswordResetToken = (): {
   resetToken: string;
   hashedToken: string;

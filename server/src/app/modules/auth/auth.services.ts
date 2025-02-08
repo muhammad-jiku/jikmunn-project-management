@@ -1,4 +1,6 @@
+import { User } from '@prisma/client';
 import crypto from 'crypto';
+import { Response } from 'express';
 import httpStatus from 'http-status';
 import { JwtPayload, Secret } from 'jsonwebtoken';
 import config from '../../../config';
@@ -94,6 +96,67 @@ const refreshTokenHandler = async (
   return {
     accessToken: newAccessToken,
   };
+};
+
+const setAuthCookies = (
+  res: Response,
+  accessToken: string,
+  refreshToken: string
+): void => {
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 15 * 60 * 1000, // 15 minutes
+    path: '/',
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: '/auth/refresh-token',
+  });
+};
+
+const sendVerificationEmail = async (
+  email: string,
+  token: string
+): Promise<void> => {
+  const verificationUrl = `${config.frontend_url}/verify-email?token=${token}`;
+  await EmailHelper.sendEmail({
+    email,
+    subject: 'Verify your email',
+    html: `
+      <p>Please verify your email by clicking the link below:</p>
+      <p><a href="${verificationUrl}">Verify Email</a></p>
+      <p>This link will expire in 24 hours.</p>
+    `,
+  });
+};
+
+const getCurrentUser = async (userId: string): Promise<Partial<User>> => {
+  const user = await prisma.user.findUnique({
+    where: { userId },
+    select: {
+      userId: true,
+      username: true,
+      email: true,
+      role: true,
+      emailVerified: true,
+      developerId: true,
+      managerId: true,
+      adminId: true,
+      superAdminId: true,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  return user;
 };
 
 const changePasswordHandler = async (
@@ -251,10 +314,33 @@ const resetPasswordHandler = async (
   });
 };
 
+const logoutHandler = async (res: Response): Promise<void> => {
+  // Clear auth cookies
+  res.cookie('accessToken', 'none', {
+    expires: new Date(Date.now() + 1000),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+  });
+
+  res.cookie('refreshToken', 'none', {
+    expires: new Date(Date.now() + 1000),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/auth/refresh-token',
+  });
+};
+
 export const AuthServices = {
   loginUserHandler,
   refreshTokenHandler,
+  setAuthCookies,
+  sendVerificationEmail,
+  getCurrentUser,
   changePasswordHandler,
   forgotPasswordHandler,
   resetPasswordHandler,
+  logoutHandler,
 };
