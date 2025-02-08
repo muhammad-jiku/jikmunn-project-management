@@ -5,12 +5,22 @@ export interface GlobalState {
   isSidebarCollapsed: boolean;
   isDarkMode: boolean;
   user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  needsEmailVerification: boolean;
+  needsPasswordChange: boolean;
 }
 
 const initialState: GlobalState = {
   isSidebarCollapsed: false,
   isDarkMode: false,
   user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
+  needsEmailVerification: false,
+  needsPasswordChange: false,
 };
 
 export const globalSlice = createSlice({
@@ -23,12 +33,72 @@ export const globalSlice = createSlice({
     setIsDarkMode: (state, action: PayloadAction<boolean>) => {
       state.isDarkMode = action.payload;
     },
+    setAuthCredentials: (
+      state,
+      action: PayloadAction<{
+        user: User;
+        needsEmailVerification?: boolean;
+        needsPasswordChange?: boolean;
+      }>
+    ) => {
+      const { user, needsEmailVerification, needsPasswordChange } =
+        action.payload;
+      state.user = user;
+      state.isAuthenticated = true;
+      state.needsEmailVerification = needsEmailVerification || false;
+      state.needsPasswordChange = needsPasswordChange || false;
+      state.error = null;
+    },
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
+      state.isAuthenticated = !!action.payload;
+    },
+    logoutUser: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.needsEmailVerification = false;
+      state.needsPasswordChange = false;
+      state.error = null;
+    },
+    setAuthLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    setAuthError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      state.isLoading = false;
+    },
+    clearAuthError: (state) => {
+      state.error = null;
+    },
+    updateUserInfo: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
+    },
+    setEmailVerified: (state) => {
+      if (state.user) {
+        state.user.emailVerified = true;
+      }
+      state.needsEmailVerification = false;
+    },
+    setPasswordChanged: (state) => {
+      state.needsPasswordChange = false;
     },
   },
 });
 
-export const { setIsSidebarCollapsed, setIsDarkMode, setUser } =
-  globalSlice.actions;
+export const {
+  setIsSidebarCollapsed,
+  setIsDarkMode,
+  setAuthCredentials,
+  setUser,
+  logoutUser,
+  setAuthLoading,
+  setAuthError,
+  clearAuthError,
+  updateUserInfo,
+  setEmailVerified,
+  setPasswordChanged,
+} = globalSlice.actions;
+
 export default globalSlice.reducer;
