@@ -10,36 +10,31 @@ export const auth =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // get authorization token
-      const token = req.headers.authorization;
-      console.log('req token....', token);
-      console.log('secret....', config.jwt.secret);
-      if (!token) {
-        throw new ApiError(
-          httpStatus.UNAUTHORIZED,
-          'Sorry, you are not authorized to access this route!'
-        );
+      const authHeader = req.headers.authorization;
+      console.log('auth header', authHeader);
+      if (!authHeader?.startsWith('Bearer ')) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
       }
 
-      // verify that token
-      let verifiedUserToken = null;
-      verifiedUserToken = jwtHelpers.verifyToken(
-        token,
-        config.jwt.secret as Secret
-      );
-
-      console.log('verifyToken....', verifiedUserToken);
-      req.user = verifiedUserToken; // userId, role
-      console.log('user....', req.user);
-      // guard against invalid credentials while verifying user token
-      console.log('first required roles...', requiredRoles);
-      if (
-        requiredRoles.length &&
-        !requiredRoles.includes(verifiedUserToken.role)
-      ) {
-        throw new ApiError(
-          httpStatus.FORBIDDEN,
-          'Sorry this route is forbidden!'
+      const token = authHeader.split(' ')[1];
+      console.log('token ', token);
+      let verifiedUser = null;
+      try {
+        verifiedUser = jwtHelpers.verifyToken(
+          token,
+          config.jwt.secret as Secret
         );
+      } catch (error) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid or expired token');
+      }
+
+      console.log('verified user', verifiedUser);
+      req.user = verifiedUser;
+
+      console.log('requested verified user', req.user);
+      console.log('required roles', requiredRoles);
+      if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
+        throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden access');
       }
 
       next();

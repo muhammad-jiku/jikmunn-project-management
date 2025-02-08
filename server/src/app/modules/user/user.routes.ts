@@ -5,24 +5,6 @@ import { UserValidations } from './user.validations';
 
 const router = express.Router();
 
-// router
-//   .route('/create')
-//   .post(
-//     validateRequest(UserValidations.createUser),
-//     UserControllers.insertIntoDB
-//   );
-
-// router.route('/').get(UserControllers.getAllFromDB);
-
-// router
-//   .route('/:id')
-//   .get(UserControllers.getByIdFromDB)
-//   .patch(
-//     validateRequest(UserValidations.updateUser),
-//     UserControllers.updateIntoDB
-//   )
-//   .delete(UserControllers.deleteFromDB);
-
 router
   .route('/create-developer')
   .post(

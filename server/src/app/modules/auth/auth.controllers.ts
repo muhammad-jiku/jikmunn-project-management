@@ -9,14 +9,15 @@ import { AuthServices } from './auth.services';
 const loginUserHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { ...logInData } = await req.body;
+      const logInData = req.body;
       const result = await AuthServices.loginUserHandler(logInData);
       const { refreshToken, ...othersData } = result;
 
-      // set refresh token into the cookie
+      // Set refresh token into cookie
       const cookieOptions = {
-        secure: config.env === 'production' ? true : false,
+        secure: config.env === 'production',
         httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       };
 
       res.cookie('refreshToken', refreshToken, cookieOptions);
@@ -24,11 +25,29 @@ const loginUserHandler = catchAsync(
       sendResponse<ILoginUserResponse>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Login successful',
+        message: 'User logged in successfully',
         data: othersData,
       });
     } catch (error) {
-      return next(error);
+      next(error);
+    }
+  }
+);
+
+const getCurrentUserHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?.userId;
+      const result = await AuthServices.getCurrentUser(userId);
+
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'User retrieved successfully',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -39,10 +58,11 @@ const refreshTokenHandler = catchAsync(
       const { refreshToken } = req.cookies;
       const result = await AuthServices.refreshTokenHandler(refreshToken);
 
-      // set refresh token into the cookie
+      // Set refresh token into cookie
       const cookieOptions = {
-        secure: config.env === 'production' ? true : false,
+        secure: config.env === 'production',
         httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       };
 
       res.cookie('refreshToken', refreshToken, cookieOptions);
@@ -50,11 +70,11 @@ const refreshTokenHandler = catchAsync(
       sendResponse<IRefreshTokenResponse>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User refesh token updated successfully',
+        message: 'Access token refreshed successfully',
         data: result,
       });
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 );
@@ -63,17 +83,17 @@ const changePasswordHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user;
-      const { ...passwordsData } = await req.body;
+      const passwordData = req.body;
 
-      await AuthServices.changePasswordHandler(user, passwordsData);
+      await AuthServices.changePasswordHandler(user, passwordData);
 
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Password changed successfully!',
+        message: 'Password changed successfully',
       });
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 );
@@ -82,13 +102,14 @@ const forgotPasswordHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await AuthServices.forgotPasswordHandler(req.body);
+
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: 'Password reset email sent successfully',
       });
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 );
@@ -97,21 +118,40 @@ const resetPasswordHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await AuthServices.resetPasswordHandler(req.body);
+
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Password reset successful',
+        message: 'Password reset successfully',
       });
     } catch (error) {
-      return next(error);
+      next(error);
+    }
+  }
+);
+
+const logoutHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await AuthServices.logoutHandler(res);
+
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'User logged out successfully',
+      });
+    } catch (error) {
+      next(error);
     }
   }
 );
 
 export const AuthControllers = {
   loginUserHandler,
+  getCurrentUserHandler,
   refreshTokenHandler,
   changePasswordHandler,
   forgotPasswordHandler,
   resetPasswordHandler,
+  logoutHandler,
 };
