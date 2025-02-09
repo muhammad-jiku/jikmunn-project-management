@@ -1,12 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import Header from '@/_components/Header';
 import ModalNewTask from '@/_components/modals/ModalNewTask';
-import TaskCard from '@/_components/tasks/TaskCard';
-import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
-import { Priority, Task, useGetTasksByUserQuery } from '@/state/api';
-import { useAppSelector } from '@/store';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Priority } from '@/state/api';
+import { GridColDef } from '@mui/x-data-grid';
 import { useState } from 'react';
 
 type Props = {
@@ -72,20 +70,20 @@ const ReusablePage = ({ priority }: Props) => {
   const [view, setView] = useState('list');
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
 
-  const {
-    data: tasks,
-    isLoading,
-    isError: isTasksError,
-  } = useGetTasksByUserQuery(1, {});
-  console.log('priority page tasks data', tasks);
+  // const {
+  //   data: tasks,
+  //   isLoading,
+  //   isError: isTasksError,
+  // } = useGetTasksByUserQuery(1, {});
+  // console.log('priority page tasks data', tasks);
 
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  // const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
-  const filteredTasks = tasks?.data?.filter(
-    (task: Task) => task.priority === priority
-  );
-  console.log('priority page filtered tasks data', filteredTasks);
-  if (isTasksError || !tasks) return <div>Error fetching tasks</div>;
+  // const filteredTasks = tasks?.data?.filter(
+  //   (task: Task) => task.priority === priority
+  // );
+  // console.log('priority page filtered tasks data', filteredTasks);
+  // if (isTasksError || !tasks) return <div>Error fetching tasks</div>;
 
   return (
     <div className='m-5 p-4'>
@@ -122,7 +120,7 @@ const ReusablePage = ({ priority }: Props) => {
           Table
         </button>
       </div>
-      {isLoading ? (
+      {/* {isLoading ? (
         <div>Loading tasks...</div>
       ) : view === 'list' ? (
         <div className='grid grid-cols-1 gap-4'>
@@ -144,7 +142,7 @@ const ReusablePage = ({ priority }: Props) => {
             />
           </div>
         )
-      )}
+      )} */}
     </div>
   );
 };

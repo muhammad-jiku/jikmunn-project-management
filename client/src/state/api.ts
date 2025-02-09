@@ -79,6 +79,21 @@ export interface Team {
   teamOwnerId: string;
 }
 
+export enum Priority {
+  Urgent = 'Urgent',
+  High = 'High',
+  Medium = 'Medium',
+  Low = 'Low',
+  Backlog = 'Backlog',
+}
+
+export enum Status {
+  ToDo = 'To Do',
+  WorkInProgress = 'Work In Progress',
+  UnderReview = 'Under Review',
+  Completed = 'Completed',
+}
+
 export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,

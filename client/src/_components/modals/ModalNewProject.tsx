@@ -1,5 +1,5 @@
-import { useCreateProjectMutation } from '@/state/api';
-import { formatISO } from 'date-fns';
+// import { useCreateProjectMutation } from '@/state/api';
+// import { formatISO } from 'date-fns';
 import { useState } from 'react';
 import Modal from './Modal';
 
@@ -9,7 +9,7 @@ type Props = {
 };
 
 const ModalNewProject = ({ isOpen, onClose }: Props) => {
-  const [createProject, { isLoading }] = useCreateProjectMutation();
+  // const [createProject, { isLoading }] = useCreateProjectMutation();
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -18,24 +18,24 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
   const handleSubmit = async () => {
     if (!projectName || !startDate || !endDate) return;
 
-    const formattedStartDate = formatISO(new Date(startDate), {
-      representation: 'complete',
-    });
-    const formattedEndDate = formatISO(new Date(endDate), {
-      representation: 'complete',
-    });
+    // const formattedStartDate = formatISO(new Date(startDate), {
+    //   representation: 'complete',
+    // });
+    // const formattedEndDate = formatISO(new Date(endDate), {
+    //   representation: 'complete',
+    // });
 
-    await createProject({
-      name: projectName,
-      description,
-      startDate: formattedStartDate,
-      endDate: formattedEndDate,
-    });
+    // await createProject({
+    //   name: projectName,
+    //   description,
+    //   startDate: formattedStartDate,
+    //   endDate: formattedEndDate,
+    // });
   };
 
-  const isFormValid = () => {
-    return projectName && description && startDate && endDate;
-  };
+  // const isFormValid = () => {
+  //   return projectName && description && startDate && endDate;
+  // };
 
   const inputStyles =
     'w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary dark:text-white dark:focus:outline-none';
@@ -78,12 +78,15 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
         </div>
         <button
           type='submit'
-          className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-            !isFormValid() || isLoading ? 'cursor-not-allowed opacity-50' : ''
-          }`}
-          disabled={!isFormValid() || isLoading}
+          // className={`focus-offset-2 mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600
+          //    ${
+          //   !isFormValid() || isLoading ? 'cursor-not-allowed opacity-50' : ''
+          //   }
+          //   `
+          // }
+          // disabled={!isFormValid() || isLoading}
         >
-          {isLoading ? 'Creating...' : 'Create Project'}
+          {/* {isLoading ? 'Creating...' : 'Create Project'} */} Create Project
         </button>
       </form>
     </Modal>

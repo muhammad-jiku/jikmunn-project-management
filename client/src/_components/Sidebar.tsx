@@ -1,7 +1,7 @@
 'use client';
 
 import { setIsSidebarCollapsed } from '@/state';
-import { useGetProjectsQuery } from '@/state/api';
+// import { useGetProjectsQuery } from '@/state/api';
 import { useAppDispatch, useAppSelector } from '@/store';
 import {
   AlertCircle,
@@ -30,7 +30,7 @@ import logo from '../../public/logo.png';
 const Sidebar = () => {
   const [showProjects, setShowProjects] = useState(true);
   const [showPriority, setShowPriority] = useState(true);
-  const { data: projects } = useGetProjectsQuery({});
+  // const { data: projects } = useGetProjectsQuery({});
   // console.log('sidebar projects data', projects);
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
@@ -106,7 +106,7 @@ const Sidebar = () => {
           )}
         </button>
         {/* PROJECTS LIST */}
-        {showProjects &&
+        {/* {showProjects &&
           projects?.data?.map((project) => (
             <SidebarLink
               key={project.id}
@@ -114,7 +114,7 @@ const Sidebar = () => {
               label={project.name}
               href={`/projects/${project.id}`}
             />
-          ))}
+          ))} */}
 
         {/* PRIORITIES LINKS */}
         <button

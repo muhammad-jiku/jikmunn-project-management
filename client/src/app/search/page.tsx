@@ -1,14 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import Header from '@/_components/Header';
-import ProjectCard from '@/_components/projects/ProjectCard';
-import TaskCard from '@/_components/tasks/TaskCard';
-import UserCard from '@/_components/users/UserCard';
-import {
-  useGetProjectsQuery,
-  useGetTasksQuery,
-  useGetUsersQuery,
-} from '@/state/api';
 import { debounce } from 'lodash';
 import React, { useEffect, useState } from 'react';
 
@@ -21,26 +14,26 @@ const Search = ({ params }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const searchFilters = searchTerm.length >= 3 ? { searchTerm } : {};
 
-  const {
-    data: projectResults,
-    isLoading: isLoadingProjects,
-    isError: isErrorProjects,
-  } = useGetProjectsQuery(searchFilters, { skip: searchTerm.length < 3 });
+  // const {
+  //   data: projectResults,
+  //   isLoading: isLoadingProjects,
+  //   isError: isErrorProjects,
+  // } = useGetProjectsQuery(searchFilters, { skip: searchTerm.length < 3 });
 
-  const {
-    data: taskResults,
-    isLoading: isLoadingTasks,
-    isError: isErrorTasks,
-  } = useGetTasksQuery(
-    { projectId: Number(id), ...searchFilters },
-    { skip: searchTerm.length < 3 }
-  );
+  // const {
+  //   data: taskResults,
+  //   isLoading: isLoadingTasks,
+  //   isError: isErrorTasks,
+  // } = useGetTasksQuery(
+  //   { projectId: Number(id), ...searchFilters },
+  //   { skip: searchTerm.length < 3 }
+  // );
 
-  const {
-    data: userResults,
-    isLoading: isLoadingUsers,
-    isError: isErrorUsers,
-  } = useGetUsersQuery(searchFilters, { skip: searchTerm.length < 3 });
+  // const {
+  //   data: userResults,
+  //   isLoading: isLoadingUsers,
+  //   isError: isErrorUsers,
+  // } = useGetUsersQuery(searchFilters, { skip: searchTerm.length < 3 });
 
   const handleSearch = debounce(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,14 +58,14 @@ const Search = ({ params }: Props) => {
         />
       </div>
       <div className='p-5'>
-        {(isLoadingProjects || isLoadingTasks || isLoadingUsers) && (
+        {/* {(isLoadingProjects || isLoadingTasks || isLoadingUsers) && (
           <p>Loading...</p>
         )}
         {(isErrorProjects || isErrorTasks || isErrorUsers) && (
           <p>Error occurred while fetching search results.</p>
-        )}
+        )} */}
 
-        {projectResults?.data?.length ? (
+        {/* {projectResults?.data?.length ? (
           <div>
             <h2>Projects</h2>
             {projectResults.data.map((project) => (
@@ -97,7 +90,7 @@ const Search = ({ params }: Props) => {
               <UserCard key={user.userId} user={user} />
             ))}
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     </div>
   );

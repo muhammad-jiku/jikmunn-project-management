@@ -1,99 +1,99 @@
 'use client';
 
 import Header from '@/_components/Header';
-import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
-import {
-  Priority,
-  Project,
-  Task,
-  useGetProjectsQuery,
-  useGetTasksQuery,
-} from '@/state/api';
-import { useAppSelector } from '@/store';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+// import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
+// import {
+//   Priority,
+//   Project,
+//   Task,
+//   useGetProjectsQuery,
+//   useGetTasksQuery,
+// } from '@/state/api';
+// import { useAppSelector } from '@/store';
+// import { DataGrid, GridColDef } from '@mui/x-data-grid';
+// import {
+//   Bar,
+//   BarChart,
+//   CartesianGrid,
+//   Cell,
+//   Legend,
+//   Pie,
+//   PieChart,
+//   ResponsiveContainer,
+//   Tooltip,
+//   XAxis,
+//   YAxis,
+// } from 'recharts';
 
-const taskColumns: GridColDef[] = [
-  { field: 'title', headerName: 'Title', width: 200 },
-  { field: 'status', headerName: 'Status', width: 150 },
-  { field: 'priority', headerName: 'Priority', width: 150 },
-  { field: 'dueDate', headerName: 'Due Date', width: 150 },
-];
+// const taskColumns: GridColDef[] = [
+//   { field: 'title', headerName: 'Title', width: 200 },
+//   { field: 'status', headerName: 'Status', width: 150 },
+//   { field: 'priority', headerName: 'Priority', width: 150 },
+//   { field: 'dueDate', headerName: 'Due Date', width: 150 },
+// ];
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+// const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const HomePage = () => {
-  const {
-    data: tasks,
-    isLoading: tasksLoading,
-    isError: tasksError,
-  } = useGetTasksQuery({ projectId: parseInt('1') });
-  console.log('tasks data', tasks);
-  const { data: projects, isLoading: isProjectsLoading } = useGetProjectsQuery(
-    {}
-  );
-  console.log('projects data', projects);
+  // const {
+  //   data: tasks,
+  //   isLoading: tasksLoading,
+  //   isError: tasksError,
+  // } = useGetTasksQuery({ projectId: parseInt('1') });
+  // console.log('tasks data', tasks);
+  // const { data: projects, isLoading: isProjectsLoading } = useGetProjectsQuery(
+  //   {}
+  // );
+  // console.log('projects data', projects);
 
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  // const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
-  if (tasksLoading || isProjectsLoading) return <div>Loading..</div>;
-  if (tasksError || !tasks || !projects) return <div>Error fetching data</div>;
+  // if (tasksLoading || isProjectsLoading) return <div>Loading..</div>;
+  // if (tasksError || !tasks || !projects) return <div>Error fetching data</div>;
 
-  const priorityCount = tasks?.data?.reduce(
-    (acc: Record<string, number>, task: Task) => {
-      const { priority } = task;
-      acc[priority as Priority] = (acc[priority as Priority] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
+  // const priorityCount = tasks?.data?.reduce(
+  //   (acc: Record<string, number>, task: Task) => {
+  //     const { priority } = task;
+  //     acc[priority as Priority] = (acc[priority as Priority] || 0) + 1;
+  //     return acc;
+  //   },
+  //   {}
+  // );
 
-  const taskDistribution = Object.keys(priorityCount).map((key) => ({
-    name: key,
-    count: priorityCount[key],
-  }));
+  // const taskDistribution = Object.keys(priorityCount).map((key) => ({
+  //   name: key,
+  //   count: priorityCount[key],
+  // }));
 
-  const statusCount = projects?.data?.reduce(
-    (acc: Record<string, number>, project: Project) => {
-      const status = project.endDate ? 'Completed' : 'Active';
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
-  console.log('status count', statusCount);
+  // const statusCount = projects?.data?.reduce(
+  //   (acc: Record<string, number>, project: Project) => {
+  //     const status = project.endDate ? 'Completed' : 'Active';
+  //     acc[status] = (acc[status] || 0) + 1;
+  //     return acc;
+  //   },
+  //   {}
+  // );
+  // console.log('status count', statusCount);
 
-  const projectStatus = Object.keys(statusCount).map((key) => ({
-    name: key,
-    count: statusCount[key],
-  }));
-  console.log('project status', projectStatus);
+  // const projectStatus = Object.keys(statusCount).map((key) => ({
+  //   name: key,
+  //   count: statusCount[key],
+  // }));
+  // console.log('project status', projectStatus);
 
-  const chartColors = isDarkMode
-    ? {
-        bar: '#8884d8',
-        barGrid: '#303030',
-        pieFill: '#4A90E2',
-        text: '#FFFFFF',
-      }
-    : {
-        bar: '#8884d8',
-        barGrid: '#E0E0E0',
-        pieFill: '#82ca9d',
-        text: '#000000',
-      };
+  // const chartColors = isDarkMode
+  //   ? {
+  //       bar: '#8884d8',
+  //       barGrid: '#303030',
+  //       pieFill: '#4A90E2',
+  //       text: '#FFFFFF',
+  //     }
+  //   : {
+  //       bar: '#8884d8',
+  //       barGrid: '#E0E0E0',
+  //       pieFill: '#82ca9d',
+  //       text: '#000000',
+  //     };
 
   return (
     <div className='container h-full w-[100%] bg-gray-100 bg-transparent p-8'>
@@ -103,8 +103,8 @@ const HomePage = () => {
           <h3 className='mb-4 text-lg font-semibold dark:text-white'>
             Task Priority Distribution
           </h3>
-          <ResponsiveContainer width='100%' height={300}>
-            <BarChart data={taskDistribution}>
+          {/*   <ResponsiveContainer width='100%' height={300}>
+           <BarChart data={taskDistribution}>
               <CartesianGrid
                 strokeDasharray='3 3'
                 stroke={chartColors.barGrid}
@@ -119,14 +119,14 @@ const HomePage = () => {
               />
               <Legend />
               <Bar dataKey='count' fill={chartColors.bar} />
-            </BarChart>
-          </ResponsiveContainer>
+            </BarChart> 
+          </ResponsiveContainer>*/}
         </div>
         <div className='rounded-lg bg-white p-4 shadow dark:bg-dark-secondary'>
           <h3 className='mb-4 text-lg font-semibold dark:text-white'>
             Project Status
           </h3>
-          <ResponsiveContainer width='100%' height={300}>
+          {/* <ResponsiveContainer width='100%' height={300}>
             <PieChart>
               <Pie dataKey='count' data={projectStatus} fill='#82ca9d' label>
                 {projectStatus.map((entry, index) => (
@@ -139,14 +139,14 @@ const HomePage = () => {
               <Tooltip />
               <Legend />
             </PieChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer> */}
         </div>
         <div className='rounded-lg bg-white p-4 shadow dark:bg-dark-secondary md:col-span-2'>
           <h3 className='mb-4 text-lg font-semibold dark:text-white'>
             Your Tasks
           </h3>
           <div style={{ height: 400, width: '100%' }}>
-            <DataGrid
+            {/* <DataGrid
               rows={tasks?.data || []}
               columns={taskColumns}
               checkboxSelection
@@ -155,7 +155,7 @@ const HomePage = () => {
               getCellClassName={() => 'data-grid-cell'}
               className={dataGridClassNames}
               sx={dataGridSxStyles(isDarkMode)}
-            />
+            /> */}
           </div>
         </div>
       </div>
