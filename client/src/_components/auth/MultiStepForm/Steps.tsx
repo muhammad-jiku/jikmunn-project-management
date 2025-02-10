@@ -23,8 +23,9 @@ interface StepsProps {
 const StepsContainer = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(5),
   display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
   flexWrap: 'wrap',
   gap: theme.spacing(3),
   backgroundColor: theme.palette.background.paper,
@@ -34,6 +35,7 @@ const StepsContainer = styled(Paper)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     flexDirection: 'column',
     justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   },
 }));
 
@@ -84,6 +86,7 @@ const Steps: React.FC<StepsProps> = ({ steps }) => {
           backgroundColor: theme.palette.background.default,
           minHeight: '100vh',
           padding: 2,
+          borderRadius: 2,
         }}
       >
         <StepsContainer elevation={3}>

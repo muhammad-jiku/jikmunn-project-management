@@ -1,5 +1,5 @@
 import { RootState } from '@/store';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, styled, Typography, useTheme } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -47,6 +47,14 @@ const Step: React.FC<StepProps> = ({ step }) => {
     return baseStyle;
   };
 
+  const StepTypo = styled(Typography)(({}) => ({
+    textAlign: 'center',
+
+    [theme.breakpoints.up('md')]: {
+      textAlign: 'left',
+    },
+  }));
+
   return (
     <Box
       sx={{
@@ -62,7 +70,7 @@ const Step: React.FC<StepProps> = ({ step }) => {
     >
       <Box sx={getStepCircleStyle()}>{number}</Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        <Typography
+        <StepTypo
           variant='caption'
           sx={{
             textTransform: 'uppercase',
@@ -70,7 +78,7 @@ const Step: React.FC<StepProps> = ({ step }) => {
           }}
         >
           Step {number}
-        </Typography>
+        </StepTypo>
         <Typography
           variant='subtitle1'
           sx={{
