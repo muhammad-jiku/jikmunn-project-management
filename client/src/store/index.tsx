@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import globalReducer from '@/state';
 import { api } from '@/state/api';
+import signupReducer from '@/state/signupSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { useRef } from 'react';
@@ -28,11 +29,12 @@ const storage =
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['global'],
+  whitelist: ['global', 'signup'], // Persist signup state if needed
 };
 
 const rootReducer = combineReducers({
   global: globalReducer,
+  signup: signupReducer,
   [api.reducerPath]: api.reducer,
 });
 
