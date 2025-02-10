@@ -1,10 +1,8 @@
 import { RootState } from '@/store';
-import { Box, ThemeProvider, Typography, createTheme } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, Typography, useTheme } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-// Define the step interface
 interface StepProps {
   step: {
     number: number;
@@ -12,96 +10,79 @@ interface StepProps {
   };
 }
 
-// Create styled components
-const StepCircle = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isActive',
-})<{ isActive: boolean }>(({ theme, isActive }) => ({
-  width: 32,
-  height: 32,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '50%',
-  flexShrink: 0,
-  fontWeight: 700,
-  border: `1px solid ${theme.palette.mode === 'dark' ? theme.palette.grey[300] : theme.palette.grey[800]}`,
-  color:
-    theme.palette.mode === 'dark'
-      ? theme.palette.grey[300]
-      : theme.palette.grey[800],
-  ...(isActive && {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-    border: 'none',
-  }),
-}));
-
-const StepContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: theme.spacing(1.5),
-  padding: theme.spacing(1),
-  [theme.breakpoints.up('md')]: {
-    flexDirection: 'row',
-  },
-}));
-
-const StepInfo = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  gap: theme.spacing(0.5),
-}));
-
 const Step: React.FC<StepProps> = ({ step }) => {
   const { number, title } = step;
+  const theme = useTheme();
   const currentStep = useSelector(
     (state: RootState) => state.signup.currentStep
   );
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
 
-  // Create theme based on dark mode preference
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: isDarkMode ? 'dark' : 'light',
-          primary: {
-            main: '#90caf9', // Light blue similar to the original blue-300
-          },
-        },
-      }),
-    [isDarkMode]
-  );
+  const getStepCircleStyle = () => {
+    const baseStyle = {
+      width: 32,
+      height: 32,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: '50%',
+      fontWeight: 'bold',
+      border: `2px solid ${
+        number === currentStep
+          ? theme.palette.primary.main
+          : isDarkMode
+            ? theme.palette.text.secondary
+            : theme.palette.text.primary
+      }`,
+      color:
+        number === currentStep
+          ? theme.palette.primary.contrastText
+          : isDarkMode
+            ? theme.palette.text.secondary
+            : theme.palette.text.primary,
+      backgroundColor:
+        number === currentStep ? theme.palette.primary.main : 'transparent',
+    };
+
+    return baseStyle;
+  };
 
   return (
-    <ThemeProvider theme={theme}>
-      <StepContainer>
-        <StepCircle isActive={number === currentStep}>{number}</StepCircle>
-        <StepInfo>
-          <Typography
-            variant='caption'
-            sx={{
-              textTransform: 'uppercase',
-              color: 'text.secondary',
-            }}
-          >
-            Step {number}
-          </Typography>
-          <Typography
-            variant='subtitle2'
-            sx={{
-              textTransform: 'uppercase',
-              fontWeight: 700,
-              color: 'text.primary',
-            }}
-          >
-            {title}
-          </Typography>
-        </StepInfo>
-      </StepContainer>
-    </ThemeProvider>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: {
+          xs: 'column',
+          md: 'row',
+        },
+        alignItems: 'center',
+        gap: 2,
+        padding: 2,
+      }}
+    >
+      <Box sx={getStepCircleStyle()}>{number}</Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+        <Typography
+          variant='caption'
+          sx={{
+            textTransform: 'uppercase',
+            color: theme.palette.text.secondary,
+          }}
+        >
+          Step {number}
+        </Typography>
+        <Typography
+          variant='subtitle1'
+          sx={{
+            textTransform: 'uppercase',
+            fontWeight: 'bold',
+            color: theme.palette.text.primary,
+          }}
+        >
+          {title}
+        </Typography>
+      </Box>
+    </Box>
   );
 };
 

@@ -5,6 +5,7 @@ import { setCurrentStep, updateFormData } from '@/state/signupSlice';
 import { RootState } from '@/store';
 import {
   Box,
+  CssBaseline,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -21,7 +22,6 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../FormInputs/NavButtons';
 
-// Define interfaces
 interface FormData {
   role: UserRole;
   [key: string]: any;
@@ -40,6 +40,7 @@ const FormContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(2, 6),
   },
+  backgroundColor: theme.palette.background.paper,
 }));
 
 const HeaderContainer = styled(Box)(({ theme }) => ({
@@ -101,16 +102,21 @@ const UserRoleSelection: React.FC = () => {
         palette: {
           mode: isDarkMode ? 'dark' : 'light',
           primary: {
-            main: '#2563eb',
+            main: isDarkMode ? '#93c5fd' : '#3b82f6', // Tailwind blue colors
+            dark: isDarkMode ? '#60a5fa' : '#2563eb',
+            contrastText: '#ffffff',
           },
           background: {
-            default: isDarkMode ? '#121212' : '#ffffff',
-            paper: isDarkMode ? '#1e1e1e' : '#ffffff',
+            default: isDarkMode ? '#101214' : '#f3f4f6', // dark-bg or gray-100
+            paper: isDarkMode ? '#1d1f21' : '#ffffff', // dark-secondary or white
           },
           text: {
-            primary: isDarkMode ? '#ffffff' : '#111827',
-            secondary: isDarkMode ? '#9ca3af' : '#4b5563',
+            primary: isDarkMode ? '#f3f4f6' : '#1f2937', // gray-100 or gray-800
+            secondary: isDarkMode ? '#6b7280' : '#374151', // Tailwind gray-500 or gray-700
           },
+        },
+        typography: {
+          fontFamily: 'inherit',
         },
       }),
     [isDarkMode]
@@ -143,6 +149,7 @@ const UserRoleSelection: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <form onSubmit={handleSubmit(processData)}>
         <FormContainer>
           <HeaderContainer>

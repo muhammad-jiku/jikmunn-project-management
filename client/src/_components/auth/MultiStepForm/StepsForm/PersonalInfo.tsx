@@ -2,12 +2,12 @@
 'use client';
 
 import { setCurrentStep, updateFormData } from '@/state/signupSlice';
-import { RootState } from '@/store'; // Adjust import path as needed
+import { RootState } from '@/store';
 import {
   Box,
   createTheme,
+  CssBaseline,
   Grid,
-  styled,
   ThemeProvider,
   Typography,
 } from '@mui/material';
@@ -17,28 +17,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../FormInputs/NavButtons';
 import TextInput from '../../FormInputs/TextInput';
 
-// Define interfaces for our data structures
 interface FormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  dob: string;
-  gender: string;
-  location: string;
-  country: string;
-  [key: string]: any; // For any additional fields
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  contact: string;
+  [key: string]: any;
 }
-
-const FormContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2, 6),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(2, 6),
-  },
-}));
-
-const HeaderContainer = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(4),
-}));
 
 const PersonalInfo: React.FC = () => {
   const dispatch = useDispatch();
@@ -49,22 +34,21 @@ const PersonalInfo: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
   const [loading, setLoading] = useState(false);
 
-  // Create theme based on dark mode preference
   const theme = React.useMemo(
     () =>
       createTheme({
         palette: {
           mode: isDarkMode ? 'dark' : 'light',
           primary: {
-            main: '#2563eb', // blue-600
+            main: isDarkMode ? '#93c5fd' : '#3b82f6', // Tailwind blue-200 and blue-500
           },
           background: {
-            default: isDarkMode ? '#121212' : '#ffffff',
-            paper: isDarkMode ? '#1e1e1e' : '#ffffff',
+            default: isDarkMode ? '#101214' : '#f3f4f6', // dark-bg or gray-100
+            paper: isDarkMode ? '#1d1f21' : '#ffffff', // dark-secondary or white
           },
           text: {
-            primary: isDarkMode ? '#ffffff' : '#111827',
-            secondary: isDarkMode ? '#9ca3af' : '#4b5563',
+            primary: isDarkMode ? '#f3f4f6' : '#1f2937', // gray-100 or gray-800
+            secondary: isDarkMode ? '#6b7280' : '#374151', // Tailwind gray-500 or gray-700
           },
         },
       }),
@@ -95,28 +79,30 @@ const PersonalInfo: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <form onSubmit={handleSubmit(processData)}>
-        <FormContainer>
-          <HeaderContainer>
+        <Box
+          sx={{
+            padding: { xs: 2, sm: 6 },
+            backgroundColor: theme.palette.background.default,
+          }}
+        >
+          <Box sx={{ mb: 4 }}>
             <Typography
               variant='h4'
-              component='h5'
               sx={{
                 fontWeight: 700,
                 mb: 1,
-                fontSize: {
-                  xs: '1.5rem',
-                  md: '2rem',
-                },
+                fontSize: { xs: '1.5rem', md: '2rem' },
+                color: theme.palette.text.primary,
               }}
             >
               Personal Info
             </Typography>
             <Typography variant='body1' color='text.secondary'>
-              Please provide your profile picture, first name, middle name, last
-              name, and phone number.
+              Please provide your profile details
             </Typography>
-          </HeaderContainer>
+          </Box>
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -161,7 +147,7 @@ const PersonalInfo: React.FC = () => {
           <Box sx={{ mt: 3 }}>
             <NavButtons disabled={loading} />
           </Box>
-        </FormContainer>
+        </Box>
       </form>
     </ThemeProvider>
   );
