@@ -97,7 +97,7 @@ const Confirmation: React.FC = () => {
                 Confirm and Submit Data
               </Typography>
               <Typography variant='body1' color='text.secondary'>
-                Confirm if this is the Data that you filled
+                Confirm if this is the data that you filled
               </Typography>
             </HeaderContainer>
 

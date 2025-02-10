@@ -19,6 +19,7 @@ import {
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import NavButtons from '../../FormInputs/NavButtons';
 
 // Define interfaces
 interface FormData {
@@ -26,7 +27,7 @@ interface FormData {
   [key: string]: any;
 }
 
-type UserRole = 'developer' | 'manager' | 'admin' | 'super_admin';
+type UserRole = 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';
 
 interface RoleOption {
   value: UserRole;
@@ -69,27 +70,26 @@ const UserRoleSelection: React.FC = () => {
   );
   const formData = useSelector((state: RootState) => state.signup.formData);
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
 
   const roleOptions: RoleOption[] = [
     {
-      value: 'developer',
+      value: 'DEVELOPER',
       label: 'Developer',
       description: 'Access to code repositories and development tools',
     },
     {
-      value: 'manager',
+      value: 'MANAGER',
       label: 'Manager',
       description: 'Manage team members and project resources',
     },
     {
-      value: 'admin',
+      value: 'ADMIN',
       label: 'Admin',
       description: 'Full system administration capabilities',
     },
     {
-      value: 'super_admin',
+      value: 'SUPER_ADMIN',
       label: 'Super Admin',
       description: 'Complete control over all system aspects',
     },
@@ -123,7 +123,7 @@ const UserRoleSelection: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      role: formData?.role || 'developer',
+      role: formData?.role || 'DEVELOPER',
     },
   });
 
@@ -158,7 +158,7 @@ const UserRoleSelection: React.FC = () => {
                 },
               }}
             >
-              Select Your Role
+              Choose Your Role
             </Typography>
             <Typography variant='body1' color='text.secondary'>
               Choose the role that best matches your responsibilities
@@ -198,6 +198,10 @@ const UserRoleSelection: React.FC = () => {
               <FormHelperText>{errors.role.message}</FormHelperText>
             )}
           </FormControl>
+
+          <Box sx={{ mt: 3 }}>
+            <NavButtons disabled={loading} />
+          </Box>
         </FormContainer>
       </form>
     </ThemeProvider>

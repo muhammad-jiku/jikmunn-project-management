@@ -14,6 +14,7 @@ import {
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import NavButtons from '../../FormInputs/NavButtons';
 import TextInput from '../../FormInputs/TextInput';
 
 // Define interfaces for our data structures
@@ -46,7 +47,6 @@ const UserInfo: React.FC = () => {
   );
   const formData = useSelector((state: RootState) => state.signup.formData);
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
 
   // Create theme based on dark mode preference
@@ -159,9 +159,9 @@ const UserInfo: React.FC = () => {
             </Grid>
           </Grid>
 
-          {/* <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: 3 }}>
             <NavButtons disabled={loading} />
-          </Box> */}
+          </Box>
         </FormContainer>
       </form>
     </ThemeProvider>

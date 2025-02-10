@@ -113,8 +113,8 @@ const PersonalInfo: React.FC = () => {
               Personal Info
             </Typography>
             <Typography variant='body1' color='text.secondary'>
-              Please provide your first name, middle name, last name, and phone
-              number.
+              Please provide your profile picture, first name, middle name, last
+              name, and phone number.
             </Typography>
           </HeaderContainer>
 
