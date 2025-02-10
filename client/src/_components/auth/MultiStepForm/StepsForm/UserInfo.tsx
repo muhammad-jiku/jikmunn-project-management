@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import TextInput from '@/components/FormInputs/TextInput';
-
 import { setCurrentStep, updateFormData } from '@/state/signupSlice';
 import { RootState } from '@/store'; // Adjust import path as needed
 import {
@@ -16,6 +14,7 @@ import {
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import TextInput from '../../FormInputs/TextInput';
 
 // Define interfaces for our data structures
 interface FormData {
@@ -126,7 +125,7 @@ const UserInfo: React.FC = () => {
                 name='username'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -136,7 +135,7 @@ const UserInfo: React.FC = () => {
                 type='email'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -145,7 +144,7 @@ const UserInfo: React.FC = () => {
                 name='password'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -155,7 +154,7 @@ const UserInfo: React.FC = () => {
                 type='password'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
           </Grid>

@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import NavButtons from '../../FormInputs/NavButtons';
 
 // Define the styled components
 const CodeBlock = styled(Paper)(({ theme }) => ({
@@ -115,9 +116,9 @@ const Confirmation: React.FC = () => {
               </CodeBlock>
             </Box>
 
-            {/* <Box sx={{ mt: 3 }}>
+            <Box sx={{ mt: 3 }}>
               <NavButtons />
-            </Box> */}
+            </Box>
           </FormContainer>
         </form>
       </Box>

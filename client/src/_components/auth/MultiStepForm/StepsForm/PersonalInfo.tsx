@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import TextInput from '@/components/FormInputs/TextInput';
-
 import { setCurrentStep, updateFormData } from '@/state/signupSlice';
 import { RootState } from '@/store'; // Adjust import path as needed
 import {
@@ -16,6 +14,8 @@ import {
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import NavButtons from '../../FormInputs/NavButtons';
+import TextInput from '../../FormInputs/TextInput';
 
 // Define interfaces for our data structures
 interface FormData {
@@ -47,7 +47,6 @@ const PersonalInfo: React.FC = () => {
   );
   const formData = useSelector((state: RootState) => state.signup.formData);
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
 
   // Create theme based on dark mode preference
@@ -126,7 +125,7 @@ const PersonalInfo: React.FC = () => {
                 name='firstName'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -135,7 +134,7 @@ const PersonalInfo: React.FC = () => {
                 name='middleName'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -144,7 +143,7 @@ const PersonalInfo: React.FC = () => {
                 name='lastName'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -154,14 +153,14 @@ const PersonalInfo: React.FC = () => {
                 type='number'
                 register={register}
                 errors={errors}
-                required
+                isRequired
               />
             </Grid>
           </Grid>
 
-          {/* <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: 3 }}>
             <NavButtons disabled={loading} />
-          </Box> */}
+          </Box>
         </FormContainer>
       </form>
     </ThemeProvider>
