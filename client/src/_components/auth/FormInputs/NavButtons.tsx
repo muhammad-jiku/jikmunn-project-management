@@ -47,6 +47,9 @@ const NavButtons: React.FC<NavButtonsProps> = ({ disabled }) => {
     dispatch(setCurrentStep(currentStep - 1));
   };
 
+  // Define a responsive font size object
+  const responsiveFontSize = { xs: '0.75rem', sm: '0.875rem', md: '1rem' };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -71,6 +74,7 @@ const NavButtons: React.FC<NavButtonsProps> = ({ disabled }) => {
               color: theme.palette.common.white,
               borderRadius: 2,
               boxShadow: 1,
+              fontSize: responsiveFontSize,
             }}
           >
             Previous
@@ -94,6 +98,7 @@ const NavButtons: React.FC<NavButtonsProps> = ({ disabled }) => {
             color: theme.palette.common.white,
             borderRadius: 2,
             boxShadow: 1,
+            fontSize: responsiveFontSize,
           }}
         >
           {currentStep === 4 ? 'Confirm and Submit' : 'Save and Continue'}

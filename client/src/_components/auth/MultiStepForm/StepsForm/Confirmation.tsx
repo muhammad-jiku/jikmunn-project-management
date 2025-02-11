@@ -18,6 +18,7 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../FormInputs/NavButtons';
 import TextInput from '../../FormInputs/TextInput';
+import StepFormHeader from '../StepFormHeader';
 
 const Confirmation: React.FC = () => {
   const dispatch = useDispatch();
@@ -91,9 +92,7 @@ const Confirmation: React.FC = () => {
             }}
           >
             <Box sx={{ mb: 4 }}>
-              <Typography variant='h4' sx={{ fontWeight: 700, mb: 1 }}>
-                Confirm and Submit Data
-              </Typography>
+              <StepFormHeader />
               <Typography variant='body1' color='text.secondary'>
                 Confirm if this is the data that you filled
               </Typography>

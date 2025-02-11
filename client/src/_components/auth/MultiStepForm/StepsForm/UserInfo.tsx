@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../FormInputs/NavButtons';
 import TextInput from '../../FormInputs/TextInput';
+import StepFormHeader from '../StepFormHeader';
 
 interface FormData {
   username: string;
@@ -102,9 +103,7 @@ const UserInfo: React.FC = () => {
           }}
         >
           <Box sx={{ mb: 4 }}>
-            <Typography variant='h4' sx={{ fontWeight: 700, mb: 1 }}>
-              User Info
-            </Typography>
+            <StepFormHeader />
             <Typography variant='body1' color='text.secondary'>
               Please provide your account details
             </Typography>

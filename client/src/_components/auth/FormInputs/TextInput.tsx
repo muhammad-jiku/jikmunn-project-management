@@ -66,6 +66,7 @@ const TextInput: React.FC<TextInputProps> = ({
     [isDarkMode]
   );
 
+  // Default register options with a default error message.
   const defaultRegisterOptions = {
     required: isRequired ? `${label} is required` : false,
   };
@@ -92,7 +93,9 @@ const TextInput: React.FC<TextInputProps> = ({
           variant='outlined'
           placeholder={`Type the ${label.toLowerCase()}`}
           error={Boolean(errors[name])}
-          helperText={errors[name] && `${label} is required`}
+          helperText={
+            errors[name] ? errors[name].message || `${label} is required` : ''
+          }
           inputProps={inputProps}
           InputProps={{
             ...InputProps,

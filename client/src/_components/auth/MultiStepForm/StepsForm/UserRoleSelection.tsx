@@ -20,6 +20,7 @@ import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../FormInputs/NavButtons';
+import StepFormHeader from '../StepFormHeader';
 
 type UserRole = 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';
 
@@ -146,13 +147,7 @@ const UserRoleSelection: React.FC = () => {
       <form onSubmit={handleSubmit(processData)}>
         <FormContainer>
           <HeaderContainer>
-            <Typography
-              variant='h4'
-              component='h5'
-              sx={{ fontWeight: 700, mb: 1 }}
-            >
-              Choose Your Role
-            </Typography>
+            <StepFormHeader />
             <Typography variant='body1' color='text.secondary'>
               Choose the role that best matches your responsibilities
             </Typography>

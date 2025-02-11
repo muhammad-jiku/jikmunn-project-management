@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import profileDefault from '../../../../../public/p7.jpeg';
 import NavButtons from '../../FormInputs/NavButtons';
 import TextInput from '../../FormInputs/TextInput';
+import StepFormHeader from '../StepFormHeader';
 
 interface FormData {
   firstName: string;
@@ -95,7 +96,10 @@ const PersonalInfo: React.FC = () => {
     try {
       setLoading(true);
       // Dispatch personal info – the slice will nest these under the key
-      // matching the current role (e.g. "manager" or "developer")
+      if (data.profileImage === profileDefault.src) {
+        // You can trigger an error by not dispatching the update and simply returning.
+        return;
+      }
       dispatch(updateFormData({ ...data, profileImage: avatar }));
       dispatch(setCurrentStep(currentStep + 1));
     } catch (error) {
@@ -117,9 +121,7 @@ const PersonalInfo: React.FC = () => {
           }}
         >
           <Box sx={{ mb: 4 }}>
-            <Typography variant='h4' sx={{ fontWeight: 700, mb: 1 }}>
-              Personal Info
-            </Typography>
+            <StepFormHeader />
             <Typography variant='body1' color='text.secondary'>
               Please provide your profile details
             </Typography>
@@ -158,9 +160,18 @@ const PersonalInfo: React.FC = () => {
                 />
                 <input
                   type='hidden'
-                  {...register('profileImage')}
+                  {...register('profileImage', {
+                    validate: (value) =>
+                      value !== profileDefault.src ||
+                      'Please upload your profile image',
+                  })}
                   value={avatar}
                 />
+                {errors.profileImage && (
+                  <Typography variant='caption' color='error'>
+                    {errors.profileImage.message}
+                  </Typography>
+                )}
               </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -200,8 +211,9 @@ const PersonalInfo: React.FC = () => {
                 isRequired
                 registerOptions={{
                   pattern: {
-                    value: /^[+]?[1-9][0-9]{6,14}$/,
-                    message: 'Please enter a valid phone number',
+                    value: /^(?:\+[1-9]\d{6,14}|0\d{6,14}|\d{6,14})$/,
+                    message:
+                      'Contact must be in international (e.g. +880...), national (e.g. 018...) or local format (e.g. 1855613783)',
                   },
                   validate: {
                     validLength: (value: string) => {
