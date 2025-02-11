@@ -5,10 +5,12 @@ import {
   createTheme,
   CssBaseline,
   TextField,
+  TextFieldProps,
   ThemeProvider,
   Typography,
 } from '@mui/material';
 import React from 'react';
+import { RegisterOptions } from 'react-hook-form';
 
 interface TextInputProps {
   label: string;
@@ -16,9 +18,12 @@ interface TextInputProps {
   register: any;
   errors: Record<string, any>;
   isRequired?: boolean;
+  registerOptions?: RegisterOptions;
   type?: string;
   className?: string;
   defaultValue?: string;
+  InputProps?: TextFieldProps['InputProps'];
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -27,9 +32,12 @@ const TextInput: React.FC<TextInputProps> = ({
   register,
   errors,
   isRequired = true,
+  registerOptions,
   type = 'text',
   className = 'sm:col-span-2',
   defaultValue = '',
+  InputProps,
+  inputProps,
 }) => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
 
@@ -58,6 +66,10 @@ const TextInput: React.FC<TextInputProps> = ({
     [isDarkMode]
   );
 
+  const defaultRegisterOptions = {
+    required: isRequired ? `${label} is required` : false,
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -72,7 +84,7 @@ const TextInput: React.FC<TextInputProps> = ({
           {label}
         </Typography>
         <TextField
-          {...register(name, { required: isRequired })}
+          {...register(name, { ...defaultRegisterOptions, ...registerOptions })}
           type={type}
           name={name}
           defaultValue={defaultValue}
@@ -81,12 +93,15 @@ const TextInput: React.FC<TextInputProps> = ({
           placeholder={`Type the ${label.toLowerCase()}`}
           error={Boolean(errors[name])}
           helperText={errors[name] && `${label} is required`}
+          inputProps={inputProps}
           InputProps={{
+            ...InputProps,
             style: {
               color: theme.palette.text.primary,
               backgroundColor: isDarkMode
                 ? 'transparent'
                 : theme.palette.background.paper,
+              ...(InputProps?.style || {}),
             },
           }}
           sx={{

@@ -18,7 +18,7 @@ import {
   styled,
 } from '@mui/material';
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../FormInputs/NavButtons';
 
@@ -40,7 +40,8 @@ const FormContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(2, 6),
   },
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.default,
+  borderRadius: 2,
 }));
 
 const HeaderContainer = styled(Box)(({ theme }) => ({
@@ -102,17 +103,17 @@ const UserRoleSelection: React.FC = () => {
         palette: {
           mode: isDarkMode ? 'dark' : 'light',
           primary: {
-            main: isDarkMode ? '#93c5fd' : '#3b82f6', // Tailwind blue colors
+            main: isDarkMode ? '#93c5fd' : '#3b82f6',
             dark: isDarkMode ? '#60a5fa' : '#2563eb',
             contrastText: '#ffffff',
           },
           background: {
-            default: isDarkMode ? '#101214' : '#f3f4f6', // dark-bg or gray-100
-            paper: isDarkMode ? '#1d1f21' : '#ffffff', // dark-secondary or white
+            default: isDarkMode ? '#101214' : '#f3f4f6',
+            paper: isDarkMode ? '#1d1f21' : '#ffffff',
           },
           text: {
-            primary: isDarkMode ? '#f3f4f6' : '#1f2937', // gray-100 or gray-800
-            secondary: isDarkMode ? '#6b7280' : '#374151', // Tailwind gray-500 or gray-700
+            primary: isDarkMode ? '#f3f4f6' : '#1f2937',
+            secondary: isDarkMode ? '#6b7280' : '#374151',
           },
         },
         typography: {
@@ -123,17 +124,16 @@ const UserRoleSelection: React.FC = () => {
   );
 
   const {
-    register,
+    control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
       role: formData?.role || 'DEVELOPER',
     },
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   });
-
-  const currentRole = watch('role');
 
   const processData = async (data: FormData) => {
     try {
@@ -173,34 +173,42 @@ const UserRoleSelection: React.FC = () => {
           </HeaderContainer>
 
           <FormControl error={!!errors.role} component='fieldset'>
-            <RadioGroup
-              aria-label='user-role'
-              {...register('role', { required: 'Please select a role' })}
-              value={currentRole}
-            >
-              {roleOptions.map((role) => (
-                <RoleCard
-                  key={role.value}
-                  isSelected={currentRole === role.value}
-                  elevation={currentRole === role.value ? 2 : 1}
-                >
-                  <FormControlLabel
-                    value={role.value}
-                    control={<Radio />}
-                    label={
-                      <Box>
-                        <Typography variant='subtitle1' fontWeight='bold'>
-                          {role.label}
-                        </Typography>
-                        <Typography variant='body2' color='text.secondary'>
-                          {role.description}
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </RoleCard>
-              ))}
-            </RadioGroup>
+            <Controller
+              name='role'
+              control={control}
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Please select a role',
+                },
+              }}
+              render={({ field }) => (
+                <RadioGroup {...field} aria-label='user-role'>
+                  {roleOptions.map((role) => (
+                    <RoleCard
+                      key={role.value}
+                      isSelected={field.value === role.value}
+                      elevation={field.value === role.value ? 2 : 1}
+                    >
+                      <FormControlLabel
+                        value={role.value}
+                        control={<Radio />}
+                        label={
+                          <Box>
+                            <Typography variant='subtitle1' fontWeight='bold'>
+                              {role.label}
+                            </Typography>
+                            <Typography variant='body2' color='text.secondary'>
+                              {role.description}
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                    </RoleCard>
+                  ))}
+                </RadioGroup>
+              )}
+            />
             {errors.role && (
               <FormHelperText>{errors.role.message}</FormHelperText>
             )}

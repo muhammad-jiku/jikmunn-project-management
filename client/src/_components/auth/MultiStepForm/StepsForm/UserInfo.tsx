@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-
 import { setCurrentStep, updateFormData } from '@/state/signupSlice';
 import { RootState } from '@/store';
 import {
@@ -8,9 +6,12 @@ import {
   createTheme,
   CssBaseline,
   Grid,
+  IconButton,
+  InputAdornment,
   ThemeProvider,
   Typography,
 } from '@mui/material';
+import { Eye, EyeClosed } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,6 +34,16 @@ const UserInfo: React.FC = () => {
   const formData = useSelector((state: RootState) => state.signup.formData);
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword((show) => !show);
+
+  const handleMouseDownPassword = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+  };
 
   const theme = React.useMemo(
     () =>
@@ -40,15 +51,15 @@ const UserInfo: React.FC = () => {
         palette: {
           mode: isDarkMode ? 'dark' : 'light',
           primary: {
-            main: isDarkMode ? '#93c5fd' : '#3b82f6', // Tailwind blue-200 and blue-500
+            main: isDarkMode ? '#93c5fd' : '#3b82f6',
           },
           background: {
-            default: isDarkMode ? '#101214' : '#f3f4f6', // dark-bg or gray-100
-            paper: isDarkMode ? '#1d1f21' : '#ffffff', // dark-secondary or white
+            default: isDarkMode ? '#101214' : '#f3f4f6',
+            paper: isDarkMode ? '#1d1f21' : '#ffffff',
           },
           text: {
-            primary: isDarkMode ? '#f3f4f6' : '#1f2937', // gray-100 or gray-800
-            secondary: isDarkMode ? '#6b7280' : '#374151', // Tailwind gray-500 or gray-700
+            primary: isDarkMode ? '#f3f4f6' : '#1f2937',
+            secondary: isDarkMode ? '#6b7280' : '#374151',
           },
         },
       }),
@@ -58,18 +69,33 @@ const UserInfo: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
       ...formData,
     },
+    mode: 'onChange',
   });
 
+  const password = watch('password');
+
+  // Update the processData function
   const processData = async (data: FormData) => {
     try {
       setLoading(true);
-      dispatch(updateFormData(data));
-      dispatch(setCurrentStep(currentStep + 1));
+      if (
+        data.password.length >= 8 &&
+        data.password.length <= 12 &&
+        /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,12}$/.test(
+          data.password
+        ) &&
+        data.password === data.confirmPassword
+      ) {
+        // Remove the destructuring to keep confirmPassword
+        dispatch(updateFormData(data));
+        dispatch(setCurrentStep(currentStep + 1));
+      }
     } catch (error) {
       console.error('Error processing form data:', error);
     } finally {
@@ -85,6 +111,7 @@ const UserInfo: React.FC = () => {
           sx={{
             padding: { xs: 2, sm: 6 },
             backgroundColor: theme.palette.background.default,
+            borderRadius: 2,
           }}
         >
           <Box sx={{ mb: 4 }}>
@@ -112,6 +139,20 @@ const UserInfo: React.FC = () => {
                 register={register}
                 errors={errors}
                 isRequired
+                registerOptions={{
+                  pattern: {
+                    value: /^[a-z][a-z0-9!@#$%^&*_-]*$/,
+                    message:
+                      'Username must start with a letter and be lowercase',
+                  },
+                  validate: {
+                    noSpaces: (value) =>
+                      !value.includes(' ') || 'Username cannot contain spaces',
+                  },
+                  onChange: (e) => {
+                    e.target.value = e.target.value.toLowerCase();
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -128,20 +169,90 @@ const UserInfo: React.FC = () => {
               <TextInput
                 label='Password'
                 name='password'
-                type='password'
+                type={showPassword ? 'text' : 'password'}
                 register={register}
                 errors={errors}
                 isRequired
+                registerOptions={{
+                  minLength: {
+                    value: 8,
+                    message: 'Password must be at least 8 characters',
+                  },
+                  maxLength: {
+                    value: 12,
+                    message: 'Password cannot exceed 12 characters',
+                  },
+                  pattern: {
+                    value:
+                      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,12}$/,
+                    message:
+                      'Password must contain at least one letter, one number, and one special character',
+                  },
+                  validate: {
+                    noSpaces: (value) =>
+                      !value.includes(' ') || 'Password cannot contain spaces',
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='toggle password visibility'
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge='end'
+                      >
+                        {showPassword ? <EyeClosed /> : <Eye />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextInput
                 label='Confirm Password'
                 name='confirmPassword'
-                type='password'
+                type={showConfirmPassword ? 'text' : 'password'}
                 register={register}
                 errors={errors}
                 isRequired
+                registerOptions={{
+                  minLength: {
+                    value: 8,
+                    message: 'Password must be at least 8 characters',
+                  },
+                  maxLength: {
+                    value: 12,
+                    message: 'Password cannot exceed 12 characters',
+                  },
+                  pattern: {
+                    value:
+                      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,12}$/,
+                    message:
+                      'Password must contain at least one letter, one number, and one special character',
+                  },
+                  validate: {
+                    match: (value) =>
+                      value === password || 'Passwords do not match',
+                    noSpaces: (value) =>
+                      !value.includes(' ') || 'Password cannot contain spaces',
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='toggle password visibility'
+                        onClick={handleClickShowConfirmPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge='end'
+                      >
+                        {showConfirmPassword ? <EyeClosed /> : <Eye />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>
