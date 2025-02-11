@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { setCurrentStep, updateFormData } from '@/state/signupSlice';
@@ -22,24 +21,18 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../FormInputs/NavButtons';
 
-interface FormData {
-  role: UserRole;
-  [key: string]: any;
-}
-
 type UserRole = 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';
 
-interface RoleOption {
-  value: UserRole;
-  label: string;
-  description: string;
+interface FormData {
+  role: UserRole;
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
 }
 
 const FormContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2, 6),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(2, 6),
-  },
   backgroundColor: theme.palette.background.default,
   borderRadius: 2,
 }));
@@ -74,7 +67,7 @@ const UserRoleSelection: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
   const [loading, setLoading] = useState(false);
 
-  const roleOptions: RoleOption[] = [
+  const roleOptions = [
     {
       value: 'DEVELOPER',
       label: 'Developer',
@@ -95,33 +88,29 @@ const UserRoleSelection: React.FC = () => {
       label: 'Super Admin',
       description: 'Complete control over all system aspects',
     },
-  ];
+  ] as const;
 
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: isDarkMode ? 'dark' : 'light',
-          primary: {
-            main: isDarkMode ? '#93c5fd' : '#3b82f6',
-            dark: isDarkMode ? '#60a5fa' : '#2563eb',
-            contrastText: '#ffffff',
-          },
-          background: {
-            default: isDarkMode ? '#101214' : '#f3f4f6',
-            paper: isDarkMode ? '#1d1f21' : '#ffffff',
-          },
-          text: {
-            primary: isDarkMode ? '#f3f4f6' : '#1f2937',
-            secondary: isDarkMode ? '#6b7280' : '#374151',
-          },
-        },
-        typography: {
-          fontFamily: 'inherit',
-        },
-      }),
-    [isDarkMode]
-  );
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? 'dark' : 'light',
+      primary: {
+        main: isDarkMode ? '#93c5fd' : '#3b82f6',
+        dark: isDarkMode ? '#60a5fa' : '#2563eb',
+        contrastText: '#ffffff',
+      },
+      background: {
+        default: isDarkMode ? '#101214' : '#f3f4f6',
+        paper: isDarkMode ? '#1d1f21' : '#ffffff',
+      },
+      text: {
+        primary: isDarkMode ? '#f3f4f6' : '#1f2937',
+        secondary: isDarkMode ? '#6b7280' : '#374151',
+      },
+    },
+    typography: {
+      fontFamily: 'inherit',
+    },
+  });
 
   const {
     control,
@@ -129,15 +118,19 @@ const UserRoleSelection: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      role: formData?.role || 'DEVELOPER',
+      role: formData.role || 'DEVELOPER',
+      username: formData.username || '',
+      email: formData.email || '',
+      password: formData.password || '',
+      confirmPassword: formData.confirmPassword || '',
     },
     mode: 'onSubmit',
-    reValidateMode: 'onSubmit',
   });
 
   const processData = async (data: FormData) => {
     try {
       setLoading(true);
+      // Dispatch base data (role, username, email, password, confirmPassword)
       dispatch(updateFormData(data));
       dispatch(setCurrentStep(currentStep + 1));
     } catch (error) {
@@ -156,14 +149,7 @@ const UserRoleSelection: React.FC = () => {
             <Typography
               variant='h4'
               component='h5'
-              sx={{
-                fontWeight: 700,
-                mb: 1,
-                fontSize: {
-                  xs: '1.5rem',
-                  md: '2rem',
-                },
-              }}
+              sx={{ fontWeight: 700, mb: 1 }}
             >
               Choose Your Role
             </Typography>
@@ -171,24 +157,17 @@ const UserRoleSelection: React.FC = () => {
               Choose the role that best matches your responsibilities
             </Typography>
           </HeaderContainer>
-
           <FormControl error={!!errors.role} component='fieldset'>
             <Controller
               name='role'
               control={control}
-              rules={{
-                required: {
-                  value: true,
-                  message: 'Please select a role',
-                },
-              }}
+              rules={{ required: 'Please select a role' }}
               render={({ field }) => (
                 <RadioGroup {...field} aria-label='user-role'>
                   {roleOptions.map((role) => (
                     <RoleCard
                       key={role.value}
                       isSelected={field.value === role.value}
-                      elevation={field.value === role.value ? 2 : 1}
                     >
                       <FormControlLabel
                         value={role.value}
@@ -213,7 +192,6 @@ const UserRoleSelection: React.FC = () => {
               <FormHelperText>{errors.role.message}</FormHelperText>
             )}
           </FormControl>
-
           <Box sx={{ mt: 3 }}>
             <NavButtons disabled={loading} />
           </Box>

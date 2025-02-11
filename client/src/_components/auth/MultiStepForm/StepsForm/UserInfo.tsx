@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { setCurrentStep, updateFormData } from '@/state/signupSlice';
 import { RootState } from '@/store';
 import {
@@ -23,7 +22,6 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  [key: string]: any;
 }
 
 const UserInfo: React.FC = () => {
@@ -37,34 +35,20 @@ const UserInfo: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword((show) => !show);
-
-  const handleMouseDownPassword = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-  };
-
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: isDarkMode ? 'dark' : 'light',
-          primary: {
-            main: isDarkMode ? '#93c5fd' : '#3b82f6',
-          },
-          background: {
-            default: isDarkMode ? '#101214' : '#f3f4f6',
-            paper: isDarkMode ? '#1d1f21' : '#ffffff',
-          },
-          text: {
-            primary: isDarkMode ? '#f3f4f6' : '#1f2937',
-            secondary: isDarkMode ? '#6b7280' : '#374151',
-          },
-        },
-      }),
-    [isDarkMode]
-  );
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? 'dark' : 'light',
+      primary: { main: isDarkMode ? '#93c5fd' : '#3b82f6' },
+      background: {
+        default: isDarkMode ? '#101214' : '#f3f4f6',
+        paper: isDarkMode ? '#1d1f21' : '#ffffff',
+      },
+      text: {
+        primary: isDarkMode ? '#f3f4f6' : '#1f2937',
+        secondary: isDarkMode ? '#6b7280' : '#374151',
+      },
+    },
+  });
 
   const {
     register,
@@ -73,35 +57,38 @@ const UserInfo: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      ...formData,
+      username: formData.username || '',
+      email: formData.email || '',
+      password: formData.password || '',
+      confirmPassword: formData.confirmPassword || '',
     },
     mode: 'onChange',
   });
 
   const password = watch('password');
 
-  // Update the processData function
   const processData = async (data: FormData) => {
     try {
       setLoading(true);
-      if (
-        data.password.length >= 8 &&
-        data.password.length <= 12 &&
-        /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,12}$/.test(
-          data.password
-        ) &&
-        data.password === data.confirmPassword
-      ) {
-        // Remove the destructuring to keep confirmPassword
-        dispatch(updateFormData(data));
-        dispatch(setCurrentStep(currentStep + 1));
+      if (data.password !== data.confirmPassword) {
+        console.error('Passwords do not match');
+        return;
       }
+      // Update base account details
+      dispatch(updateFormData(data));
+      dispatch(setCurrentStep(currentStep + 1));
     } catch (error) {
       console.error('Error processing form data:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+  const handleMouseDownPassword = (e: React.MouseEvent<HTMLButtonElement>) =>
+    e.preventDefault();
 
   return (
     <ThemeProvider theme={theme}>
@@ -115,22 +102,13 @@ const UserInfo: React.FC = () => {
           }}
         >
           <Box sx={{ mb: 4 }}>
-            <Typography
-              variant='h4'
-              sx={{
-                fontWeight: 700,
-                mb: 1,
-                fontSize: { xs: '1.5rem', md: '2rem' },
-                color: theme.palette.text.primary,
-              }}
-            >
+            <Typography variant='h4' sx={{ fontWeight: 700, mb: 1 }}>
               User Info
             </Typography>
             <Typography variant='body1' color='text.secondary'>
               Please provide your account details
             </Typography>
           </Box>
-
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextInput
@@ -218,20 +196,6 @@ const UserInfo: React.FC = () => {
                 errors={errors}
                 isRequired
                 registerOptions={{
-                  minLength: {
-                    value: 8,
-                    message: 'Password must be at least 8 characters',
-                  },
-                  maxLength: {
-                    value: 12,
-                    message: 'Password cannot exceed 12 characters',
-                  },
-                  pattern: {
-                    value:
-                      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,12}$/,
-                    message:
-                      'Password must contain at least one letter, one number, and one special character',
-                  },
                   validate: {
                     match: (value) =>
                       value === password || 'Passwords do not match',
@@ -256,7 +220,6 @@ const UserInfo: React.FC = () => {
               />
             </Grid>
           </Grid>
-
           <Box sx={{ mt: 3 }}>
             <NavButtons disabled={loading} />
           </Box>

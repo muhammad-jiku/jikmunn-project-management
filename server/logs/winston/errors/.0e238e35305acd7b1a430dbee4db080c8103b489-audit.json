@@ -6,11 +6,6 @@
     "auditLog": "D:\\_my_portfolio_\\Full Stack\\NEXT\\1. Project Management\\jikmunn-project-management\\server\\logs\\winston\\errors\\.0e238e35305acd7b1a430dbee4db080c8103b489-audit.json",
     "files": [
         {
-            "date": 1737790669877,
-            "name": "D:\\_my_portfolio_\\Full Stack\\NEXT\\1. Project Management\\jikmunn-project-management\\server\\logs\\winston\\errors\\jikmunn-project-management-2025-25-01-13-error.log",
-            "hash": "ba96d07c20277dec794ca71f01581dba48e457df6b94a5d4d005882597e37b17"
-        },
-        {
             "date": 1738556540908,
             "name": "D:\\_my_portfolio_\\Full Stack\\NEXT\\1. Project Management\\jikmunn-project-management\\server\\logs\\winston\\errors\\jikmunn-project-management-2025-03-02-10-error.log",
             "hash": "282d95a7c7bdc41001814b814ac115016e8d894e6016e5ed4265f749ab73e1b8"
@@ -44,6 +39,11 @@
             "date": 1738675145379,
             "name": "D:\\_my_portfolio_\\Full Stack\\NEXT\\1. Project Management\\jikmunn-project-management\\server\\logs\\winston\\errors\\jikmunn-project-management-2025-04-02-19-error.log",
             "hash": "0fbd0430ea9d577144bc2452ca18a3a2f553562d5f9f5172f12c4f912027aa4c"
+        },
+        {
+            "date": 1739279783133,
+            "name": "D:\\_my_portfolio_\\Full Stack\\NEXT\\1. Project Management\\jikmunn-project-management\\server\\logs\\winston\\errors\\jikmunn-project-management-2025-11-02-19-error.log",
+            "hash": "67c2b1d27740abb6eec9b00f2529b786786a2e8d5fd8e613b4f23b904e3544c5"
         }
     ],
     "hashType": "sha256"

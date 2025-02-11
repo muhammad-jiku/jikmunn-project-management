@@ -2,6 +2,7 @@
 
 import StepForm from '@/_components/auth/MultiStepForm/StepForm';
 import Steps from '@/_components/auth/MultiStepForm/Steps';
+import { resetSignup } from '@/state/signupSlice';
 import { RootState } from '@/store';
 import {
   Box,
@@ -11,8 +12,8 @@ import {
   Paper,
   ThemeProvider,
 } from '@mui/material';
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface Step {
   number: number;
@@ -20,7 +21,12 @@ interface Step {
 }
 
 const SignUp: React.FC = () => {
+  const dispatch = useDispatch();
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
+
+  useEffect(() => {
+    dispatch(resetSignup());
+  }, [dispatch]);
 
   const theme = React.useMemo(
     () =>
