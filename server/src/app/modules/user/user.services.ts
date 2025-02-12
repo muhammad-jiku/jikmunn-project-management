@@ -6,6 +6,7 @@ import {
   User,
   UserRole,
 } from '@prisma/client';
+import cloudinary from 'cloudinary';
 import { Response } from 'express';
 import httpStatus from 'http-status';
 import { Secret } from 'jsonwebtoken';
@@ -49,9 +50,22 @@ const insertDeveloperIntoDB = async (
     developerData.developerId = developerId;
     console.log('developerId: ', developerId);
     // Step 2: Create Developer first to ensure the developerId exists
+    const myCloud = await cloudinary.v2.uploader.upload(
+      developerData?.profileImage! as string,
+      {
+        folder: 'jikmunn-project-management/avatars',
+        width: 150,
+        crop: 'scale',
+      }
+    );
+
     const newDeveloper = await prisma.developer.create({
       data: {
         ...developerData,
+        profileImage: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
       },
     });
 
@@ -142,9 +156,22 @@ const insertManagerIntoDB = async (
     managerData.managerId = managerId;
     console.log('managerId: ', managerId);
     // Step 2: Create Manager first to ensure the managerId exists
+    const myCloud = await cloudinary.v2.uploader.upload(
+      managerData?.profileImage! as string,
+      {
+        folder: 'jikmunn-project-management/avatars',
+        width: 150,
+        crop: 'scale',
+      }
+    );
+
     const newManager = await prisma.manager.create({
       data: {
         ...managerData,
+        profileImage: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
       },
     });
 
@@ -232,9 +259,22 @@ const insertAdminIntoDB = async (
     adminData.adminId = adminId;
     console.log('adminId: ', adminId);
     // Step 2: Create Admin first to ensure the adminId exists
+    const myCloud = await cloudinary.v2.uploader.upload(
+      adminData?.profileImage! as string,
+      {
+        folder: 'jikmunn-project-management/avatars',
+        width: 150,
+        crop: 'scale',
+      }
+    );
+
     const newAdmin = await prisma.admin.create({
       data: {
         ...adminData,
+        profileImage: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
       },
     });
 
@@ -322,9 +362,22 @@ const insertSuperAdminIntoDB = async (
     superAdminData.superAdminId = superAdminId;
     console.log('superAdminId: ', superAdminId);
     // Step 2: Create Super Admin first to ensure the superAdminId exists
+    const myCloud = await cloudinary.v2.uploader.upload(
+      superAdminData?.profileImage! as string,
+      {
+        folder: 'jikmunn-project-management/avatars',
+        width: 150,
+        crop: 'scale',
+      }
+    );
+
     const newSuperAdmin = await prisma.superAdmin.create({
       data: {
         ...superAdminData,
+        profileImage: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
       },
     });
 

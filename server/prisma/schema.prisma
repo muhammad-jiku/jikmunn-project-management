@@ -19,7 +19,7 @@ model Developer {
   firstName    String
   lastName     String
   middleName   String?
-  profileImage String?
+  profileImage Json? // Changed from String? to Json?
   contact      String  @unique
 
   user      User?    @relation("DeveloperUser")
@@ -35,7 +35,7 @@ model Manager {
   firstName    String
   lastName     String
   middleName   String?
-  profileImage String?
+  profileImage Json? // Changed from String? to Json?
   contact      String  @unique
 
   user      User?    @relation("ManagerUser")
@@ -51,7 +51,7 @@ model Admin {
   firstName    String
   lastName     String
   middleName   String?
-  profileImage String?
+  profileImage Json? // Changed from String? to Json?
   contact      String  @unique
 
   user      User?    @relation("AdminUser")
@@ -67,7 +67,7 @@ model SuperAdmin {
   firstName    String
   lastName     String
   middleName   String?
-  profileImage String?
+  profileImage Json? // Changed from String? to Json?
   contact      String  @unique
 
   user      User?    @relation("SuperAdminUser")
