@@ -19,7 +19,7 @@ import {
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import NavButtons from '../../FormInputs/NavButtons';
+import NavButtons from '../../../FormInputs/NavButtons';
 import StepFormHeader from '../StepFormHeader';
 
 type UserRole = 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';

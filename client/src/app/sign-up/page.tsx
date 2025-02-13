@@ -1,7 +1,7 @@
 'use client';
 
-import StepForm from '@/_components/auth/MultiStepForm/StepForm';
-import Steps from '@/_components/auth/MultiStepForm/Steps';
+import StepForm from '@/_components/auth/signup/MultiStepForm/StepForm';
+import Steps from '@/_components/auth/signup/MultiStepForm/Steps';
 import { resetSignup } from '@/state/signupSlice';
 import { RootState } from '@/store';
 import {

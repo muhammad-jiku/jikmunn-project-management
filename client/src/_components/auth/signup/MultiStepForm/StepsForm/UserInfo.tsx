@@ -14,8 +14,8 @@ import { Eye, EyeClosed } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import NavButtons from '../../FormInputs/NavButtons';
-import TextInput from '../../FormInputs/TextInput';
+import NavButtons from '../../../FormInputs/NavButtons';
+import TextInput from '../../../FormInputs/TextInput';
 import StepFormHeader from '../StepFormHeader';
 
 interface FormData {

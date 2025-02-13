@@ -15,8 +15,8 @@ import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import profileDefault from '../../../../../public/p7.jpeg';
-import NavButtons from '../../FormInputs/NavButtons';
-import TextInput from '../../FormInputs/TextInput';
+import NavButtons from '../../../FormInputs/NavButtons';
+import TextInput from '../../../FormInputs/TextInput';
 import StepFormHeader from '../StepFormHeader';
 
 interface FormData {
