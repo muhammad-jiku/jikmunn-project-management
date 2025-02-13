@@ -9,10 +9,20 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import routes from './app/routes';
 
 const app: Application = express();
+// const corsOptions = {
+//   origin: 'http://localhost:3000', // Specify your frontend's origin
+//   credentials: true, // Allow cookies and credentials
+// };
+const corsOptions = {
+  origin: true,
+  // origin: 'http://localhost:3000/',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+};
 
 //
 // parser and middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));

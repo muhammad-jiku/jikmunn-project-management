@@ -93,6 +93,26 @@ const Confirmation: React.FC = () => {
   }
 
   const payload = { userData, profileData };
+  console.log('payload..', payload);
+  // Helper to convert underscore_separated string to camelCase
+  const toCamelCase = (str: string): string => {
+    return str
+      .toLowerCase()
+      .replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  };
+  // helper to transform payload for signup endpoints
+  const transformSignupPayload = (payload: {
+    userData: any;
+    profileData: any;
+  }) => {
+    const { userData, profileData } = payload;
+    // Lowercase the role key to use as the nested property name.
+    const roleKey = toCamelCase(userData.role); // "SUPER_ADMIN" becomes "superAdmin", and e.g., "developer", "manager", etc.
+    return {
+      ...userData,
+      [roleKey]: profileData,
+    };
+  };
 
   const {
     register,
@@ -114,14 +134,16 @@ const Confirmation: React.FC = () => {
     try {
       console.log('Final signup data:', JSON.stringify(formData, null, 2));
       let result;
+      const transformedPayload = transformSignupPayload(payload);
+      console.log('transformed payload..', transformedPayload);
       if (formData.role === 'DEVELOPER') {
-        result = await signupDeveloper(payload).unwrap();
+        result = await signupDeveloper(transformedPayload).unwrap();
       } else if (formData.role === 'MANAGER') {
-        result = await signupManager(payload).unwrap();
+        result = await signupManager(transformedPayload).unwrap();
       } else if (formData.role === 'ADMIN') {
-        result = await signupAdmin(payload).unwrap();
+        result = await signupAdmin(transformedPayload).unwrap();
       } else if (formData.role === 'SUPER_ADMIN') {
-        result = await signupSuperAdmin(payload).unwrap();
+        result = await signupSuperAdmin(transformedPayload).unwrap();
       } else {
         throw new Error('Invalid user role');
       }
@@ -135,7 +157,9 @@ const Confirmation: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error processing form data:', error);
-      setSignupError(error.message || 'Signup failed');
+      setSignupError(
+        error.message || 'Something went wrong, Please try again!'
+      );
     }
   };
 

@@ -1,18 +1,33 @@
-import { setIsDarkMode, setIsSidebarCollapsed } from '@/state';
-import { useAppDispatch, useAppSelector } from '@/store';
+import { logoutUser, setIsDarkMode, setIsSidebarCollapsed } from '@/state';
+import { useLogoutMutation } from '@/state/api';
+import { RootState, useAppDispatch, useAppSelector } from '@/store';
 import { Menu, Moon, Search, Settings, Sun, User } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const isSidebarCollapsed = useAppSelector(
-    (state) => state.global.isSidebarCollapsed
+    (state: RootState) => state.global.isSidebarCollapsed
   );
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector(
+    (state: RootState) => state.global.isDarkMode
+  );
+  const globalUser = useAppSelector((state: RootState) => state.global.user);
+
+  const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
+
+  console.log('global user...', globalUser);
 
   const handleSignOut = async () => {
     try {
-      //   await signOut();
+      // Call the logout mutation
+      await logout().unwrap();
+      // Dispatch logout action to clear user state
+      dispatch(logoutUser());
+      // Redirect to login page (or home, as desired)
+      router.push('/login');
     } catch (error) {
       console.error('Error signing out: ', error);
     }
@@ -25,7 +40,7 @@ const Navbar = () => {
         {!isSidebarCollapsed ? null : (
           <button
             aria-label='Close sidebar'
-            title='Close sidebar' // Tooltip for all users
+            title='Close sidebar'
             onClick={() => dispatch(setIsSidebarCollapsed(!isSidebarCollapsed))}
           >
             <Menu className='h-8 w-8 dark:text-white' />
@@ -41,7 +56,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Icons */}
+      {/* Icons & Authentication Controls */}
       <div className='flex items-center'>
         <button
           onClick={() => dispatch(setIsDarkMode(!isDarkMode))}
@@ -69,16 +84,26 @@ const Navbar = () => {
         </Link>
         <div className='ml-2 mr-5 hidden min-h-[2em] w-[0.1rem] bg-gray-200 md:inline-block'></div>
         <div className='hidden items-center justify-between md:flex'>
-          <div className='align-center flex h-9 w-9 justify-center'>
-            <User className='h-6 w-6 cursor-pointer self-center rounded-full dark:text-white' />
-          </div>
-
-          <button
-            className='hidden rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:block'
-            onClick={handleSignOut}
-          >
-            Sign out
-          </button>
+          {globalUser ? (
+            <>
+              <div className='flex h-9 w-9 items-center justify-center'>
+                <User className='h-6 w-6 cursor-pointer self-center rounded-full dark:text-white' />
+              </div>
+              <button
+                className='hidden rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:block'
+                onClick={handleSignOut}
+                disabled={logoutLoading}
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link href='/login'>
+              <button className='rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
+                Login
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

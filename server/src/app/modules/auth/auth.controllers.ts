@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import config from '../../../config';
+import ApiError from '../../../errors/handleApiError';
 import { catchAsync } from '../../../shared/catchAsync';
 import { sendResponse } from '../../../shared/sendResponse';
 import { ILoginUserResponse, IRefreshTokenResponse } from './auth.interfaces';
@@ -34,24 +35,6 @@ const loginUserHandler = catchAsync(
   }
 );
 
-const getCurrentUserHandler = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId = req.user?.userId;
-      const result = await AuthServices.getCurrentUser(userId);
-
-      sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'User retrieved successfully',
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
 const refreshTokenHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -72,25 +55,6 @@ const refreshTokenHandler = catchAsync(
         success: true,
         message: 'Access token refreshed successfully',
         data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-const changePasswordHandler = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const user = req.user;
-      const passwordData = req.body;
-
-      await AuthServices.changePasswordHandler(user, passwordData);
-
-      sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Password changed successfully',
       });
     } catch (error) {
       next(error);
@@ -130,6 +94,62 @@ const resetPasswordHandler = catchAsync(
   }
 );
 
+const verifyEmailHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { token } = req.body;
+    if (!token) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Verification token is required'
+      );
+    }
+    // Call the verification logic from the AuthServices.
+    await AuthServices.verifyEmail(token);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Email verified and account activated successfully',
+    });
+  }
+);
+
+const getCurrentUserHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?.userId;
+      const result = await AuthServices.getCurrentUser(userId);
+
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'User retrieved successfully',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+const changePasswordHandler = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user;
+      const passwordData = req.body;
+
+      await AuthServices.changePasswordHandler(user, passwordData);
+
+      sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Password changed successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 const logoutHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -148,10 +168,11 @@ const logoutHandler = catchAsync(
 
 export const AuthControllers = {
   loginUserHandler,
-  getCurrentUserHandler,
   refreshTokenHandler,
-  changePasswordHandler,
   forgotPasswordHandler,
   resetPasswordHandler,
+  verifyEmailHandler,
+  getCurrentUserHandler,
+  changePasswordHandler,
   logoutHandler,
 };

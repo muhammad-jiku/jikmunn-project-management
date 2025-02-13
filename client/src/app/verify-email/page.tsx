@@ -59,10 +59,13 @@ const VerifyEmailPage: React.FC = () => {
     const verifyEmail = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify-email`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/verify-email`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
             body: JSON.stringify({ token }),
           }
         );

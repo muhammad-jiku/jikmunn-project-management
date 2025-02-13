@@ -113,7 +113,7 @@ export const api = createApi({
           const { data } = await queryFulfilled;
           // Get user data after successful login
           const userResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
             {
               credentials: 'include',
             }
@@ -143,7 +143,7 @@ export const api = createApi({
           const { data } = await queryFulfilled;
           // Get user data after successful signup
           const userResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
             {
               credentials: 'include',
             }
@@ -174,7 +174,7 @@ export const api = createApi({
           const { data } = await queryFulfilled;
           // Get user data after successful signup
           const userResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
             {
               credentials: 'include',
             }
@@ -205,7 +205,7 @@ export const api = createApi({
           const { data } = await queryFulfilled;
           // Get user data after successful signup
           const userResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
             {
               credentials: 'include',
             }
@@ -240,7 +240,7 @@ export const api = createApi({
           const { data } = await queryFulfilled;
           // Get user data after successful signup
           const userResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
             {
               credentials: 'include',
             }

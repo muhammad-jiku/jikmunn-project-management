@@ -1,32 +1,5 @@
 import { z } from 'zod';
 
-// const createUser = z.object({
-//   body: z
-//     .object({
-//       cognitoId: z.string({
-//         required_error: 'Cognito ID is required',
-//       }),
-//       username: z.string({
-//         required_error: 'Username is required',
-//       }),
-//       profilePictureUrl: z.string().optional(),
-//       teamId: z.number().optional(),
-//     })
-//     .strict(),
-// });
-
-// const updateUser = z.object({
-//   body: z
-//     .object({
-//       cognitoId: z.string().optional(),
-//       username: z.string().optional(),
-//       profilePictureUrl: z.string().optional(),
-//       teamId: z.number().optional(),
-//     })
-//     .strict()
-//     .optional(),
-// });
-
 const createDeveloper = z.object({
   body: z
     .object({
@@ -39,6 +12,8 @@ const createDeveloper = z.object({
           required_error: 'Email is required',
         })
         .email('Invalid email format'),
+      // Allow the role key and require it to be "DEVELOPER"
+      role: z.literal('DEVELOPER'),
       developer: z
         .object({
           firstName: z.string({
@@ -70,6 +45,8 @@ const createManager = z.object({
           required_error: 'Email is required',
         })
         .email('Invalid email format'),
+      // Allow the role key and require it to be "MANAGER"
+      role: z.literal('MANAGER'),
       manager: z
         .object({
           firstName: z.string({
@@ -101,6 +78,8 @@ const createAdmin = z.object({
           required_error: 'Email is required',
         })
         .email('Invalid email format'),
+      // Allow the role key and require it to be "ADMIN"
+      role: z.literal('ADMIN'),
       admin: z
         .object({
           firstName: z.string({
@@ -132,6 +111,8 @@ const createSuperAdmin = z.object({
           required_error: 'Email is required',
         })
         .email('Invalid email format'),
+      // Allow the role key and require it to be "SUPER_ADMIN"
+      role: z.literal('SUPER_ADMIN'),
       superAdmin: z
         .object({
           firstName: z.string({

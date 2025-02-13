@@ -1,3 +1,4 @@
+import { v2 as cloudinary } from 'cloudinary';
 import { Server } from 'http';
 import app from './app';
 import config from './config';
@@ -9,6 +10,13 @@ process.on('uncaughtException', (error) => {
 });
 
 async function bootstrap() {
+  // Cloudinary Config
+  cloudinary.config({
+    cloud_name: config.cloudinary.cloud_name,
+    api_key: config.cloudinary.api_key,
+    api_secret: config.cloudinary.api_secret,
+  });
+
   const server: Server = app.listen(config.port, () => {
     logger.info(`Server running on http://localhost:${config.port}`);
   });

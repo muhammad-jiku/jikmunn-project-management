@@ -98,109 +98,6 @@ const refreshTokenHandler = async (
   };
 };
 
-const setAuthCookies = (
-  res: Response,
-  accessToken: string,
-  refreshToken: string
-): void => {
-  res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 15 * 60 * 1000, // 15 minutes
-    path: '/',
-  });
-
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    path: '/auth/refresh-token',
-  });
-};
-
-const sendVerificationEmail = async (
-  email: string,
-  token: string
-): Promise<void> => {
-  const verificationUrl = `${config.frontend_url}/verify-email?token=${token}`;
-  await EmailHelper.sendEmail({
-    email,
-    subject: 'Verify your email',
-    html: `
-      <p>Please verify your email by clicking the link below:</p>
-      <p><a href="${verificationUrl}">Verify Email</a></p>
-      <p>This link will expire in 24 hours.</p>
-    `,
-  });
-};
-
-const getCurrentUser = async (userId: string): Promise<Partial<User>> => {
-  const user = await prisma.user.findUnique({
-    where: { userId },
-    select: {
-      userId: true,
-      username: true,
-      email: true,
-      role: true,
-      emailVerified: true,
-      developerId: true,
-      managerId: true,
-      adminId: true,
-      superAdminId: true,
-    },
-  });
-
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-  }
-
-  return user;
-};
-
-const changePasswordHandler = async (
-  user: JwtPayload | null,
-  payload: IChangePassword
-): Promise<void> => {
-  const { oldPassword, newPassword } = payload;
-
-  const existingUser = await isUserExist(user?.userId);
-  if (!existingUser) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
-  }
-
-  const isOldPasswordValid = await isPasswordMatch(
-    oldPassword,
-    existingUser.password!
-  );
-  if (!isOldPasswordValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect');
-  }
-
-  const isNewPasswordSame = await isPasswordMatch(
-    newPassword,
-    existingUser.password!
-  );
-  if (isNewPasswordSame) {
-    throw new ApiError(
-      httpStatus.CONFLICT,
-      'New password cannot be the same as the old password'
-    );
-  }
-
-  // Hash the new password and update the user record
-  const hashedNewPassword = await hashPassword(newPassword);
-  await prisma.user.update({
-    where: { userId: user?.userId },
-    data: {
-      password: hashedNewPassword,
-      needsPasswordChange: false,
-      passwordChangedAt: new Date(),
-    },
-  });
-};
-
 const forgotPasswordHandler = async (
   payload: IForgotPasswordPayload
 ): Promise<void> => {
@@ -314,6 +211,217 @@ const resetPasswordHandler = async (
   });
 };
 
+const setAuthCookies = (
+  res: Response,
+  accessToken: string,
+  refreshToken: string
+): void => {
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 15 * 60 * 1000, // 15 minutes
+    path: '/',
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: '/auth/refresh-token',
+  });
+};
+
+const verifyEmail = async (token: string): Promise<void> => {
+  // Hash the incoming token so you can compare with what is stored in the database
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  // Find the user with a matching emailVerificationToken that hasn't expired
+  const user = await prisma.user.findFirst({
+    where: {
+      emailVerificationToken: hashedToken,
+      emailVerificationExpires: { gt: new Date() },
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid or expired verification token'
+    );
+  }
+
+  // Update the user record to mark email as verified and clear the verification token
+  await prisma.user.update({
+    where: { userId: user.userId },
+    data: {
+      emailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+    },
+  });
+};
+
+// const verifyEmail = async (token: string): Promise<void> => {
+//   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+//   // Find pending signup record by token and ensure it's not expired
+//   const pending = await prisma.pendingSignup.findFirst({
+//     where: {
+//       emailVerificationToken: hashedToken,
+//       emailVerificationExpires: { gt: new Date() },
+//     },
+//   });
+
+//   if (!pending) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid or expired token');
+//   }
+
+//   // Depending on the role, create the permanent records
+//   if (pending.role === 'DEVELOPER') {
+//     // Extract profileData for developer
+//     const { developer } = pending.profileData as any;
+//     // Create Developer record
+//     const newDeveloper = await prisma.developer.create({
+//       data: {
+//         developerId: developer.developerId, // or generate new if necessary
+//         firstName: developer.firstName,
+//         lastName: developer.lastName,
+//         middleName: developer.middleName,
+//         contact: developer.contact,
+//         profileImage: developer.profileImage,
+//       },
+//     });
+
+//     // Create User record linking to the Developer
+//     await prisma.user.create({
+//       data: {
+//         userId: newDeveloper.developerId,
+//         username: pending.username,
+//         email: pending.email,
+//         role: pending.role,
+//         password: pending.password,
+//         developerId: newDeveloper.developerId,
+//         emailVerified: true,
+//       },
+//     });
+//   }
+//   // Handle other roles similarly (MANAGER, ADMIN, SUPER_ADMIN)
+
+//   // Delete the pending record
+//   await prisma.pendingSignup.delete({
+//     where: { id: pending.id },
+//   });
+// };
+
+// const verifyEmail = async (token: string): Promise<void> => {
+//   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+//   // Find user with a matching token that hasn't expired
+//   const user = await prisma.user.findFirst({
+//     where: {
+//       emailVerificationToken: hashedToken,
+//       emailVerificationExpires: { gt: new Date() },
+//     },
+//   });
+
+//   if (!user) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid or expired token');
+//   }
+
+//   // Mark the email as verified and clear the token
+//   await prisma.user.update({
+//     where: { userId: user.userId },
+//     data: {
+//       emailVerified: true,
+//       emailVerificationToken: null,
+//       emailVerificationExpires: null,
+//     },
+//   });
+// };
+
+const sendVerificationEmail = async (
+  email: string,
+  token: string
+): Promise<void> => {
+  const verificationUrl = `${config.frontend_url}/verify-email?token=${token}`;
+  await EmailHelper.sendEmail({
+    email,
+    subject: 'Verify your email',
+    html: `
+      <p>Please verify your email by clicking the link below:</p>
+      <p><a href="${verificationUrl}">Verify Email</a></p>
+      <p>This link will expire in 24 hours.</p>
+    `,
+  });
+};
+
+const getCurrentUser = async (userId: string): Promise<Partial<User>> => {
+  const user = await prisma.user.findUnique({
+    where: { userId },
+    select: {
+      userId: true,
+      username: true,
+      email: true,
+      role: true,
+      emailVerified: true,
+      developerId: true,
+      managerId: true,
+      adminId: true,
+      superAdminId: true,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  return user;
+};
+
+const changePasswordHandler = async (
+  user: JwtPayload | null,
+  payload: IChangePassword
+): Promise<void> => {
+  const { oldPassword, newPassword } = payload;
+
+  const existingUser = await isUserExist(user?.userId);
+  if (!existingUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
+  }
+
+  const isOldPasswordValid = await isPasswordMatch(
+    oldPassword,
+    existingUser.password!
+  );
+  if (!isOldPasswordValid) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect');
+  }
+
+  const isNewPasswordSame = await isPasswordMatch(
+    newPassword,
+    existingUser.password!
+  );
+  if (isNewPasswordSame) {
+    throw new ApiError(
+      httpStatus.CONFLICT,
+      'New password cannot be the same as the old password'
+    );
+  }
+
+  // Hash the new password and update the user record
+  const hashedNewPassword = await hashPassword(newPassword);
+  await prisma.user.update({
+    where: { userId: user?.userId },
+    data: {
+      password: hashedNewPassword,
+      needsPasswordChange: false,
+      passwordChangedAt: new Date(),
+    },
+  });
+};
+
 const logoutHandler = async (res: Response): Promise<void> => {
   // Clear auth cookies
   res.cookie('accessToken', 'none', {
@@ -336,11 +444,12 @@ const logoutHandler = async (res: Response): Promise<void> => {
 export const AuthServices = {
   loginUserHandler,
   refreshTokenHandler,
+  forgotPasswordHandler,
+  resetPasswordHandler,
   setAuthCookies,
+  verifyEmail,
   sendVerificationEmail,
   getCurrentUser,
   changePasswordHandler,
-  forgotPasswordHandler,
-  resetPasswordHandler,
   logoutHandler,
 };

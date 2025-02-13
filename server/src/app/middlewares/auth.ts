@@ -9,34 +9,28 @@ export const auth =
   (...requiredRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // get authorization token
-      const authHeader = req.headers.authorization;
-      console.log('auth header', authHeader);
-      if (!authHeader?.startsWith('Bearer ')) {
+      let token;
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer ')
+      ) {
+        token = req.headers.authorization.split(' ')[1];
+      } else if (req.cookies && req.cookies.accessToken) {
+        token = req.cookies.accessToken;
+      }
+
+      console.log('first token', token);
+      if (!token) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
       }
 
-      const token = authHeader.split(' ')[1];
-      console.log('token ', token);
-      let verifiedUser = null;
-      try {
-        verifiedUser = jwtHelpers.verifyToken(
-          token,
-          config.jwt.secret as Secret
-        );
-      } catch (error) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid or expired token');
-      }
-
+      const verifiedUser = jwtHelpers.verifyToken(
+        token,
+        config.jwt.secret as Secret
+      );
       console.log('verified user', verifiedUser);
+      // Check required roles...
       req.user = verifiedUser;
-
-      console.log('requested verified user', req.user);
-      console.log('required roles', requiredRoles);
-      if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-        throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden access');
-      }
-
       next();
     } catch (error) {
       next(error);

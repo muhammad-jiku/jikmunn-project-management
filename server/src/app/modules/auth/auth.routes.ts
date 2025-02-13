@@ -10,65 +10,77 @@ import { AuthControllers } from './auth.controllers';
 import { AuthValidations } from './auth.validations';
 
 const router = express.Router();
-router.post(
-  '/login',
-  validateRequest(AuthValidations.loginUserHandler),
-  loginLimiter,
-  AuthControllers.loginUserHandler
-);
+router
+  .route('/login')
+  .post(
+    validateRequest(AuthValidations.loginUserHandler),
+    loginLimiter,
+    AuthControllers.loginUserHandler
+  );
 
-router.post(
-  '/refresh-token',
-  validateRequest(AuthValidations.refreshTokenHandler),
-  AuthControllers.refreshTokenHandler
-);
+router
+  .route('/refresh-token')
+  .post(
+    validateRequest(AuthValidations.refreshTokenHandler),
+    AuthControllers.refreshTokenHandler
+  );
 
-router.post(
-  '/forgot-password',
-  validateRequest(AuthValidations.forgotPasswordHandler),
-  passwordResetLimiter,
-  AuthControllers.forgotPasswordHandler
-);
+router
+  .route('/forgot-password')
+  .post(
+    validateRequest(AuthValidations.forgotPasswordHandler),
+    passwordResetLimiter,
+    AuthControllers.forgotPasswordHandler
+  );
 
-router.post(
-  '/reset-password',
-  validateRequest(AuthValidations.resetPasswordHandler),
-  AuthControllers.resetPasswordHandler
+router
+  .route('/reset-password')
+  .post(
+    validateRequest(AuthValidations.resetPasswordHandler),
+    AuthControllers.resetPasswordHandler
+  );
+
+router.route('/verify-email').post(
+  // Optionally, you could add validation middleware here if needed
+  AuthControllers.verifyEmailHandler
 );
 
 // Protected routes
-router.get(
-  '/me',
-  auth(
-    USER_ROLES.SUPER_ADMIN,
-    USER_ROLES.ADMIN,
-    USER_ROLES.MANAGER,
-    USER_ROLES.DEVELOPER
-  ),
-  AuthControllers.getCurrentUserHandler
-);
+router
+  .route('/me')
+  .get(
+    auth(
+      USER_ROLES.SUPER_ADMIN,
+      USER_ROLES.ADMIN,
+      USER_ROLES.MANAGER,
+      USER_ROLES.DEVELOPER
+    ),
+    AuthControllers.getCurrentUserHandler
+  );
 
-router.post(
-  '/change-password',
-  auth(
-    USER_ROLES.SUPER_ADMIN,
-    USER_ROLES.ADMIN,
-    USER_ROLES.MANAGER,
-    USER_ROLES.DEVELOPER
-  ),
-  validateRequest(AuthValidations.changePasswordHandler),
-  AuthControllers.changePasswordHandler
-);
+router
+  .route('/change-password')
+  .post(
+    auth(
+      USER_ROLES.SUPER_ADMIN,
+      USER_ROLES.ADMIN,
+      USER_ROLES.MANAGER,
+      USER_ROLES.DEVELOPER
+    ),
+    validateRequest(AuthValidations.changePasswordHandler),
+    AuthControllers.changePasswordHandler
+  );
 
-router.post(
-  '/logout',
-  auth(
-    USER_ROLES.SUPER_ADMIN,
-    USER_ROLES.ADMIN,
-    USER_ROLES.MANAGER,
-    USER_ROLES.DEVELOPER
-  ),
-  AuthControllers.logoutHandler
-);
+router
+  .route('/logout')
+  .post(
+    auth(
+      USER_ROLES.SUPER_ADMIN,
+      USER_ROLES.ADMIN,
+      USER_ROLES.MANAGER,
+      USER_ROLES.DEVELOPER
+    ),
+    AuthControllers.logoutHandler
+  );
 
 export const AuthRoutes = router;

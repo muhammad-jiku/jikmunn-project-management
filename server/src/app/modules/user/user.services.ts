@@ -127,6 +127,83 @@ const insertDeveloperIntoDB = async (
   }
 };
 
+const insertDeveloperIntoPending = async (
+  developerData: Developer,
+  userData: User,
+  res: Response
+): Promise<AuthResponse> => {
+  // Use a default password if not provided
+  if (!userData.password) {
+    userData.password = config.default.developer_pass as string;
+  }
+  // Hash the password before storing
+  userData.password = await hashPassword(userData.password);
+  userData.role = UserRole.DEVELOPER;
+
+  try {
+    // Generate email verification token
+    const { verificationToken, hashedToken } = createEmailVerificationToken();
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    // Generate a unique developer ID and assign it
+    const developerId = await generateDeveloperId();
+    developerData.developerId = developerId;
+
+    // Upload profile image to Cloudinary
+    const myCloud = await cloudinary.v2.uploader.upload(
+      developerData?.profileImage! as string,
+      {
+        folder: 'jikmunn-project-management/avatars',
+        width: 150,
+        crop: 'scale',
+      }
+    );
+
+    // Prepare role-specific data (as JSON)
+    const profileData = {
+      developer: {
+        developerId,
+        firstName: developerData.firstName,
+        lastName: developerData.lastName,
+        middleName: developerData.middleName,
+        contact: developerData.contact,
+        profileImage: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
+      },
+    };
+
+    // Store pending signup data
+    await prisma.pendingSignup.create({
+      data: {
+        username: userData.username,
+        email: userData.email,
+        role: userData.role,
+        password: userData.password,
+        profileData,
+        emailVerificationToken: hashedToken,
+        emailVerificationExpires: verificationExpires,
+      },
+    });
+
+    // Send verification email
+    await AuthServices.sendVerificationEmail(userData.email, verificationToken);
+
+    return {
+      accessToken: '', // Tokens are not issued until verification
+      refreshToken: '',
+      needsEmailVerification: true,
+    };
+  } catch (error) {
+    console.error('Error during pending signup:', error);
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to process pending signup'
+    );
+  }
+};
+
 // Manager creation
 const insertManagerIntoDB = async (
   managerData: Manager,
@@ -440,6 +517,7 @@ const insertSuperAdminIntoDB = async (
 };
 
 export const UserServices = {
+  // insertDeveloperIntoDB: insertDeveloperIntoPending,
   insertDeveloperIntoDB,
   insertManagerIntoDB,
   insertAdminIntoDB,
