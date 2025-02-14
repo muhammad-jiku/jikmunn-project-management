@@ -1,13 +1,13 @@
 import { logoutUser, setIsDarkMode, setIsSidebarCollapsed } from '@/state';
 import { useLogoutMutation } from '@/state/api';
-import { RootState, useAppDispatch, useAppSelector } from '@/store';
+import { persistor, RootState, useAppDispatch, useAppSelector } from '@/store';
 import { Menu, Moon, Search, Settings, Sun, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-  const dispatch = useAppDispatch();
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
     (state: RootState) => state.global.isSidebarCollapsed
   );
@@ -22,14 +22,16 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     try {
-      // Call the logout mutation
+      // Call backend logout to clear cookies
       await logout().unwrap();
-      // Dispatch logout action to clear user state
+      // Clear Redux state
       dispatch(logoutUser());
-      // Redirect to login page (or home, as desired)
+      // Purge persisted data from storage
+      await persistor.purge();
+      // Navigate to sign in page (or any appropriate route)
       router.push('/sign-in');
     } catch (error) {
-      console.error('Error signing out: ', error);
+      console.error('Error signing out:', error);
     }
   };
 

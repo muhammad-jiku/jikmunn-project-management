@@ -21,6 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Eye, EyeClosed } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
@@ -43,10 +44,12 @@ const Confirmation: React.FC = () => {
     useState<boolean>(false);
   const [signupError, setSignupError] = useState<string | null>(null);
   // Mutation hooks for signup
-  const [signupDeveloper] = useSignupDeveloperMutation();
-  const [signupManager] = useSignupManagerMutation();
-  const [signupAdmin] = useSignupAdminMutation();
-  const [signupSuperAdmin] = useSignupSuperAdminMutation();
+  const [signupDeveloper, { error: developerError }] =
+    useSignupDeveloperMutation();
+  const [signupManager, { error: managerError }] = useSignupManagerMutation();
+  const [signupAdmin, { error: adminError }] = useSignupAdminMutation();
+  const [signupSuperAdmin, { error: superAdminError }] =
+    useSignupSuperAdminMutation();
 
   // Compute the role-specific personal info.
   const personalInfo =
@@ -494,6 +497,30 @@ const Confirmation: React.FC = () => {
               </Typography>
             )}
 
+            {developerError && (
+              <Typography variant='body2' color='error' sx={{ mt: 2 }}>
+                {(developerError as any).data?.message || ''}
+              </Typography>
+            )}
+
+            {managerError && (
+              <Typography variant='body2' color='error' sx={{ mt: 2 }}>
+                {(managerError as any).data?.message || ''}
+              </Typography>
+            )}
+
+            {adminError && (
+              <Typography variant='body2' color='error' sx={{ mt: 2 }}>
+                {(adminError as any).data?.message || ''}
+              </Typography>
+            )}
+
+            {superAdminError && (
+              <Typography variant='body2' color='error' sx={{ mt: 2 }}>
+                {(superAdminError as any).data?.message || ''}
+              </Typography>
+            )}
+
             {/* If email verification is pending, show a message and a button */}
             {isVerificationPending ? (
               <Box sx={{ mt: 3 }}>
@@ -516,6 +543,14 @@ const Confirmation: React.FC = () => {
             )}
           </Box>
         </form>
+        <Box sx={{ mt: 2, textAlign: 'center' }}>
+          <Typography variant='body2' color='text.secondary'>
+            Already have an account?{' '}
+            <Link href='/sign-in' color='text.primary'>
+              Sign In
+            </Link>
+          </Typography>
+        </Box>
       </Box>
     </ThemeProvider>
   );

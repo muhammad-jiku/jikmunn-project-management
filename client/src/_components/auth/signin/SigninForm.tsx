@@ -17,6 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Eye, EyeClosed } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -254,9 +255,9 @@ const SignInForm: React.FC = () => {
           <Box sx={{ mt: 2, textAlign: 'center' }}>
             <Typography variant='body2' color='text.secondary'>
               Don't have an account?{' '}
-              <a href='/sign-up' color='text.primary'>
+              <Link href='/sign-up' color='text.primary'>
                 Sign Up
-              </a>
+              </Link>
             </Typography>
           </Box>
         </Box>

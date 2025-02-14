@@ -17,6 +17,7 @@ import {
   IResetPasswordPayload,
 } from './auth.interfaces';
 import {
+  createEmailVerificationToken,
   createPasswordResetToken,
   hashPassword,
   isPasswordMatch,
@@ -24,7 +25,8 @@ import {
 } from './auth.utils';
 
 const loginUserHandler = async (
-  payload: ILoginUser
+  payload: ILoginUser,
+  res: Response
 ): Promise<ILoginUserResponse> => {
   const { email, password } = payload;
 
@@ -60,6 +62,25 @@ const loginUserHandler = async (
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string
   );
+
+  // Set cookies for tokens
+  setAuthCookies(res, accessToken, refreshToken);
+
+  // If the user is unverified, generate a new verification token and send email.
+  if (!user.emailVerified) {
+    const { verificationToken, hashedToken } = createEmailVerificationToken();
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await prisma.user.update({
+      where: { userId: user.userId },
+      data: {
+        emailVerificationToken: hashedToken,
+        emailVerificationExpires: verificationExpires,
+      },
+    });
+    console.log('Sending verification email to:', userEmail);
+    console.log('Plain verification token:', verificationToken);
+    await sendVerificationEmail(userEmail, verificationToken);
+  }
 
   return {
     accessToken,
@@ -217,9 +238,12 @@ const setAuthCookies = (
   accessToken: string,
   refreshToken: string
 ): void => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  console.log('is production', isProduction);
+
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction, // secure only in production (HTTPS)
     sameSite: 'lax',
     maxAge: 15 * 60 * 1000, // 15 minutes
     path: '/',
@@ -227,7 +251,7 @@ const setAuthCookies = (
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     sameSite: 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/auth/refresh-token',
@@ -265,84 +289,6 @@ const verifyEmail = async (token: string): Promise<void> => {
     },
   });
 };
-
-// const verifyEmail = async (token: string): Promise<void> => {
-//   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
-//   // Find pending signup record by token and ensure it's not expired
-//   const pending = await prisma.pendingSignup.findFirst({
-//     where: {
-//       emailVerificationToken: hashedToken,
-//       emailVerificationExpires: { gt: new Date() },
-//     },
-//   });
-
-//   if (!pending) {
-//     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid or expired token');
-//   }
-
-//   // Depending on the role, create the permanent records
-//   if (pending.role === 'DEVELOPER') {
-//     // Extract profileData for developer
-//     const { developer } = pending.profileData as any;
-//     // Create Developer record
-//     const newDeveloper = await prisma.developer.create({
-//       data: {
-//         developerId: developer.developerId, // or generate new if necessary
-//         firstName: developer.firstName,
-//         lastName: developer.lastName,
-//         middleName: developer.middleName,
-//         contact: developer.contact,
-//         profileImage: developer.profileImage,
-//       },
-//     });
-
-//     // Create User record linking to the Developer
-//     await prisma.user.create({
-//       data: {
-//         userId: newDeveloper.developerId,
-//         username: pending.username,
-//         email: pending.email,
-//         role: pending.role,
-//         password: pending.password,
-//         developerId: newDeveloper.developerId,
-//         emailVerified: true,
-//       },
-//     });
-//   }
-//   // Handle other roles similarly (MANAGER, ADMIN, SUPER_ADMIN)
-
-//   // Delete the pending record
-//   await prisma.pendingSignup.delete({
-//     where: { id: pending.id },
-//   });
-// };
-
-// const verifyEmail = async (token: string): Promise<void> => {
-//   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
-//   // Find user with a matching token that hasn't expired
-//   const user = await prisma.user.findFirst({
-//     where: {
-//       emailVerificationToken: hashedToken,
-//       emailVerificationExpires: { gt: new Date() },
-//     },
-//   });
-
-//   if (!user) {
-//     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid or expired token');
-//   }
-
-//   // Mark the email as verified and clear the token
-//   await prisma.user.update({
-//     where: { userId: user.userId },
-//     data: {
-//       emailVerified: true,
-//       emailVerificationToken: null,
-//       emailVerificationExpires: null,
-//     },
-//   });
-// };
 
 const sendVerificationEmail = async (
   email: string,
@@ -429,22 +375,24 @@ const changePasswordHandler = async (
 };
 
 const logoutHandler = async (res: Response): Promise<void> => {
-  // Clear auth cookies
-  res.cookie('accessToken', 'none', {
-    expires: new Date(Date.now() + 1000),
+  // Clear cookies using res.clearCookie for convenience
+  res.clearCookie('accessToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
+    expires: new Date(0), // Force expiration
   });
 
-  res.cookie('refreshToken', 'none', {
-    expires: new Date(Date.now() + 1000),
+  res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/auth/refresh-token',
+    expires: new Date(0), // Force expiration
   });
+
+  res.status(200).json({ message: 'Signed out successfully!' });
 };
 
 export const AuthServices = {

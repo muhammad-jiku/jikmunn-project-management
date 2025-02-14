@@ -11,7 +11,7 @@ const loginUserHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const logInData = req.body;
-      const result = await AuthServices.loginUserHandler(logInData);
+      const result = await AuthServices.loginUserHandler(logInData, res);
       const { refreshToken, ...othersData } = result;
 
       // Set refresh token into cookie
