@@ -111,15 +111,23 @@ export const api = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // Get user data after successful login
+          // If the response indicates that email verification is needed, skip fetching /auth/me.
+          if (data.needsEmailVerification) {
+            dispatch(
+              setAuthCredentials({
+                user: null, // No fully authenticated user yet
+                needsEmailVerification: true,
+                needsPasswordChange: data.needsPasswordChange,
+              })
+            );
+            return;
+          }
+          // Otherwise, fetch the current user
           const userResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
-            {
-              credentials: 'include',
-            }
+            { credentials: 'include' }
           );
           const userData = await userResponse.json();
-
           dispatch(
             setAuthCredentials({
               user: userData,
@@ -127,7 +135,7 @@ export const api = createApi({
             })
           );
         } catch {
-          // Error handling if needed
+          // Handle errors if needed.
         }
       },
       invalidatesTags: ['Auth', 'User'],
@@ -141,24 +149,32 @@ export const api = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // Get user data after successful signup
+          // If the response indicates that email verification is needed, skip fetching /auth/me.
+          if (data.needsEmailVerification) {
+            dispatch(
+              setAuthCredentials({
+                user: null, // No fully authenticated user yet
+                needsEmailVerification: true,
+                needsPasswordChange: data.needsPasswordChange,
+              })
+            );
+            return;
+          }
+          // Otherwise, fetch the current user
           const userResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
-            {
-              credentials: 'include',
-            }
+            { credentials: 'include' }
           );
           const userData = await userResponse.json();
 
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsEmailVerification: data.needsEmailVerification,
               needsPasswordChange: data.needsPasswordChange,
             })
           );
         } catch {
-          // Error handling if needed
+          // Handle errors if needed.
         }
       },
       invalidatesTags: ['Auth', 'User'],
@@ -172,24 +188,32 @@ export const api = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // Get user data after successful signup
+          // If the response indicates that email verification is needed, skip fetching /auth/me.
+          if (data.needsEmailVerification) {
+            dispatch(
+              setAuthCredentials({
+                user: null, // No fully authenticated user yet
+                needsEmailVerification: true,
+                needsPasswordChange: data.needsPasswordChange,
+              })
+            );
+            return;
+          }
+          // Otherwise, fetch the current user
           const userResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
-            {
-              credentials: 'include',
-            }
+            { credentials: 'include' }
           );
           const userData = await userResponse.json();
 
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsEmailVerification: data.needsEmailVerification,
               needsPasswordChange: data.needsPasswordChange,
             })
           );
         } catch {
-          // Error handling if needed
+          // Handle errors if needed.
         }
       },
       invalidatesTags: ['Auth', 'User'],
@@ -203,24 +227,32 @@ export const api = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // Get user data after successful signup
+          // If the response indicates that email verification is needed, skip fetching /auth/me.
+          if (data.needsEmailVerification) {
+            dispatch(
+              setAuthCredentials({
+                user: null, // No fully authenticated user yet
+                needsEmailVerification: true,
+                needsPasswordChange: data.needsPasswordChange,
+              })
+            );
+            return;
+          }
+          // Otherwise, fetch the current user
           const userResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
-            {
-              credentials: 'include',
-            }
+            { credentials: 'include' }
           );
           const userData = await userResponse.json();
 
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsEmailVerification: data.needsEmailVerification,
               needsPasswordChange: data.needsPasswordChange,
             })
           );
         } catch {
-          // Error handling if needed
+          // Handle errors if needed.
         }
       },
       invalidatesTags: ['Auth', 'User'],
@@ -238,24 +270,32 @@ export const api = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // Get user data after successful signup
+          // If the response indicates that email verification is needed, skip fetching /auth/me.
+          if (data.needsEmailVerification) {
+            dispatch(
+              setAuthCredentials({
+                user: null, // No fully authenticated user yet
+                needsEmailVerification: true,
+                needsPasswordChange: data.needsPasswordChange,
+              })
+            );
+            return;
+          }
+          // Otherwise, fetch the current user
           const userResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
-            {
-              credentials: 'include',
-            }
+            { credentials: 'include' }
           );
           const userData = await userResponse.json();
 
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsEmailVerification: data.needsEmailVerification,
               needsPasswordChange: data.needsPasswordChange,
             })
           );
         } catch {
-          // Error handling if needed
+          // Handle errors if needed.
         }
       },
       invalidatesTags: ['Auth', 'User'],

@@ -27,7 +27,7 @@ const Navbar = () => {
       // Dispatch logout action to clear user state
       dispatch(logoutUser());
       // Redirect to login page (or home, as desired)
-      router.push('/login');
+      router.push('/sign-in');
     } catch (error) {
       console.error('Error signing out: ', error);
     }
@@ -98,9 +98,9 @@ const Navbar = () => {
               </button>
             </>
           ) : (
-            <Link href='/login'>
+            <Link href='/sign-in'>
               <button className='rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
-                Login
+                Sign in
               </button>
             </Link>
           )}

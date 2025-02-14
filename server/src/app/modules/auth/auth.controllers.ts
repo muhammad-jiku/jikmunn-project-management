@@ -97,6 +97,8 @@ const resetPasswordHandler = catchAsync(
 const verifyEmailHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.body;
+    console.log('(4) verified email handler', token);
+
     if (!token) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,

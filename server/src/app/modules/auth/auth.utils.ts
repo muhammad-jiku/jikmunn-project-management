@@ -18,9 +18,11 @@ export async function isUserExist(email: string) {
       role: true,
       password: true,
       needsPasswordChange: true,
+      emailVerified: true,
+      emailVerificationToken: true, // NEW
+      emailVerificationExpires: true, // NEW
     },
   });
-
   return user;
 }
 
@@ -41,6 +43,9 @@ export const createEmailVerificationToken = (): {
     .createHash('sha256')
     .update(verificationToken)
     .digest('hex');
+
+  console.log('(1) created email verification token', verificationToken);
+  console.log('(1.1) created email verification hashed token', hashedToken);
 
   return {
     verificationToken,

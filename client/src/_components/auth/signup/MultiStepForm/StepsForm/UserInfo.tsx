@@ -32,9 +32,10 @@ const UserInfo: React.FC = () => {
   );
   const formData = useSelector((state: RootState) => state.signup.formData);
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   const theme = createTheme({
     palette: {

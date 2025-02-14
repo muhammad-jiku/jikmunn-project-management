@@ -107,7 +107,7 @@ const insertDeveloperIntoDB = async (
     );
 
     // Set cookies
-    AuthServices.setAuthCookies(res, accessToken, refreshToken);
+    await AuthServices.setAuthCookies(res, accessToken, refreshToken);
 
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
@@ -210,9 +210,6 @@ const insertManagerIntoDB = async (
   userData: User,
   res: Response
 ): Promise<AuthResponse> => {
-  const { verificationToken, hashedToken } = createEmailVerificationToken();
-  const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
   if (!userData.password) {
     userData.password = config.default.manager_pass as string;
   }
@@ -257,13 +254,13 @@ const insertManagerIntoDB = async (
       data: {
         ...userData,
         userId: newManager.managerId, // Set userId to match managerId
-        managerId: newManager.managerId, // Link to the newly created manager
+        managerId: newManager.managerId, // Link to the newly created Manager
         emailVerificationToken: hashedToken,
         emailVerificationExpires: verificationExpires,
       },
     });
 
-    console.log('manager created', newManager);
+    console.log('Manager created', newManager);
     console.log('User created:', newUser);
 
     // Generate tokens using jwt helpers
@@ -360,13 +357,13 @@ const insertAdminIntoDB = async (
       data: {
         ...userData,
         userId: newAdmin.adminId, // Set userId to match adminId
-        adminId: newAdmin.adminId, // Link to the newly created admin
+        adminId: newAdmin.adminId, // Link to the newly created Admin
         emailVerificationToken: hashedToken,
         emailVerificationExpires: verificationExpires,
       },
     });
 
-    console.log('admin created', newAdmin);
+    console.log('Admin created', newAdmin);
     console.log('User created:', newUser);
 
     // Generate tokens using jwt helpers
@@ -393,12 +390,12 @@ const insertAdminIntoDB = async (
     );
 
     // Set cookies
-    AuthServices.setAuthCookies(res, accessToken, refreshToken);
+    await AuthServices.setAuthCookies(res, accessToken, refreshToken);
 
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
 
-    console.log('admins tokens...', { accessToken, refreshToken });
+    console.log('admin tokens...', { accessToken, refreshToken });
     return {
       accessToken,
       refreshToken,
@@ -434,7 +431,10 @@ const insertSuperAdminIntoDB = async (
     const { verificationToken, hashedToken } = createEmailVerificationToken();
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    // Step 1: Generate a unique superAdmin ID
+    console.log('(2) verification token', verificationToken);
+    console.log('(2.1) verification token expires', verificationExpires);
+
+    // Step 1: Generate a unique super admin ID
     const superAdminId = await generateSuperAdminId();
     superAdminData.superAdminId = superAdminId;
     console.log('superAdminId: ', superAdminId);
@@ -463,13 +463,13 @@ const insertSuperAdminIntoDB = async (
       data: {
         ...userData,
         userId: newSuperAdmin.superAdminId, // Set userId to match superAdminId
-        superAdminId: newSuperAdmin.superAdminId, // Link to the newly created super admin
+        superAdminId: newSuperAdmin.superAdminId, // Link to the newly created Super Admin
         emailVerificationToken: hashedToken,
         emailVerificationExpires: verificationExpires,
       },
     });
 
-    console.log('super admin created', newSuperAdmin);
+    console.log('Super Admin created', newSuperAdmin);
     console.log('User created:', newUser);
 
     // Generate tokens using jwt helpers
@@ -496,7 +496,7 @@ const insertSuperAdminIntoDB = async (
     );
 
     // Set cookies
-    AuthServices.setAuthCookies(res, accessToken, refreshToken);
+    await AuthServices.setAuthCookies(res, accessToken, refreshToken);
 
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);

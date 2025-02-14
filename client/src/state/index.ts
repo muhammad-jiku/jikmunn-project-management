@@ -36,7 +36,7 @@ export const globalSlice = createSlice({
     setAuthCredentials: (
       state,
       action: PayloadAction<{
-        user: User;
+        user: User | null;
         needsEmailVerification?: boolean;
         needsPasswordChange?: boolean;
       }>
@@ -44,7 +44,7 @@ export const globalSlice = createSlice({
       const { user, needsEmailVerification, needsPasswordChange } =
         action.payload;
       state.user = user;
-      state.isAuthenticated = true;
+      state.isAuthenticated = !!user;
       state.needsEmailVerification = needsEmailVerification || false;
       state.needsPasswordChange = needsPasswordChange || false;
       state.error = null;

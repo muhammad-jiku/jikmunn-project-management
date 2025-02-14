@@ -64,6 +64,7 @@ const loginUserHandler = async (
   return {
     accessToken,
     refreshToken,
+    needsEmailVerification: !user.emailVerified,
     needsPasswordChange,
   };
 };
@@ -235,7 +236,9 @@ const setAuthCookies = (
 
 const verifyEmail = async (token: string): Promise<void> => {
   // Hash the incoming token so you can compare with what is stored in the database
+  console.log('(5) token received', token);
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  console.log('(5.1) verified hash token', hashedToken);
 
   // Find the user with a matching emailVerificationToken that hasn't expired
   const user = await prisma.user.findFirst({
@@ -345,6 +348,9 @@ const sendVerificationEmail = async (
   email: string,
   token: string
 ): Promise<void> => {
+  console.log('(3) send verification email', email);
+  console.log('(3.1) send verification token', token);
+
   const verificationUrl = `${config.frontend_url}/verify-email?token=${token}`;
   await EmailHelper.sendEmail({
     email,
