@@ -1,12 +1,12 @@
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useLoginMutation } from '@/state/api';
+import { useResetPasswordMutation } from '@/state/api';
 import { useAppSelector } from '@/store';
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   createTheme,
   CssBaseline,
@@ -17,32 +17,28 @@ import {
   Typography,
 } from '@mui/material';
 import { Eye, EyeClosed } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import TextInput from '../FormInputs/TextInput';
+import CountdownTimer from './CountdownTimer';
 
-interface SignInFormInputs {
-  email: string;
-  password: string;
+interface ResetPasswordFormInputs {
+  newPassword: string;
   confirmPassword: string;
 }
 
-const SignInForm: React.FC = () => {
+const ResetPassword: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  const [login, { isLoading, error }] = useLoginMutation();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<SignInFormInputs>();
+  const [message, setMessage] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
+  // Replace with your selector if you have dark mode state
   const theme = React.useMemo(
     () =>
       createTheme({
@@ -79,30 +75,40 @@ const SignInForm: React.FC = () => {
     [isDarkMode]
   );
 
-  const password = watch('password');
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<ResetPasswordFormInputs>();
 
-  const onSubmit: SubmitHandler<SignInFormInputs> = async (data) => {
+  const [resetPassword, { isLoading, error }] = useResetPasswordMutation();
+
+  const newPassword = watch('newPassword');
+
+  // When time expires, show message and redirect
+  const handleExpire = () => {
+    setMessage('Time expired. Redirecting...');
+    setTimeout(() => {
+      router.push('/sign-in');
+    }, 1000);
+  };
+
+  const onSubmit: SubmitHandler<ResetPasswordFormInputs> = async (data) => {
+    if (data.newPassword !== data.confirmPassword) {
+      setMessage('Passwords do not match');
+      return;
+    }
+    if (!token) {
+      setMessage('Token is missing');
+      return;
+    }
     try {
-      if (data.password !== data.confirmPassword) {
-        alert('Passwords do not match');
-        return;
-      }
-      const result = await login({
-        email: data.email,
-        password: data.password,
-      }).unwrap();
-      console.log('Login result:', result);
-      // If email is not verified, inform the user and do not navigate.
-      if (result.needsEmailVerification) {
-        alert(
-          'Your email is not verified. A verification email has been sent. Please check your inbox (and spam folder) and verify your email before signing in.'
-        );
-        // Optionally, you could disable further navigation or provide a button for manual verification check.
-        return;
-      }
-      router.push('/');
+      await resetPassword({ token, newPassword: data.newPassword }).unwrap();
+      setMessage('Password has been reset successfully');
+      setTimeout(() => router.push('/sign-in'), 3000);
     } catch (err: any) {
-      console.error('Login error:', err);
+      setMessage(err.data?.message || 'Failed to reset password');
     }
   };
 
@@ -125,6 +131,8 @@ const SignInForm: React.FC = () => {
             backgroundColor: theme.palette.background.paper,
           }}
         >
+          <CountdownTimer initialSeconds={30} onExpire={handleExpire} />
+
           <form onSubmit={handleSubmit(onSubmit)}>
             <Box
               sx={{
@@ -139,27 +147,18 @@ const SignInForm: React.FC = () => {
                   color='text.primary'
                   sx={{ fontWeight: 700, mb: 1 }}
                 >
-                  Sign In
+                  Reset Password
                 </Typography>
                 <Typography variant='body1' color='text.secondary'>
-                  Please provide your email and password
+                  Please enter your new password. You have 30 seconds to
+                  complete this form.
                 </Typography>
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextInput
-                    label='Email'
-                    name='email'
-                    type='email'
-                    register={register}
-                    errors={errors}
-                    isRequired
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextInput
-                    label='Password'
-                    name='password'
+                    label='New Password'
+                    name='newPassword'
                     type={showPassword ? 'text' : 'password'}
                     register={register}
                     errors={errors}
@@ -212,7 +211,7 @@ const SignInForm: React.FC = () => {
                     registerOptions={{
                       validate: {
                         match: (value) =>
-                          value === password || 'Passwords do not match',
+                          value === newPassword || 'Passwords do not match',
                         noSpaces: (value) =>
                           !value.includes(' ') ||
                           'Password cannot contain spaces',
@@ -235,10 +234,13 @@ const SignInForm: React.FC = () => {
                   />
                 </Grid>
               </Grid>
-              {error && (
-                <Typography variant='body2' color='error' sx={{ mt: 2 }}>
-                  {(error as any).data?.message ||
-                    'Something went wrong, Please try again!'}
+              {message && (
+                <Typography
+                  variant='body2'
+                  color={error ? 'error' : 'primary'}
+                  sx={{ mt: 2, textAlign: 'center' }}
+                >
+                  {message}
                 </Typography>
               )}
               <Button
@@ -248,43 +250,18 @@ const SignInForm: React.FC = () => {
                 sx={{ mt: 3 }}
                 disabled={isLoading}
               >
-                {isLoading ? 'Signing In...' : 'Sign In'}
+                {isLoading ? (
+                  <CircularProgress size={24} color='inherit' />
+                ) : (
+                  'Reset Password'
+                )}
               </Button>
             </Box>
           </form>
-          <Box
-            sx={{
-              mt: 2,
-              px: 2,
-              display: 'flex',
-              flexDirection: { xs: 'column', lg: 'row' },
-              justifyContent: { xs: 'initial', lg: 'space-between' },
-              alignItems: { xs: 'center', lg: 'space-between' },
-            }}
-          >
-            <Typography variant='body2' color='text.secondary'>
-              Forget password?{' '}
-              <Link
-                href='/forget-password'
-                style={{ color: theme.palette.text.primary }}
-              >
-                Click here
-              </Link>
-            </Typography>
-            <Typography variant='body2' color='text.secondary'>
-              Don't have an account?{' '}
-              <Link
-                href='/sign-up'
-                style={{ color: theme.palette.text.primary }}
-              >
-                Sign Up
-              </Link>
-            </Typography>
-          </Box>
         </Box>
       </Container>
     </ThemeProvider>
   );
 };
 
-export default SignInForm;
+export default ResetPassword;
