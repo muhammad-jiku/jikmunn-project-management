@@ -1,8 +1,9 @@
 'use client';
 
-import { setIsSidebarCollapsed } from '@/state';
+import { logoutUser, setIsSidebarCollapsed } from '@/state';
 // import { useGetProjectsQuery } from '@/state/api';
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useLogoutMutation } from '@/state/api';
+import { persistor, RootState, useAppDispatch, useAppSelector } from '@/store';
 import {
   AlertCircle,
   AlertOctagon,
@@ -23,24 +24,36 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import logo from '../../public/logo.png';
 
 const Sidebar = () => {
-  const [showProjects, setShowProjects] = useState(true);
-  const [showPriority, setShowPriority] = useState(true);
-  // const { data: projects } = useGetProjectsQuery({});
-  // console.log('sidebar projects data', projects);
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed
   );
+  const globalUser = useAppSelector((state: RootState) => state.global.user);
+  const [showProjects, setShowProjects] = useState(true);
+  const [showPriority, setShowPriority] = useState(true);
+
+  const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
+  // const { data: projects } = useGetProjectsQuery({});
+  // console.log('sidebar projects data', projects);
 
   const handleSignOut = async () => {
     try {
+      // Call backend logout to clear cookies
+      await logout().unwrap();
+      // Clear Redux state
+      dispatch(logoutUser());
+      // Purge persisted data from storage
+      await persistor.purge();
+      // Navigate to sign in page (or any appropriate route)
+      router.push('/sign-in');
     } catch (error) {
-      console.error('Error signing out: ', error);
+      console.error('Error signing out:', error);
     }
   };
 
@@ -84,6 +97,7 @@ const Sidebar = () => {
           </div>
         </div>
         {/* NAVBAR LINKS */}
+
         <nav className='z-10 w-full'>
           <SidebarLink icon={Home} label='Home' href='/' />
           <SidebarLink icon={Briefcase} label='Timeline' href='/timeline' />
@@ -154,18 +168,33 @@ const Sidebar = () => {
           </>
         )}
       </div>
+
       <div className='z-10 mt-32 flex w-full flex-col items-center gap-4 bg-white px-8 py-4 dark:bg-black md:hidden'>
         <div className='flex w-full items-center'>
-          <div className='align-center flex h-9 w-9 justify-center'>
+          {/* <div className='align-center flex h-9 w-9 justify-center'>
             <User className='h-6 w-6 cursor-pointer self-center rounded-full dark:text-white' />
-          </div>
+          </div> */}
 
-          <button
-            className='self-start rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:block'
-            onClick={handleSignOut}
-          >
-            Sign out
-          </button>
+          {globalUser ? (
+            <>
+              <div className='flex h-9 w-9 items-center justify-center'>
+                <User className='h-6 w-6 cursor-pointer self-center rounded-full dark:text-white' />
+              </div>
+              <button
+                className='block rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:hidden'
+                onClick={handleSignOut}
+                disabled={logoutLoading}
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link href='/sign-in'>
+              <button className='rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
+                Sign in
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

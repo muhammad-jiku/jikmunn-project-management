@@ -4,6 +4,7 @@ import StoreProvider, { useAppSelector } from '@/store';
 import React, { useEffect } from 'react';
 import Navbar from '../Navbar';
 import Sidebar from '../Sidebar';
+import ProtectedRoute from '../auth/ProtectedRoute';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const isSidebarCollapsed = useAppSelector(
@@ -37,7 +38,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
-      <DashboardLayout>{children}</DashboardLayout>
+      <ProtectedRoute>
+        <DashboardLayout>{children}</DashboardLayout>
+      </ProtectedRoute>
     </StoreProvider>
   );
 };

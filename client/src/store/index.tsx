@@ -52,6 +52,7 @@ export const makeStore = () => {
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
+        // serializableCheck: false, // only on development mode
         serializableCheck: {
           // Ignore redux-persist and RTK Query actions
           ignoredActions: [

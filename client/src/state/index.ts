@@ -13,7 +13,7 @@ export interface GlobalState {
 }
 
 const initialState: GlobalState = {
-  isSidebarCollapsed: false,
+  isSidebarCollapsed: true,
   isDarkMode: false,
   user: null,
   isAuthenticated: false,
