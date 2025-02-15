@@ -1,9 +1,12 @@
 import { logoutUser, setIsDarkMode, setIsSidebarCollapsed } from '@/state';
 import { useLogoutMutation } from '@/state/api';
 import { persistor, RootState, useAppDispatch, useAppSelector } from '@/store';
-import { Menu, Moon, Search, Settings, Sun, User } from 'lucide-react';
+import { Avatar } from '@mui/material';
+import { Menu, Moon, Search, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import profileDefault from '../../public/p7.jpeg';
 
 const Navbar = () => {
   const router = useRouter();
@@ -14,7 +17,32 @@ const Navbar = () => {
   const isDarkMode = useAppSelector(
     (state: RootState) => state.global.isDarkMode
   );
-  const globalUser = useAppSelector((state: RootState) => state.global.user);
+  const globalUser = useAppSelector(
+    (state: RootState) => state.global.user?.data
+  );
+  const [avatar, setAvatar] = useState<string | undefined>('');
+
+  useEffect(() => {
+    let imageUrl;
+
+    if (globalUser) {
+      const profileImages = [
+        globalUser?.developer?.profileImage,
+        globalUser?.manager?.profileImage,
+        globalUser?.admin?.profileImage,
+        globalUser?.superAdmin?.profileImage,
+      ];
+
+      for (const img of profileImages) {
+        if (img && typeof img === 'object' && img.url) {
+          imageUrl = img.url;
+          break;
+        }
+      }
+    }
+
+    setAvatar(imageUrl || profileDefault.src);
+  }, [globalUser]);
 
   const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
 
@@ -74,22 +102,16 @@ const Navbar = () => {
             <Moon className='h-6 w-6 cursor-pointer dark:text-white' />
           )}
         </button>
-        <Link
-          href='/settings'
-          className={
-            isDarkMode
-              ? `h-min w-min rounded p-2 dark:hover:bg-gray-700`
-              : `h-min w-min rounded p-2 hover:bg-gray-100`
-          }
-        >
-          <Settings className='h-6 w-6 cursor-pointer dark:text-white' />
-        </Link>
         <div className='ml-2 mr-5 hidden min-h-[2em] w-[0.1rem] bg-gray-200 md:inline-block'></div>
         <div className='hidden items-center justify-between md:flex'>
           {globalUser ? (
             <>
-              <div className='flex h-9 w-9 items-center justify-center'>
-                <User className='h-6 w-6 cursor-pointer self-center rounded-full dark:text-white' />
+              <div className='flex h-9 items-between jusify-between'>
+                <Avatar
+                  alt={globalUser?.username || `Avatar`}
+                  src={avatar}
+                  className='h-4 w-4 mr-4 cursor-pointer self-center rounded-full'
+                />
               </div>
               <button
                 className='hidden rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:block'

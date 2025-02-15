@@ -4,7 +4,7 @@ import { User } from './api';
 export interface GlobalState {
   isSidebarCollapsed: boolean;
   isDarkMode: boolean;
-  user: User | null;
+  user: { data: User | null } | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -36,7 +36,7 @@ export const globalSlice = createSlice({
     setAuthCredentials: (
       state,
       action: PayloadAction<{
-        user: User | null;
+        user: { data: User | null } | null;
         needsEmailVerification?: boolean;
         needsPasswordChange?: boolean;
       }>
@@ -49,7 +49,7 @@ export const globalSlice = createSlice({
       state.needsPasswordChange = needsPasswordChange || false;
       state.error = null;
     },
-    setUser: (state, action: PayloadAction<User | null>) => {
+    setUser: (state, action: PayloadAction<{ data: User | null } | null>) => {
       state.user = action.payload;
       state.isAuthenticated = !!action.payload;
     },
@@ -76,8 +76,8 @@ export const globalSlice = createSlice({
       }
     },
     setEmailVerified: (state) => {
-      if (state.user) {
-        state.user.emailVerified = true;
+      if (state.user?.data) {
+        state.user.data.emailVerified = true;
       }
       state.needsEmailVerification = false;
     },

@@ -4,6 +4,7 @@ import { logoutUser, setIsSidebarCollapsed } from '@/state';
 // import { useGetProjectsQuery } from '@/state/api';
 import { useLogoutMutation } from '@/state/api';
 import { persistor, RootState, useAppDispatch, useAppSelector } from '@/store';
+import { Avatar } from '@mui/material';
 import {
   AlertCircle,
   AlertOctagon,
@@ -25,8 +26,9 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../../public/logo.png';
+import profileDefault from '../../public/p7.jpeg';
 
 const Sidebar = () => {
   const router = useRouter();
@@ -34,9 +36,35 @@ const Sidebar = () => {
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed
   );
-  const globalUser = useAppSelector((state: RootState) => state.global.user);
+  const globalUser = useAppSelector(
+    (state: RootState) => state.global.user?.data
+  );
+
   const [showProjects, setShowProjects] = useState(true);
   const [showPriority, setShowPriority] = useState(true);
+  const [avatar, setAvatar] = useState<string | undefined>('');
+
+  useEffect(() => {
+    let imageUrl;
+
+    if (globalUser) {
+      const profileImages = [
+        globalUser?.developer?.profileImage,
+        globalUser?.manager?.profileImage,
+        globalUser?.admin?.profileImage,
+        globalUser?.superAdmin?.profileImage,
+      ];
+
+      for (const img of profileImages) {
+        if (img && typeof img === 'object' && img.url) {
+          imageUrl = img.url;
+          break;
+        }
+      }
+    }
+
+    setAvatar(imageUrl || profileDefault.src);
+  }, [globalUser]);
 
   const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
   // const { data: projects } = useGetProjectsQuery({});
@@ -177,8 +205,12 @@ const Sidebar = () => {
 
           {globalUser ? (
             <>
-              <div className='flex h-9 w-9 items-center justify-center'>
-                <User className='h-6 w-6 cursor-pointer self-center rounded-full dark:text-white' />
+              <div className='flex h-9 items-between jusify-between'>
+                <Avatar
+                  alt={globalUser?.username || `Avatar`}
+                  src={avatar}
+                  className='h-4 w-4 mr-4 cursor-pointer self-center rounded-full'
+                />
               </div>
               <button
                 className='block rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:hidden'

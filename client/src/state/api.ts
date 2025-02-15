@@ -12,18 +12,32 @@ export interface SearchFilter {
   [key: string]: any;
 }
 
+export interface Profile {
+  firstName?: string;
+  middleName?: string;
+  lasName?: string;
+  contact?: string;
+  profileImage?: {
+    public_id?: string;
+    url?: string;
+  };
+}
+
 export interface User {
   userId: string;
   username: string;
   email: string;
   role: string;
-  profileImage?: string;
   developerId?: string;
   managerId?: string;
   adminId?: string;
   superAdminId?: string;
   needsPasswordChange?: boolean;
   emailVerified?: boolean;
+  developer?: Profile;
+  manager?: Profile;
+  admin?: Profile;
+  superAdmin?: Profile;
 }
 
 // Add proper auth response type to match backend

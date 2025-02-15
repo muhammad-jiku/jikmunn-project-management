@@ -77,20 +77,6 @@ model SuperAdmin {
   @@map("tblsuperadmin")
 }
 
-model PendingSignup {
-  id                       String   @id @default(uuid())
-  username                 String
-  email                    String   @unique
-  role                     UserRole
-  password                 String
-  profileData              Json // Store role-specific data as JSON
-  emailVerificationToken   String
-  emailVerificationExpires DateTime
-  createdAt                DateTime @default(now())
-
-  @@map("tblpending_signup")
-}
-
 model User {
   id                       String    @id @default(uuid())
   userId                   String    @unique
