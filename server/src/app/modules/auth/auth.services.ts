@@ -309,29 +309,6 @@ const sendVerificationEmail = async (
   });
 };
 
-// const getCurrentUser = async (userId: string): Promise<Partial<User>> => {
-//   const user = await prisma.user.findUnique({
-//     where: { userId },
-//     select: {
-//       userId: true,
-//       username: true,
-//       email: true,
-//       role: true,
-//       emailVerified: true,
-//       developerId: true,
-//       managerId: true,
-//       adminId: true,
-//       superAdminId: true,
-//     },
-//   });
-
-//   if (!user) {
-//     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-//   }
-
-//   return user;
-// };
-
 const getCurrentUser = async (
   userId: string
 ): Promise<Partial<User> | null> => {
@@ -383,50 +360,50 @@ const getCurrentUser = async (
           contact: true,
         },
       },
-      // authoredTasks: {
-      //   select: {
-      //     id: true,
-      //     title: true,
-      //     status: true,
-      //     priority: true,
-      //     dueDate: true,
-      //   },
-      // },
-      // assignedTasks: {
-      //   select: {
-      //     id: true,
-      //     title: true,
-      //     status: true,
-      //     priority: true,
-      //     dueDate: true,
-      //   },
-      // },
-      // ownedTeams: {
-      //   select: {
-      //     id: true,
-      //     name: true,
-      //   },
-      // },
-      // assignedTeams: {
-      //   select: {
-      //     id: true,
-      //     team: {
-      //       select: {
-      //         id: true,
-      //         name: true,
-      //       },
-      //     },
-      //   },
-      // },
-      // Project: {
-      //   select: {
-      //     id: true,
-      //     title: true,
-      //     description: true,
-      //     startDate: true,
-      //     endDate: true,
-      //   },
-      // },
+      authoredTasks: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          priority: true,
+          dueDate: true,
+        },
+      },
+      assignedTasks: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          priority: true,
+          dueDate: true,
+        },
+      },
+      ownedTeams: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      assignedTeams: {
+        select: {
+          id: true,
+          team: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      Project: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          startDate: true,
+          endDate: true,
+        },
+      },
     },
   });
 
@@ -439,7 +416,7 @@ const changePasswordHandler = async (
 ): Promise<void> => {
   const { oldPassword, newPassword } = payload;
 
-  const existingUser = await isUserExist(user?.userId);
+  const existingUser = await isUserExist(user?.email);
   if (!existingUser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
   }

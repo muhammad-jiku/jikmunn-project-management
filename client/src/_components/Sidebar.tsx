@@ -87,14 +87,14 @@ const Sidebar = () => {
 
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl
     transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white
-    ${isSidebarCollapsed ? 'w-0 hidden' : 'w-64'}
+    ${isSidebarCollapsed ? 'w-0 hidden' : 'w-80'}
   `;
 
   return (
     <div className={sidebarClassNames}>
       <div className='flex h-[100%] w-full flex-col justify-start'>
         {/* TOP LOGO */}
-        <div className='z-50 flex min-h-[56px] w-64 items-center justify-between bg-white px-6 pt-3 dark:bg-black'>
+        <div className='z-50 flex min-h-[56px] w-80 items-center justify-between bg-white px-6 pt-3 dark:bg-black'>
           <div className='text-xl font-bold text-gray-800 dark:text-white'>
             EDLIST
           </div>
@@ -198,31 +198,35 @@ const Sidebar = () => {
       </div>
 
       <div className='z-10 mt-32 flex w-full flex-col items-center gap-4 bg-white px-8 py-4 dark:bg-black md:hidden'>
-        <div className='flex w-full items-center'>
-          {/* <div className='align-center flex h-9 w-9 justify-center'>
-            <User className='h-6 w-6 cursor-pointer self-center rounded-full dark:text-white' />
-          </div> */}
-
+        <div className='flex w-full items-start'>
           {globalUser ? (
-            <>
-              <div className='flex h-9 items-between jusify-between'>
+            <div className='flex flex-col items-start p-1'>
+              <div className='flex items-between jusify-between'>
                 <Avatar
                   alt={globalUser?.username || `Avatar`}
                   src={avatar}
-                  className='h-4 w-4 mr-4 cursor-pointer self-center rounded-full'
+                  className='h-7 w-7 mr-1 cursor-pointer rounded-full border-1 border-dark-bg dark:border-white'
                 />
+                <div className='flex flex-col items-start mx-2'>
+                  <h6 className='text-[#1f2937] dark:text-[#f3f4f6]'>
+                    {globalUser?.username}
+                  </h6>
+                  <h6 className='text-[#374151] dark:text-[#6b7280]'>
+                    {globalUser?.email}
+                  </h6>
+                </div>
               </div>
               <button
-                className='block rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:hidden'
+                className='block mt-4 w-full rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:hidden'
                 onClick={handleSignOut}
                 disabled={logoutLoading}
               >
                 Sign out
               </button>
-            </>
+            </div>
           ) : (
             <Link href='/sign-in'>
-              <button className='rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
+              <button className='rounded w-full bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
                 Sign in
               </button>
             </Link>

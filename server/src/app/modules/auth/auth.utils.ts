@@ -19,50 +19,51 @@ export async function isUserExist(email: string) {
       password: true,
       needsPasswordChange: true,
       emailVerified: true,
-      emailVerificationToken: true, // NEW
-      emailVerificationExpires: true, // NEW
+      emailVerificationToken: true,
+      emailVerificationExpires: true,
       developerId: true,
       managerId: true,
       adminId: true,
       superAdminId: true,
-      developer: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
-        },
-      },
-      manager: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
-        },
-      },
-      admin: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
-        },
-      },
-      superAdmin: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
-        },
-      },
+      // developer: {
+      //   select: {
+      //     firstName: true,
+      //     lastName: true,
+      //     middleName: true,
+      //     profileImage: true,
+      //     contact: true,
+      //   },
+      // },
+      // manager: {
+      //   select: {
+      //     firstName: true,
+      //     lastName: true,
+      //     middleName: true,
+      //     profileImage: true,
+      //     contact: true,
+      //   },
+      // },
+      // admin: {
+      //   select: {
+      //     firstName: true,
+      //     lastName: true,
+      //     middleName: true,
+      //     profileImage: true,
+      //     contact: true,
+      //   },
+      // },
+      // superAdmin: {
+      //   select: {
+      //     firstName: true,
+      //     lastName: true,
+      //     middleName: true,
+      //     profileImage: true,
+      //     contact: true,
+      //   },
+      // },
     },
   });
+
   return user;
 }
 

@@ -38,6 +38,11 @@ export interface User {
   manager?: Profile;
   admin?: Profile;
   superAdmin?: Profile;
+  authoredTasks?: Task[];
+  assignedTasks?: Task[];
+  ownedTeams?: Team[];
+  assignedTeams?: TeamMember[];
+  Project?: Project[];
 }
 
 // Add proper auth response type to match backend
@@ -91,6 +96,12 @@ export interface Team {
   id: number;
   name: string;
   teamOwnerId: string;
+}
+
+export interface TeamMember {
+  id: number;
+  teamId: number;
+  userId: string;
 }
 
 export enum Priority {

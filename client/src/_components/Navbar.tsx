@@ -110,8 +110,16 @@ const Navbar = () => {
                 <Avatar
                   alt={globalUser?.username || `Avatar`}
                   src={avatar}
-                  className='h-4 w-4 mr-4 cursor-pointer self-center rounded-full'
+                  className='h-7 w-7 mr-1 cursor-pointer self-center rounded-full'
                 />
+                <div className='flex flex-col items-start px-1 mx-1'>
+                  <h6 className='text-[#1f2937] dark:text-[#f3f4f6]'>
+                    {globalUser?.username}
+                  </h6>
+                  <h6 className='text-[#374151] dark:text-[#6b7280]'>
+                    {globalUser?.email}
+                  </h6>
+                </div>
               </div>
               <button
                 className='hidden rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:block'
