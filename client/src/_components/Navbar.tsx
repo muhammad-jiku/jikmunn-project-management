@@ -106,13 +106,16 @@ const Navbar = () => {
         <div className='hidden items-center justify-between md:flex'>
           {globalUser ? (
             <>
-              <div className='flex h-9 items-between jusify-between'>
+              <Link
+                href='/settings'
+                className='flex h-9 items-center jusify-between p-1 box-border'
+              >
                 <Avatar
                   alt={globalUser?.username || `Avatar`}
                   src={avatar}
-                  className='h-7 w-7 mr-1 cursor-pointer self-center rounded-full'
+                  className='h-4 w-4 mr-2 cursor-pointer self-center rounded-full'
                 />
-                <div className='flex flex-col items-start px-1 mx-1'>
+                <div className='flex flex-col items-start box-border'>
                   <h6 className='text-[#1f2937] dark:text-[#f3f4f6]'>
                     {globalUser?.username}
                   </h6>
@@ -120,7 +123,7 @@ const Navbar = () => {
                     {globalUser?.email}
                   </h6>
                 </div>
-              </div>
+              </Link>
               <button
                 className='hidden rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:block'
                 onClick={handleSignOut}

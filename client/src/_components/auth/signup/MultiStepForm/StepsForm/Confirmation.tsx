@@ -488,9 +488,7 @@ const Confirmation: React.FC = () => {
                 </Grid>
               </Grid>
             </Paper>
-            {/* <Box sx={{ mt: 3 }}>
-              <NavButtons />
-            </Box> */}
+
             {signupError && (
               <Typography variant='body2' color='error' sx={{ mt: 2 }}>
                 {signupError}
@@ -538,6 +536,10 @@ const Confirmation: React.FC = () => {
             ) : (
               // Otherwise, show the navigation buttons (which include the submit button)
               <Box sx={{ mt: 3 }}>
+                <Typography variant='caption' color='text.secondary'>
+                  *These data can not be modified. If you want to modify data
+                  you have to go back to previous step or steps.
+                </Typography>
                 <NavButtons />
               </Box>
             )}

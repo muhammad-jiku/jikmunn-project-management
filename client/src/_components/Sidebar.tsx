@@ -17,7 +17,6 @@ import {
   LockIcon,
   LucideIcon,
   Search,
-  Settings,
   ShieldAlert,
   User,
   Users,
@@ -87,14 +86,14 @@ const Sidebar = () => {
 
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl
     transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white
-    ${isSidebarCollapsed ? 'w-0 hidden' : 'w-80'}
+    ${isSidebarCollapsed ? 'w-0 hidden' : 'w-96'}
   `;
 
   return (
     <div className={sidebarClassNames}>
       <div className='flex h-[100%] w-full flex-col justify-start'>
         {/* TOP LOGO */}
-        <div className='z-50 flex min-h-[56px] w-80 items-center justify-between bg-white px-6 pt-3 dark:bg-black'>
+        <div className='z-50 flex min-h-[56px] w-96 items-center justify-between bg-white px-6 pt-3 dark:bg-black'>
           <div className='text-xl font-bold text-gray-800 dark:text-white'>
             EDLIST
           </div>
@@ -130,7 +129,7 @@ const Sidebar = () => {
           <SidebarLink icon={Home} label='Home' href='/' />
           <SidebarLink icon={Briefcase} label='Timeline' href='/timeline' />
           <SidebarLink icon={Search} label='Search' href='/search' />
-          <SidebarLink icon={Settings} label='Settings' href='/settings' />
+          {/* <SidebarLink icon={Settings} label='Settings' href='/settings' /> */}
           <SidebarLink icon={User} label='Users' href='/users' />
           <SidebarLink icon={Users} label='Teams' href='/teams' />
         </nav>
@@ -200,14 +199,17 @@ const Sidebar = () => {
       <div className='z-10 mt-32 flex w-full flex-col items-center gap-4 bg-white px-8 py-4 dark:bg-black md:hidden'>
         <div className='flex w-full items-start'>
           {globalUser ? (
-            <div className='flex flex-col items-start p-1'>
-              <div className='flex items-between jusify-between'>
+            <div className='flex flex-col items-center w-full border-box'>
+              <SidebarLink
+                href='/settings'
+                className='flex items-between jusify-between'
+              >
                 <Avatar
                   alt={globalUser?.username || `Avatar`}
                   src={avatar}
                   className='h-7 w-7 mr-1 cursor-pointer rounded-full border-1 border-dark-bg dark:border-white'
                 />
-                <div className='flex flex-col items-start mx-2'>
+                <div className='flex flex-col items-start'>
                   <h6 className='text-[#1f2937] dark:text-[#f3f4f6]'>
                     {globalUser?.username}
                   </h6>
@@ -215,13 +217,13 @@ const Sidebar = () => {
                     {globalUser?.email}
                   </h6>
                 </div>
-              </div>
+              </SidebarLink>
               <button
                 className='block mt-4 w-full rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:hidden'
                 onClick={handleSignOut}
                 disabled={logoutLoading}
               >
-                Sign out
+                Sign Out
               </button>
             </div>
           ) : (
@@ -239,17 +241,25 @@ const Sidebar = () => {
 
 interface SidebarLinkProps {
   href: string;
-  icon: LucideIcon;
-  label: string;
+  icon?: LucideIcon;
+  label?: string;
+  children?: React.ReactNode;
+  className?: string;
 }
 
-const SidebarLink = ({ href, icon: Icon, label }: SidebarLinkProps) => {
+const SidebarLink = ({
+  href,
+  icon: Icon,
+  label,
+  children,
+  className = 'w-full',
+}: SidebarLinkProps) => {
   const pathname = usePathname();
   const isActive =
     pathname === href || (pathname === '/' && href === '/dashboard');
 
   return (
-    <Link href={href} className='w-full'>
+    <Link href={href} className={className}>
       <div
         className={`relative flex cursor-pointer items-center gap-3 transition-colors hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-700 ${
           isActive ? 'bg-gray-100 text-white dark:bg-gray-600' : ''
@@ -259,10 +269,18 @@ const SidebarLink = ({ href, icon: Icon, label }: SidebarLinkProps) => {
           <div className='absolute left-0 top-0 h-[100%] w-[5px] bg-blue-200' />
         )}
 
-        <Icon className='h-6 w-6 text-gray-800 dark:text-gray-100' />
-        <span className={`font-medium text-gray-800 dark:text-gray-100`}>
-          {label}
-        </span>
+        {children ? (
+          children
+        ) : (
+          <>
+            {Icon && (
+              <Icon className='h-6 w-6 text-gray-800 dark:text-gray-100' />
+            )}
+            <span className='font-medium text-gray-800 dark:text-gray-100'>
+              {label}
+            </span>
+          </>
+        )}
       </div>
     </Link>
   );
