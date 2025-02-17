@@ -23,19 +23,13 @@ router
 
 router
   .route('/:id')
-  .get(
-    validateRequest(ManagerValidations.validateManagerId),
-    auth(USER_ROLES.MANAGER),
-    ManagerControllers.getByIdFromDB
-  )
+  .get(auth(USER_ROLES.MANAGER), ManagerControllers.getByIdFromDB)
   .patch(
-    validateRequest(ManagerValidations.validateManagerId),
     validateRequest(ManagerValidations.updateManager),
     auth(USER_ROLES.MANAGER),
     ManagerControllers.updateOneInDB
   )
   .delete(
-    validateRequest(ManagerValidations.validateManagerId),
     auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
     ManagerControllers.deleteByIdFromDB
   );

@@ -1,11 +1,5 @@
 import { z } from 'zod';
 
-const validateDeveloperId = z.object({
-  params: z.object({
-    id: z.string().uuid(),
-  }),
-});
-
 const updateDeveloper = z.object({
   body: z
     .object({
@@ -19,6 +13,5 @@ const updateDeveloper = z.object({
 });
 
 export const DeveloperValidations = {
-  validateDeveloperId,
   updateDeveloper,
 };

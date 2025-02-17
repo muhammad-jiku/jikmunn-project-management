@@ -1,11 +1,5 @@
 import { z } from 'zod';
 
-const validateSuperAdminId = z.object({
-  params: z.object({
-    id: z.string().uuid(),
-  }),
-});
-
 const updateSuperAdmin = z.object({
   body: z
     .object({
@@ -19,6 +13,5 @@ const updateSuperAdmin = z.object({
 });
 
 export const SuperAdminValidations = {
-  validateSuperAdminId,
   updateSuperAdmin,
 };

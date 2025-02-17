@@ -1,25 +1,23 @@
 import { UserRole } from '@prisma/client';
-import httpStatus from 'http-status';
-import ApiError from '../../../errors/handleApiError';
 import { prisma } from '../../../shared/prisma';
 
-// --- Helper function to validate base64 image size ---
-const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB in bytes
-// The approximate maximum base64 length (without data URI prefix)
-// For a file of size N, base64 length is roughly (4/3)*N.
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB in bytes
 const MAX_BASE64_LENGTH = Math.ceil((MAX_FILE_SIZE_BYTES * 4) / 3);
 
-export function validateBase64Image(base64String: string): void {
+export const validateBase64Image = async (
+  base64String: string
+): Promise<boolean> => {
   // Remove any data URL prefix if present.
-  const parts = base64String.split(',');
+  const parts = await base64String.split(',');
   const base64Data = parts.length > 1 ? parts[1] : parts[0];
-  if (base64Data.length > MAX_BASE64_LENGTH) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      'Image file is too large. Maximum allowed size is 50MB.'
-    );
+  console.log('base64Data length', base64Data.length);
+  console.log('MAX_BASE64 length', MAX_BASE64_LENGTH);
+  if (base64String.length > MAX_BASE64_LENGTH) {
+    // Instead of throwing an error, return false.
+    return false;
   }
-}
+  return true;
+};
 
 export const findLastDeveloperId = async (): Promise<string | undefined> => {
   const lastDeveloper = await prisma.user.findFirst({

@@ -71,8 +71,8 @@ export const globalSlice = createSlice({
       state.error = null;
     },
     updateUserInfo: (state, action: PayloadAction<Partial<User>>) => {
-      if (state.user) {
-        state.user = { ...state.user, ...action.payload };
+      if (state.user && state.user.data) {
+        state.user.data = { ...state.user.data, ...action.payload };
       }
     },
     setEmailVerified: (state) => {

@@ -53,8 +53,19 @@ const insertDeveloperIntoDB = async (
     // Step 2: Create Developer first to ensure the developerId exists
     // Validate and upload profile image
     if (developerData.profileImage) {
-      validateBase64Image(developerData.profileImage as string);
+      // Validate the new base64 image (throws error if invalid)
+      const isValidImage = await validateBase64Image(
+        developerData.profileImage as string
+      );
+      console.log('validate base image result:', isValidImage);
+      if (!isValidImage) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          'Image file is too large. Maximum allowed size is 2 MB.'
+        );
+      }
     }
+
     const myCloud: UploadApiResponse = await cloudinary.v2.uploader.upload(
       developerData?.profileImage! as string,
       {
@@ -169,8 +180,19 @@ const insertManagerIntoDB = async (
     // Step 2: Create Manager first to ensure the managerId exists
     // Validate and upload profile image
     if (managerData.profileImage) {
-      validateBase64Image(managerData.profileImage as string);
+      // Validate the new base64 image (throws error if invalid)
+      const isValidImage = await validateBase64Image(
+        managerData.profileImage as string
+      );
+      console.log('validate base image result:', isValidImage);
+      if (!isValidImage) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          'Image file is too large. Maximum allowed size is 2 MB.'
+        );
+      }
     }
+
     const myCloud: UploadApiResponse = await cloudinary.v2.uploader.upload(
       managerData?.profileImage! as string,
       {
@@ -285,8 +307,19 @@ const insertAdminIntoDB = async (
     // Step 2: Create Admin first to ensure the adminId exists
     // Validate and upload profile image
     if (adminData.profileImage) {
-      validateBase64Image(adminData.profileImage as string);
+      // Validate the new base64 image (throws error if invalid)
+      const isValidImage = await validateBase64Image(
+        adminData.profileImage as string
+      );
+      console.log('validate base image result:', isValidImage);
+      if (!isValidImage) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          'Image file is too large. Maximum allowed size is 2 MB.'
+        );
+      }
     }
+
     const myCloud: UploadApiResponse = await cloudinary.v2.uploader.upload(
       adminData?.profileImage! as string,
       {
@@ -404,8 +437,19 @@ const insertSuperAdminIntoDB = async (
     // Step 2: Create Super Admin first to ensure the superAdminId exists
     // Validate and upload profile image
     if (superAdminData.profileImage) {
-      validateBase64Image(superAdminData.profileImage as string);
+      // Validate the new base64 image (throws error if invalid)
+      const isValidImage = await validateBase64Image(
+        superAdminData.profileImage as string
+      );
+      console.log('validate base image result:', isValidImage);
+      if (!isValidImage) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          'Image file is too large. Maximum allowed size is 2 MB.'
+        );
+      }
     }
+
     const myCloud: UploadApiResponse = await cloudinary.v2.uploader.upload(
       superAdminData?.profileImage! as string,
       {

@@ -226,7 +226,7 @@ const Sidebar = () => {
               </button>
             </div>
           ) : (
-            <Link href='/sign-in'>
+            <Link href='/sign-in' className='w-full'>
               <button className='rounded w-full bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
                 Sign in
               </button>

@@ -117,7 +117,16 @@ const updateOneInDB = async (
     }
 
     // Validate the new base64 image (throws error if invalid)
-    validateBase64Image(payload.profileImage as string);
+    const isValidImage = await validateBase64Image(
+      payload.profileImage as string
+    );
+    console.log('validate base image result:', isValidImage);
+    if (!isValidImage) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Image file is too large. Maximum allowed size is 2 MB.'
+      );
+    }
 
     // Upload the new image
     const myCloud: UploadApiResponse = await cloudinary.v2.uploader.upload(

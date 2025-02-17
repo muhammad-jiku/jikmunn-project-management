@@ -23,21 +23,12 @@ router
 
 router
   .route('/:id')
-  .get(
-    validateRequest(SuperAdminValidations.validateSuperAdminId),
-    auth(USER_ROLES.SUPER_ADMIN),
-    SuperAdminControllers.getByIdFromDB
-  )
+  .get(auth(USER_ROLES.SUPER_ADMIN), SuperAdminControllers.getByIdFromDB)
   .patch(
-    validateRequest(SuperAdminValidations.validateSuperAdminId),
     validateRequest(SuperAdminValidations.updateSuperAdmin),
     auth(USER_ROLES.SUPER_ADMIN),
     SuperAdminControllers.updateOneInDB
   )
-  .delete(
-    validateRequest(SuperAdminValidations.validateSuperAdminId),
-    auth(USER_ROLES.SUPER_ADMIN),
-    SuperAdminControllers.deleteByIdFromDB
-  );
+  .delete(auth(USER_ROLES.SUPER_ADMIN), SuperAdminControllers.deleteByIdFromDB);
 
 export const SuperAdminRoutes = router;

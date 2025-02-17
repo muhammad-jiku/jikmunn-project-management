@@ -27,20 +27,14 @@ router
 router
   .route('/:id')
   .get(
-    validateRequest(AdminValidations.validateAdminId),
     auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN),
     AdminControllers.getByIdFromDB
   )
   .patch(
-    validateRequest(AdminValidations.validateAdminId),
     validateRequest(AdminValidations.updateAdmin),
     auth(USER_ROLES.ADMIN),
     AdminControllers.updateOneInDB
   )
-  .delete(
-    validateRequest(AdminValidations.validateAdminId),
-    auth(USER_ROLES.SUPER_ADMIN),
-    AdminControllers.deleteByIdFromDB
-  );
+  .delete(auth(USER_ROLES.SUPER_ADMIN), AdminControllers.deleteByIdFromDB);
 
 export const AdminRoutes = router;

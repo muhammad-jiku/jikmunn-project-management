@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { updateUserInfo } from '..';
 import { Admin } from '../types';
 
 export const adminsApi = createApi({
@@ -23,6 +24,15 @@ export const adminsApi = createApi({
         method: 'PATCH',
         body: data,
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          // Dispatch with the plain user object
+          dispatch(updateUserInfo(data));
+        } catch {
+          // Optionally handle errors here.
+        }
+      },
       invalidatesTags: ['Admin'],
     }),
     deleteAdmin: build.mutation<Admin, string>({

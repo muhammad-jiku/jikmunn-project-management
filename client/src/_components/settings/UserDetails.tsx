@@ -80,12 +80,10 @@ const UserDetails: React.FC = () => {
     profileData = globalUser?.superAdmin;
   }
 
-  const payload = { ...profileData };
-  console.log('payload..', payload);
-
   const {
     register,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
@@ -114,29 +112,49 @@ const UserDetails: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  // Handle form submission (signup)
+  // Handle form submission (update)
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setUpdateError(null);
-    try {
-      console.log('Final signup data:', JSON.stringify(profileData, null, 2));
-      let result;
 
-      console.log('transformed payload..', payload);
+    // Construct your update payload only from form values (do not include the event object)
+    // For example, if you use react-hook-form, you might use getValues() or your own payload object.
+    const payload = {
+      firstName: getValues('firstName'),
+      middleName: getValues('middleName'),
+      lastName: getValues('lastName'),
+      profileImage: getValues('profileImage'),
+    };
+
+    try {
+      let result;
       if (globalUser?.role === 'DEVELOPER') {
-        result = await updateDeveloper(payload).unwrap();
+        result = await updateDeveloper({
+          id: globalUser.userId,
+          data: payload,
+        }).unwrap();
       } else if (globalUser?.role === 'MANAGER') {
-        result = await updateManager(payload).unwrap();
+        result = await updateManager({
+          id: globalUser.userId,
+          data: payload,
+        }).unwrap();
       } else if (globalUser?.role === 'ADMIN') {
-        result = await updateAdmin(payload).unwrap();
+        result = await updateAdmin({
+          id: globalUser.userId,
+          data: payload,
+        }).unwrap();
       } else if (globalUser?.role === 'SUPER_ADMIN') {
-        result = await updateSuperAdmin(payload).unwrap();
+        result = await updateSuperAdmin({
+          id: globalUser.userId,
+          data: payload,
+        }).unwrap();
       } else {
         throw new Error('Invalid user role');
       }
-      console.log('Signup successful:', result);
+      console.log('Update successful:', result);
     } catch (error: any) {
       console.error('Error processing form data:', error);
+      console.error('Error processing form data message:', error?.message);
       setUpdateError(
         error.message || 'Something went wrong, Please try again!'
       );
