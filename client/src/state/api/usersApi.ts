@@ -1,3 +1,4 @@
+import { persistor } from '@/store';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setAuthCredentials } from '..';
 import { AuthResponse, SignupPayload } from '../types';
@@ -8,7 +9,7 @@ export const usersApi = createApi({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
     credentials: 'include',
   }),
-  tagTypes: ['Auth', 'Developer', 'Manager', 'Admin', 'SuperAdmin', 'User'],
+  tagTypes: ['Auth', 'User'],
   endpoints: (build) => ({
     signupDeveloper: build.mutation<AuthResponse, SignupPayload>({
       query: (payload) => ({
@@ -28,6 +29,9 @@ export const usersApi = createApi({
                 needsPasswordChange: data.needsPasswordChange,
               })
             );
+
+            // Optionally, To clear persisted state:
+            await persistor.purge();
             return;
           }
           // Otherwise, fetch the current user
@@ -47,7 +51,7 @@ export const usersApi = createApi({
           // Handle errors if needed.
         }
       },
-      invalidatesTags: ['Auth', 'Developer', 'User'],
+      invalidatesTags: ['Auth', 'User'],
     }),
     signupManager: build.mutation<AuthResponse, SignupPayload>({
       query: (payload) => ({
@@ -67,6 +71,9 @@ export const usersApi = createApi({
                 needsPasswordChange: data.needsPasswordChange,
               })
             );
+
+            // Optionally, To clear persisted state:
+            await persistor.purge();
             return;
           }
           // Otherwise, fetch the current user
@@ -86,7 +93,7 @@ export const usersApi = createApi({
           // Handle errors if needed.
         }
       },
-      invalidatesTags: ['Auth', 'Manager', 'User'],
+      invalidatesTags: ['Auth', 'User'],
     }),
     signupAdmin: build.mutation<AuthResponse, SignupPayload>({
       query: (payload) => ({
@@ -106,6 +113,9 @@ export const usersApi = createApi({
                 needsPasswordChange: data.needsPasswordChange,
               })
             );
+
+            // Optionally, To clear persisted state:
+            await persistor.purge();
             return;
           }
           // Otherwise, fetch the current user
@@ -125,7 +135,7 @@ export const usersApi = createApi({
           // Handle errors if needed.
         }
       },
-      invalidatesTags: ['Auth', 'Admin', 'User'],
+      invalidatesTags: ['Auth', 'User'],
     }),
     signupSuperAdmin: build.mutation<AuthResponse, SignupPayload>({
       query: (payload) => ({
@@ -145,6 +155,9 @@ export const usersApi = createApi({
                 needsPasswordChange: data.needsPasswordChange,
               })
             );
+
+            // Optionally, To clear persisted state:
+            await persistor.purge();
             return;
           }
           // Otherwise, fetch the current user
@@ -164,7 +177,7 @@ export const usersApi = createApi({
           // Handle errors if needed.
         }
       },
-      invalidatesTags: ['Auth', 'SuperAdmin', 'User'],
+      invalidatesTags: ['Auth', 'User'],
     }),
   }),
 });

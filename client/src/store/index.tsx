@@ -71,10 +71,6 @@ export const makeStore = () => {
           ignoredActions: [
             'persist/PERSIST',
             'persist/REHYDRATE',
-            // api.reducerPath + '/executeQuery/pending',
-            // api.reducerPath + '/executeQuery/fulfilled',
-            // api.reducerPath + '/executeQuery/rejected',
-
             // auth api reducer path
             authApi.reducerPath + '/executeQuery/pending',
             authApi.reducerPath + '/executeQuery/fulfilled',
@@ -109,7 +105,6 @@ export const makeStore = () => {
             tasksApi.reducerPath + '/executeQuery/rejected',
           ],
         },
-        // }).concat(api.middleware),
       }).concat(
         authApi.middleware,
         usersApi.middleware,

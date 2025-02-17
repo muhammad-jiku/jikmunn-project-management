@@ -110,7 +110,7 @@ const UserInfo: React.FC = () => {
             </Typography>
           </Box>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='Username'
                 name='username'
@@ -133,7 +133,7 @@ const UserInfo: React.FC = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='Email'
                 name='email'
@@ -143,7 +143,7 @@ const UserInfo: React.FC = () => {
                 isRequired
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='Password'
                 name='password'
@@ -187,7 +187,7 @@ const UserInfo: React.FC = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='Confirm Password'
                 name='confirmPassword'

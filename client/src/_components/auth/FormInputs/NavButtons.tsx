@@ -48,7 +48,7 @@ const NavButtons: React.FC<NavButtonsProps> = ({ disabled }) => {
   };
 
   // Define a responsive font size object
-  const responsiveFontSize = { xs: '0.75rem', sm: '0.875rem', md: '1rem' };
+  const responsiveFontSize = { xs: '0.5rem', sm: '0.75rem', md: '1rem' };
 
   return (
     <ThemeProvider theme={theme}>

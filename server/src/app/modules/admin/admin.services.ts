@@ -72,6 +72,7 @@ const getByIdFromDB = async (id: string): Promise<Admin | null> => {
   const result = await prisma.admin.findUnique({
     where: { adminId: id },
   });
+
   if (!result) {
     throw new ApiError(
       httpStatus.NOT_FOUND,

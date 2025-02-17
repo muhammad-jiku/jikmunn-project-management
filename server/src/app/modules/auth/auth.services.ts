@@ -245,7 +245,7 @@ const setAuthCookies = (
     httpOnly: true,
     secure: isProduction, // secure only in production (HTTPS)
     sameSite: 'lax',
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/',
   });
 
@@ -459,7 +459,7 @@ const logoutHandler = async (res: Response): Promise<void> => {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    expires: new Date(0), // Force expiration
+    // expires: new Date(0), // Force expiration
   });
 
   res.clearCookie('refreshToken', {
@@ -467,7 +467,7 @@ const logoutHandler = async (res: Response): Promise<void> => {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/auth/refresh-token',
-    expires: new Date(0), // Force expiration
+    // expires: new Date(0), // Force expiration
   });
 
   res.status(200).json({ message: 'Signed out successfully!' });

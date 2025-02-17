@@ -229,7 +229,7 @@ const Confirmation: React.FC = () => {
                 {/** Render role-specific personal info (example for MANAGER and DEVELOPER) **/}
                 {formData.role === 'DEVELOPER' && personalInfo && (
                   <>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='First Name'
                         name='firstName'
@@ -239,7 +239,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Middle Name'
                         name='middleName'
@@ -249,7 +249,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Last Name'
                         name='lastName'
@@ -274,7 +274,7 @@ const Confirmation: React.FC = () => {
 
                 {formData.role === 'MANAGER' && personalInfo && (
                   <>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='First Name'
                         name='firstName'
@@ -284,7 +284,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Middle Name'
                         name='middleName'
@@ -294,7 +294,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Last Name'
                         name='lastName'
@@ -319,7 +319,7 @@ const Confirmation: React.FC = () => {
 
                 {formData.role === 'ADMIN' && personalInfo && (
                   <>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='First Name'
                         name='firstName'
@@ -329,7 +329,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Middle Name'
                         name='middleName'
@@ -339,7 +339,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Last Name'
                         name='lastName'
@@ -364,7 +364,7 @@ const Confirmation: React.FC = () => {
 
                 {formData.role === 'SUPER_ADMIN' && personalInfo && (
                   <>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='First Name'
                         name='firstName'
@@ -374,7 +374,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Middle Name'
                         name='middleName'
@@ -384,7 +384,7 @@ const Confirmation: React.FC = () => {
                         InputProps={{ readOnly: true }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} md={6}>
                       <TextInput
                         label='Last Name'
                         name='lastName'
@@ -437,7 +437,7 @@ const Confirmation: React.FC = () => {
                     InputProps={{ readOnly: true }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} md={6}>
                   <TextInput
                     label='Password'
                     name='password'
@@ -462,7 +462,7 @@ const Confirmation: React.FC = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} md={6}>
                   <TextInput
                     label='Confirm Password'
                     name='confirmPassword'

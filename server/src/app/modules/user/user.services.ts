@@ -52,8 +52,8 @@ const insertDeveloperIntoDB = async (
     console.log('developerId: ', developerId);
     // Step 2: Create Developer first to ensure the developerId exists
     // Validate and upload profile image
+    // Validate the new base64 image (throws error if invalid)
     if (developerData.profileImage) {
-      // Validate the new base64 image (throws error if invalid)
       const isValidImage = await validateBase64Image(
         developerData.profileImage as string
       );
@@ -132,7 +132,7 @@ const insertDeveloperIntoDB = async (
     );
 
     // Set cookies
-    await AuthServices.setAuthCookies(res, accessToken, refreshToken);
+    AuthServices.setAuthCookies(res, accessToken, refreshToken);
 
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
@@ -179,8 +179,8 @@ const insertManagerIntoDB = async (
     console.log('managerId: ', managerId);
     // Step 2: Create Manager first to ensure the managerId exists
     // Validate and upload profile image
+    // Validate the new base64 image (throws error if invalid)
     if (managerData.profileImage) {
-      // Validate the new base64 image (throws error if invalid)
       const isValidImage = await validateBase64Image(
         managerData.profileImage as string
       );
@@ -306,8 +306,8 @@ const insertAdminIntoDB = async (
     console.log('adminId: ', adminId);
     // Step 2: Create Admin first to ensure the adminId exists
     // Validate and upload profile image
+    // Validate the new base64 image (throws error if invalid)
     if (adminData.profileImage) {
-      // Validate the new base64 image (throws error if invalid)
       const isValidImage = await validateBase64Image(
         adminData.profileImage as string
       );
@@ -386,7 +386,7 @@ const insertAdminIntoDB = async (
     );
 
     // Set cookies
-    await AuthServices.setAuthCookies(res, accessToken, refreshToken);
+    AuthServices.setAuthCookies(res, accessToken, refreshToken);
 
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
@@ -436,8 +436,8 @@ const insertSuperAdminIntoDB = async (
     console.log('superAdminId: ', superAdminId);
     // Step 2: Create Super Admin first to ensure the superAdminId exists
     // Validate and upload profile image
+    // Validate the new base64 image (throws error if invalid)
     if (superAdminData.profileImage) {
-      // Validate the new base64 image (throws error if invalid)
       const isValidImage = await validateBase64Image(
         superAdminData.profileImage as string
       );
@@ -516,7 +516,7 @@ const insertSuperAdminIntoDB = async (
     );
 
     // Set cookies
-    await AuthServices.setAuthCookies(res, accessToken, refreshToken);
+    AuthServices.setAuthCookies(res, accessToken, refreshToken);
 
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);

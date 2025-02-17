@@ -137,7 +137,7 @@ const PersonalInfo: React.FC = () => {
                     borderColor: 'secondary',
                   }}
                   src={avatar}
-                  alt='Profile Avatar'
+                  alt='Profile Image'
                 />
                 <IconButton
                   onClick={handleAvatarClick}
@@ -174,7 +174,7 @@ const PersonalInfo: React.FC = () => {
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='First Name'
                 name='firstName'
@@ -183,7 +183,7 @@ const PersonalInfo: React.FC = () => {
                 isRequired
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='Middle Name'
                 name='middleName'
@@ -192,7 +192,7 @@ const PersonalInfo: React.FC = () => {
                 isRequired
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='Last Name'
                 name='lastName'
@@ -201,7 +201,7 @@ const PersonalInfo: React.FC = () => {
                 isRequired
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextInput
                 label='Contact Number'
                 name='contact'
@@ -229,6 +229,10 @@ const PersonalInfo: React.FC = () => {
             </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
+            <Typography variant='caption' color='text.secondary'>
+              *Profile image must be the format of .jpg, .jpeg, or .png and the
+              image maximum size must be 2 MB.
+            </Typography>
             <NavButtons disabled={loading} />
           </Box>
         </Box>
