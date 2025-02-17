@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   useSignupAdminMutation,
   useSignupDeveloperMutation,
   useSignupManagerMutation,
   useSignupSuperAdminMutation,
-} from '@/state/api';
+} from '@/state/api/usersApi';
 import { resetSignup } from '@/state/signupSlice';
 import { RootState } from '@/store';
 import {

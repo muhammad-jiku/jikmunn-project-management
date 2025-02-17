@@ -1,4 +1,4 @@
-import { Priority, Status } from '@/state/api';
+import { Priority, Status } from '@/state/types';
 // import { formatISO } from 'date-fns';
 import { useState } from 'react';
 import Modal from './Modal';

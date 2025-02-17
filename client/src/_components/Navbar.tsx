@@ -1,5 +1,5 @@
 import { logoutUser, setIsDarkMode, setIsSidebarCollapsed } from '@/state';
-import { useLogoutMutation } from '@/state/api';
+import { useLogoutMutation } from '@/state/api/authApi';
 import { persistor, RootState, useAppDispatch, useAppSelector } from '@/store';
 import { Avatar } from '@mui/material';
 import { Menu, Moon, Search, Sun } from 'lucide-react';

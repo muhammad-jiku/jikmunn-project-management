@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  useSignupAdminMutation,
-  useSignupDeveloperMutation,
-  useSignupManagerMutation,
-  useSignupSuperAdminMutation,
-} from '@/state/api';
+'use client';
+
+import { useUpdateAdminMutation } from '@/state/api/adminsApi';
+import { useUpdateDeveloperMutation } from '@/state/api/developersApi';
+import { useUpdateManagerMutation } from '@/state/api/managersApi';
+import { useUpdateSuperAdminMutation } from '@/state/api/superAdminsApi';
 import { RootState } from '@/store';
 import {
   Avatar,
@@ -15,12 +15,10 @@ import {
   CssBaseline,
   Grid,
   IconButton,
-  //   InputAdornment,
   Paper,
   ThemeProvider,
   Typography,
 } from '@mui/material';
-// import { Eye, EyeClosed } from 'lucide-react';
 import { Pencil } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
@@ -31,9 +29,6 @@ import TextInput from '../auth/FormInputs/TextInput';
 const UserDetails: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
   const globalUser = useSelector((state: RootState) => state.global.user?.data);
-  //   const [showPassword, setShowPassword] = useState<boolean>(false);
-  //   const [showConfirmPassword, setShowConfirmPassword] =
-  //     useState<boolean>(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | undefined>(
     // Use an existing personal image if available or fall back to default
@@ -47,17 +42,17 @@ const UserDetails: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [
-    signupDeveloper,
+    updateDeveloper,
     { error: developerError, isLoading: isDeveloperLoading },
-  ] = useSignupDeveloperMutation();
-  const [signupManager, { error: managerError, isLoading: isManagerLoading }] =
-    useSignupManagerMutation();
-  const [signupAdmin, { error: adminError, isLoading: isAdminLoading }] =
-    useSignupAdminMutation();
+  ] = useUpdateDeveloperMutation();
+  const [updateManager, { error: managerError, isLoading: isManagerLoading }] =
+    useUpdateManagerMutation();
+  const [updateAdmin, { error: adminError, isLoading: isAdminLoading }] =
+    useUpdateAdminMutation();
   const [
-    signupSuperAdmin,
+    updateSuperAdmin,
     { error: superAdminError, isLoading: isSuperAdminLoading },
-  ] = useSignupSuperAdminMutation();
+  ] = useUpdateSuperAdminMutation();
 
   const theme = createTheme({
     palette: {
@@ -129,13 +124,13 @@ const UserDetails: React.FC = () => {
 
       console.log('transformed payload..', payload);
       if (globalUser?.role === 'DEVELOPER') {
-        result = await signupDeveloper(payload).unwrap();
+        result = await updateDeveloper(payload).unwrap();
       } else if (globalUser?.role === 'MANAGER') {
-        result = await signupManager(payload).unwrap();
+        result = await updateManager(payload).unwrap();
       } else if (globalUser?.role === 'ADMIN') {
-        result = await signupAdmin(payload).unwrap();
+        result = await updateAdmin(payload).unwrap();
       } else if (globalUser?.role === 'SUPER_ADMIN') {
-        result = await signupSuperAdmin(payload).unwrap();
+        result = await updateSuperAdmin(payload).unwrap();
       } else {
         throw new Error('Invalid user role');
       }
@@ -192,327 +187,146 @@ const UserDetails: React.FC = () => {
                   overflow: 'auto',
                 }}
               >
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Box sx={{ position: 'relative', width: 'fit-content' }}>
-                      <Avatar
-                        sx={{
-                          width: 135,
-                          height: 135,
-                          border: '1px solid',
-                          borderColor: 'secondary',
-                        }}
-                        src={avatar}
-                        alt='Profile Avatar'
+                {globalUser && profileData && (
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Box sx={{ position: 'relative', width: 'fit-content' }}>
+                        <Avatar
+                          sx={{
+                            width: 135,
+                            height: 135,
+                            border: '1px solid',
+                            borderColor: 'secondary',
+                          }}
+                          src={avatar}
+                          alt='Profile Avatar'
+                        />
+                        <IconButton
+                          onClick={handleAvatarClick}
+                          sx={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            backgroundColor: theme.palette.background.paper,
+                            boxShadow: 1,
+                          }}
+                        >
+                          <Pencil size={20} />
+                        </IconButton>
+                        <input
+                          type='file'
+                          ref={fileInputRef}
+                          accept='image/*'
+                          style={{ display: 'none' }}
+                          onChange={handleAvatar}
+                        />
+                        <input
+                          type='hidden'
+                          {...register('profileImage', {
+                            validate: (value) =>
+                              value !== profileDefault.src ||
+                              'Please upload your profile image',
+                          })}
+                          value={avatar}
+                        />
+                      </Box>
+                    </Grid>
+                    {/* User Info */}
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='User ID'
+                        name='userId'
+                        defaultValue={globalUser?.userId}
+                        register={register}
+                        errors={errors}
+                        InputProps={{ readOnly: true }}
                       />
-                      <IconButton
-                        onClick={handleAvatarClick}
-                        sx={{
-                          position: 'absolute',
-                          bottom: 0,
-                          right: 0,
-                          backgroundColor: theme.palette.background.paper,
-                          boxShadow: 1,
-                        }}
-                      >
-                        <Pencil size={20} />
-                      </IconButton>
-                      <input
-                        type='file'
-                        ref={fileInputRef}
-                        accept='image/*'
-                        style={{ display: 'none' }}
-                        onChange={handleAvatar}
+                      <Typography variant='caption' color='text.secondary'>
+                        User ID can not be modified.
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='Username'
+                        name='username'
+                        defaultValue={globalUser?.username}
+                        register={register}
+                        errors={errors}
+                        InputProps={{ readOnly: true }}
                       />
-                      <input
-                        type='hidden'
-                        {...register('profileImage', {
-                          validate: (value) =>
-                            value !== profileDefault.src ||
-                            'Please upload your profile image',
-                        })}
-                        value={avatar}
+                      <Typography variant='caption' color='text.secondary'>
+                        Username can not be modified.
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='Email'
+                        name='email'
+                        defaultValue={globalUser?.email}
+                        register={register}
+                        errors={errors}
+                        InputProps={{ readOnly: true }}
                       />
-                    </Box>
+                      <Typography variant='caption' color='text.secondary'>
+                        Email can not be modified.
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='Role'
+                        name='role'
+                        defaultValue={globalUser?.role}
+                        register={register}
+                        errors={errors}
+                        InputProps={{ readOnly: true }}
+                      />
+                      <Typography variant='caption' color='text.secondary'>
+                        Role can not be modified.
+                      </Typography>
+                    </Grid>
+                    {/* Personal Info */}
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='First Name'
+                        name='firstName'
+                        defaultValue={profileData.firstName}
+                        register={register}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='Middle Name'
+                        name='middleName'
+                        defaultValue={profileData.middleName}
+                        register={register}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='Last Name'
+                        name='lastName'
+                        defaultValue={profileData.lastName}
+                        register={register}
+                        errors={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextInput
+                        label='Contact Number'
+                        name='contact'
+                        defaultValue={profileData.contact}
+                        register={register}
+                        errors={errors}
+                        InputProps={{ readOnly: true }}
+                      />
+                      <Typography variant='caption' color='text.secondary'>
+                        Contact Number can not be modified.
+                      </Typography>
+                    </Grid>
                   </Grid>
-                  {globalUser && profileData && (
-                    <>
-                      {/*     {formData.role === 'DEVELOPER' && personalInfo && (
-                  <>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='First Name'
-                        name='firstName'
-                        defaultValue={personalInfo.firstName}
-                        register={register}
-                        errors={errors}
-                        // InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Middle Name'
-                        name='middleName'
-                        defaultValue={personalInfo.middleName}
-                        register={register}
-                        errors={errors}
-                        // InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Last Name'
-                        name='lastName'
-                        defaultValue={personalInfo.lastName}
-                        register={register}
-                        errors={errors}
-                        // InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextInput
-                        label='Contact Number'
-                        name='contact'
-                        defaultValue={personalInfo.contact}
-                        register={register}
-                        errors={errors}
-                        // InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                  </>
                 )}
-
-                {formData.role === 'MANAGER' && personalInfo && (
-                  <>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='First Name'
-                        name='firstName'
-                        defaultValue={personalInfo.firstName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Middle Name'
-                        name='middleName'
-                        defaultValue={personalInfo.middleName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Last Name'
-                        name='lastName'
-                        defaultValue={personalInfo.lastName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextInput
-                        label='Contact Number'
-                        name='contact'
-                        defaultValue={personalInfo.contact}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                  </>
-                )}
-
-                {formData.role === 'ADMIN' && personalInfo && (
-                  <>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='First Name'
-                        name='firstName'
-                        defaultValue={personalInfo.firstName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Middle Name'
-                        name='middleName'
-                        defaultValue={personalInfo.middleName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Last Name'
-                        name='lastName'
-                        defaultValue={personalInfo.lastName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextInput
-                        label='Contact Number'
-                        name='contact'
-                        defaultValue={personalInfo.contact}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                  </>
-                )}
-
-                {formData.role === 'SUPER_ADMIN' && personalInfo && (
-                  <>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='First Name'
-                        name='firstName'
-                        defaultValue={personalInfo.firstName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Middle Name'
-                        name='middleName'
-                        defaultValue={personalInfo.middleName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextInput
-                        label='Last Name'
-                        name='lastName'
-                        defaultValue={personalInfo.lastName}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextInput
-                        label='Contact Number'
-                        name='contact'
-                        defaultValue={personalInfo.contact}
-                        register={register}
-                        errors={errors}
-                        InputProps={{ readOnly: true }}
-                      />
-                    </Grid>
-                  </>
-                )} */}
-                      {/* User Info */}
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='User ID'
-                          name='userId'
-                          defaultValue={globalUser?.userId}
-                          register={register}
-                          errors={errors}
-                          InputProps={{ readOnly: true }}
-                        />
-                        <Typography variant='caption' color='text.secondary'>
-                          User ID can not be modified.
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='Username'
-                          name='username'
-                          defaultValue={globalUser?.username}
-                          register={register}
-                          errors={errors}
-                          InputProps={{ readOnly: true }}
-                        />
-                        <Typography variant='caption' color='text.secondary'>
-                          Username can not be modified.
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='Email'
-                          name='email'
-                          defaultValue={globalUser?.email}
-                          register={register}
-                          errors={errors}
-                          InputProps={{ readOnly: true }}
-                        />
-                        <Typography variant='caption' color='text.secondary'>
-                          Email can not be modified.
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='Role'
-                          name='role'
-                          defaultValue={globalUser?.role}
-                          register={register}
-                          errors={errors}
-                          InputProps={{ readOnly: true }}
-                        />
-                        <Typography variant='caption' color='text.secondary'>
-                          Role can not be modified.
-                        </Typography>
-                      </Grid>
-                      {/* Personal Info */}
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='First Name'
-                          name='firstName'
-                          defaultValue={profileData.firstName}
-                          register={register}
-                          errors={errors}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='Middle Name'
-                          name='middleName'
-                          defaultValue={profileData.middleName}
-                          register={register}
-                          errors={errors}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='Last Name'
-                          name='lastName'
-                          defaultValue={profileData.lastName}
-                          register={register}
-                          errors={errors}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextInput
-                          label='Contact Number'
-                          name='contact'
-                          defaultValue={profileData.contact}
-                          register={register}
-                          errors={errors}
-                          InputProps={{ readOnly: true }}
-                        />
-                        <Typography variant='caption' color='text.secondary'>
-                          Contact Number can not be modified.
-                        </Typography>
-                      </Grid>
-                    </>
-                  )}
-                </Grid>
               </Paper>
               {errors.profileImage && (
                 <Typography variant='caption' color='error' sx={{ mt: 2 }}>

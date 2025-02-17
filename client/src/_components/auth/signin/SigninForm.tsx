@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useLoginMutation } from '@/state/api';
+import { useLoginMutation } from '@/state/api/authApi';
 import { useAppSelector } from '@/store';
 import {
   Box,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useForgotPasswordMutation } from '@/state/api';
+import { useForgotPasswordMutation } from '@/state/api/authApi';
 import { useAppSelector } from '@/store';
 import {
   Box,

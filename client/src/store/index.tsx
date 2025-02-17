@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import globalReducer from '@/state';
-import { api } from '@/state/api';
+import { adminsApi } from '@/state/api/adminsApi';
+import { authApi } from '@/state/api/authApi';
+import { developersApi } from '@/state/api/developersApi';
+import { managersApi } from '@/state/api/managersApi';
+import { superAdminsApi } from '@/state/api/superAdminsApi';
+import { tasksApi } from '@/state/api/tasksApi';
+import { usersApi } from '@/state/api/usersApi';
 import signupReducer from '@/state/signupSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
@@ -37,7 +43,14 @@ const persistConfig = {
 const rootReducer = combineReducers({
   global: globalReducer,
   signup: signupReducer,
-  [api.reducerPath]: api.reducer,
+  // [api.reducerPath]: api.reducer,
+  [authApi.reducerPath]: authApi.reducer,
+  [usersApi.reducerPath]: usersApi.reducer,
+  [developersApi.reducerPath]: developersApi.reducer,
+  [managersApi.reducerPath]: managersApi.reducer,
+  [adminsApi.reducerPath]: adminsApi.reducer,
+  [superAdminsApi.reducerPath]: superAdminsApi.reducer,
+  [tasksApi.reducerPath]: tasksApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -58,12 +71,54 @@ export const makeStore = () => {
           ignoredActions: [
             'persist/PERSIST',
             'persist/REHYDRATE',
-            api.reducerPath + '/executeQuery/pending',
-            api.reducerPath + '/executeQuery/fulfilled',
-            api.reducerPath + '/executeQuery/rejected',
+            // api.reducerPath + '/executeQuery/pending',
+            // api.reducerPath + '/executeQuery/fulfilled',
+            // api.reducerPath + '/executeQuery/rejected',
+
+            // auth api reducer path
+            authApi.reducerPath + '/executeQuery/pending',
+            authApi.reducerPath + '/executeQuery/fulfilled',
+            authApi.reducerPath + '/executeQuery/rejected',
+            // user api reducer path
+            usersApi.reducerPath + '/executeQuery/pending',
+            usersApi.reducerPath + '/executeQuery/fulfilled',
+            usersApi.reducerPath + '/executeQuery/rejected',
+            // user api reducer path
+            usersApi.reducerPath + '/executeQuery/pending',
+            usersApi.reducerPath + '/executeQuery/fulfilled',
+            usersApi.reducerPath + '/executeQuery/rejected',
+            // developer api reducer path
+            developersApi.reducerPath + '/executeQuery/pending',
+            developersApi.reducerPath + '/executeQuery/fulfilled',
+            developersApi.reducerPath + '/executeQuery/rejected',
+            // manager api reducer path
+            managersApi.reducerPath + '/executeQuery/pending',
+            managersApi.reducerPath + '/executeQuery/fulfilled',
+            managersApi.reducerPath + '/executeQuery/rejected',
+            // admin api reducer path
+            adminsApi.reducerPath + '/executeQuery/pending',
+            adminsApi.reducerPath + '/executeQuery/fulfilled',
+            adminsApi.reducerPath + '/executeQuery/rejected',
+            // super admin api reducer path
+            superAdminsApi.reducerPath + '/executeQuery/pending',
+            superAdminsApi.reducerPath + '/executeQuery/fulfilled',
+            superAdminsApi.reducerPath + '/executeQuery/rejected',
+            // task api reducer path
+            tasksApi.reducerPath + '/executeQuery/pending',
+            tasksApi.reducerPath + '/executeQuery/fulfilled',
+            tasksApi.reducerPath + '/executeQuery/rejected',
           ],
         },
-      }).concat(api.middleware),
+        // }).concat(api.middleware),
+      }).concat(
+        authApi.middleware,
+        usersApi.middleware,
+        developersApi.middleware,
+        managersApi.middleware,
+        adminsApi.middleware,
+        superAdminsApi.middleware,
+        tasksApi.middleware
+      ),
   });
 
   setupListeners(store.dispatch);

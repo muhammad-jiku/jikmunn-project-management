@@ -1,8 +1,7 @@
 'use client';
 
 import { logoutUser, setIsSidebarCollapsed } from '@/state';
-// import { useGetProjectsQuery } from '@/state/api';
-import { useLogoutMutation } from '@/state/api';
+import { useLogoutMutation } from '@/state/api/authApi';
 import { persistor, RootState, useAppDispatch, useAppSelector } from '@/store';
 import { Avatar } from '@mui/material';
 import {

@@ -1,4 +1,4 @@
-import { useGetTasksQuery } from '@/state/api';
+import { useGetTasksQuery } from '@/state/api/tasksApi';
 import Header from '../Header';
 // import TaskCard from '../tasks/TaskCard';
 

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from './api';
+import { User } from './types';
 
 export interface GlobalState {
   isSidebarCollapsed: boolean;

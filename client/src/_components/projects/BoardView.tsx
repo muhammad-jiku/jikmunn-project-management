@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Task as TaskType, useGetTasksQuery } from '@/state/api';
+import { useGetTasksQuery } from '@/state/api/tasksApi';
+import { Task as TaskType } from '@/state/types';
 import { format } from 'date-fns';
 import { EllipsisVertical, MessageSquareMore } from 'lucide-react';
 import { DndProvider, useDrag } from 'react-dnd';

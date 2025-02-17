@@ -3,7 +3,7 @@
 
 import Header from '@/_components/Header';
 import ModalNewTask from '@/_components/modals/ModalNewTask';
-import { Priority } from '@/state/api';
+import { Priority } from '@/state/types';
 import { GridColDef } from '@mui/x-data-grid';
 import { useState } from 'react';
 

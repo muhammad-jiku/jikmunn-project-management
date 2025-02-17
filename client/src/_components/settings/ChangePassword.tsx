@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-// import { useLoginMutation } from '@/state/api';
+import { useChangePasswordMutation } from '@/state/api/authApi';
 import { useAppSelector } from '@/store';
 import {
   Box,
@@ -28,7 +28,8 @@ interface ChangePassowordFormInputs {
 
 const ChangePassword: React.FC = () => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  //   const [login, { isLoading, error }] = useLoginMutation();
+  const [changePassword, { isLoading, error }] = useChangePasswordMutation();
+
   const {
     register,
     handleSubmit,
@@ -84,14 +85,13 @@ const ChangePassword: React.FC = () => {
         alert('Passwords do not match');
         return;
       }
-      //   const result = await login({
-      //     oldPassword: data.oldPassword,
-      //     newPassword: data.newPassword,
-      //   }).unwrap();
-      //   console.log('Login result:', result);
-      // If email is not verified, inform the user and do not navigate.
+      const result = await changePassword({
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+      }).unwrap();
+      console.log('Change password result:', result);
     } catch (err: any) {
-      console.error('Login error:', err);
+      console.error('Change password error:', err);
     }
   };
 
@@ -261,20 +261,20 @@ const ChangePassword: React.FC = () => {
                   />
                 </Grid>
               </Grid>
-              {/* {error && (
+              {error && (
                 <Typography variant='body2' color='error' sx={{ mt: 2 }}>
                   {(error as any).data?.message ||
                     'Something went wrong, Please try again!'}
                 </Typography>
-              )} */}
+              )}
               <Button
                 type='submit'
                 variant='contained'
                 fullWidth
                 sx={{ mt: 3 }}
-                // disabled={isLoading}
+                disabled={isLoading}
               >
-                {/* {isLoading ? 'Loading...' : 'Update Password'} */} Update
+                {isLoading ? 'Loading...' : 'Update'}
               </Button>
             </Box>
           </form>

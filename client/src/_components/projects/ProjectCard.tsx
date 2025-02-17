@@ -1,4 +1,4 @@
-import { Project } from '@/state/api';
+import { Project } from '@/state/types';
 
 type Props = {
   project: Project;
