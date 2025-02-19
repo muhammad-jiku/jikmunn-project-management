@@ -39,7 +39,6 @@ const Sidebar = () => {
     (state: RootState) => state.global.user?.data
   );
 
-  // const [showProjects, setShowProjects] = useState(true);
   const [showPriority, setShowPriority] = useState<boolean>(true);
   const [avatar, setAvatar] = useState<string | undefined>('');
 
@@ -66,8 +65,6 @@ const Sidebar = () => {
   }, [globalUser]);
 
   const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
-  // const { data: projects } = useGetProjectsQuery({});
-  // console.log('sidebar projects data', projects);
 
   const handleSignOut = async () => {
     try {
@@ -132,29 +129,6 @@ const Sidebar = () => {
           <SidebarLink icon={User} label='Users' href='/users' />
           <SidebarLink icon={Users} label='Teams' href='/teams' />
         </nav>
-
-        {/* PROJECTS LINKS */}
-        {/* <button
-          onClick={() => setShowProjects((prev) => !prev)}
-          className='flex w-full items-center justify-between px-8 py-3 text-gray-500'
-        >
-          <span className=''>Projects</span>
-          {showProjects ? (
-            <ChevronUp className='h-5 w-5' />
-          ) : (
-            <ChevronDown className='h-5 w-5' />
-          )}
-        </button> */}
-        {/* PROJECTS LIST */}
-        {/* {showProjects &&
-          projects?.data?.map((project) => (
-            <SidebarLink
-              key={project.id}
-              icon={Briefcase}
-              label={project.name}
-              href={`/projects/${project.id}`}
-            />
-          ))} */}
 
         {/* PRIORITIES LINKS */}
         <button

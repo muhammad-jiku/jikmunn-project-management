@@ -13,7 +13,7 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
   // const [createTask, { isLoading }] = useCreateTaskMutation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<Status>(Status.ToDo);
+  const [status, setStatus] = useState<Status>(Status.TO_DO);
   const [priority, setPriority] = useState<Priority>(Priority.Backlog);
   const [tags, setTags] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -85,10 +85,10 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
             }
           >
             <option value=''>Select Status</option>
-            <option value={Status.ToDo}>To Do</option>
-            <option value={Status.WorkInProgress}>Work In Progress</option>
-            <option value={Status.UnderReview}>Under Review</option>
-            <option value={Status.Completed}>Completed</option>
+            <option value={Status.TO_DO}>To Do</option>
+            <option value={Status.WORK_IN_PROGRESS}>Work In Progress</option>
+            <option value={Status.UNDER_REVIEW}>Under Review</option>
+            <option value={Status.COMPLETED}>Completed</option>
           </select>
           <select
             className={selectStyles}

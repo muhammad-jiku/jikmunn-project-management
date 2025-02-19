@@ -110,9 +110,10 @@ export interface Task {
   projectId: number;
   authorUserId?: string;
   assignedUserId?: string;
-  attachments?: Attachment[];
   author?: User;
   assignee?: User;
+  attachments?: Attachment[];
+  comments?: Comment[];
 }
 
 export interface Project {
@@ -141,6 +142,15 @@ export interface Attachment {
   id: number;
   fileName: string;
   fileURL: string;
+}
+
+export interface Comment {
+  id: number;
+  text: string;
+  taskId: number;
+  userId: string;
+  task?: Task;
+  user?: User;
 }
 
 export interface Pagination {

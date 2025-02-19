@@ -1,46 +1,50 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// import { useGetTasksQuery } from '@/state/api';
-// import { useAppSelector } from '@/store';
-import { DisplayOption, ViewMode } from 'gantt-task-react';
+import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
+import { useAppSelector } from '@/store';
+import { DisplayOption, Gantt, ViewMode } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 type Props = {
   id: string;
   setIsModalNewTaskOpen: (isOpen: boolean) => void;
 };
 
-// type TaskTypeItems = 'task' | 'milestone' | 'project';
+type TaskTypeItems = 'task' | 'milestone' | 'project';
 
 const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
-  // const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  // const { data, error, isLoading } = useGetTasksQuery({
-  //   projectId: Number(id),
-  // });
-  // console.log('timeline view param id', id);
-  // console.log('timeline view modal check', setIsModalNewTaskOpen);
-  // console.log('timeline view tasks data', data);
+  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const globalUser = useAppSelector((state) => state.global.user?.data);
+
+  const userId = globalUser?.userId as string;
+  const {
+    data: tasks,
+    isLoading,
+    isError: isTasksError,
+  } = useGetTasksByUserQuery(userId, {});
+  console.log('timeline view param id', id);
+  console.log('timeline view modal check', setIsModalNewTaskOpen);
+  console.log('timeline view tasks data', tasks);
 
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
     locale: 'en-US',
   });
 
-  // const ganttTasks = useMemo(() => {
-  //   return (
-  //     data?.data?.map((task) => ({
-  //       start: new Date(task.startDate as string),
-  //       end: new Date(task.dueDate as string),
-  //       name: task.title,
-  //       id: `Task-${task.id}`,
-  //       type: 'task' as TaskTypeItems,
-  //       progress: task.points ? (task.points / 10) * 100 : 0,
-  //       isDisabled: false,
-  //     })) || []
-  //   );
-  // }, [data]);
+  const ganttTasks = useMemo(() => {
+    return (
+      tasks?.data?.map((task) => ({
+        start: new Date(task.startDate as string),
+        end: new Date(task.dueDate as string),
+        name: task.title,
+        id: `Task-${task.id}`,
+        type: 'task' as TaskTypeItems,
+        progress: task.points ? (task.points / 10) * 100 : 0,
+        isDisabled: false,
+      })) || []
+    );
+  }, [tasks]);
 
-  // console.log('timeline view tasks ganttTasks', ganttTasks);
+  console.log('timeline view tasks ganttTasks', ganttTasks);
 
   const handleViewModeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -51,8 +55,9 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
     }));
   };
 
-  // if (isLoading) return <div>Loading...</div>;
-  // if (error || !data) return <div>An error occurred while fetching tasks</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isTasksError || !tasks)
+    return <div>An error occurred while fetching tasks</div>;
 
   return (
     <div className='px-4 xl:px-6'>
@@ -75,14 +80,14 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
 
       <div className='overflow-hidden rounded-md bg-white shadow dark:bg-dark-secondary dark:text-white'>
         <div className='timeline'>
-          {/* <Gantt
+          <Gantt
             tasks={ganttTasks}
             {...displayOptions}
             columnWidth={displayOptions.viewMode === ViewMode.Month ? 150 : 100}
             listCellWidth='100px'
             barBackgroundColor={isDarkMode ? '#101214' : '#aeb8c2'}
             barBackgroundSelectedColor={isDarkMode ? '#000' : '#9ba1a6'}
-          /> */}
+          />
         </div>
         <div className='px-4 pb-5 pt-1'>
           <button
