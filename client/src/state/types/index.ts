@@ -143,6 +143,15 @@ export interface SearchFilter {
   [key: string]: any;
 }
 
+export interface IGenericResponse<T> {
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+  };
+  data: T;
+}
+
 export enum Priority {
   Urgent = 'Urgent',
   High = 'High',

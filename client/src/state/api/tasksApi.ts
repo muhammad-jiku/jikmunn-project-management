@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Pagination, SearchFilter, Task } from '../types';
+import { IGenericResponse, Pagination, SearchFilter, Task } from '../types';
 
 export const tasksApi = createApi({
   reducerPath: 'tasksApi',
@@ -17,18 +17,15 @@ export const tasksApi = createApi({
       }),
       invalidatesTags: ['Task'],
     }),
-    getTasks: build.query<Task[], Pagination & SearchFilter>({
-      query: (params) => ({
-        url: '/tasks',
-        params: params,
-      }),
+    getTasks: build.query<IGenericResponse<Task[]>, Pagination & SearchFilter>({
+      query: () => '/tasks',
       providesTags: ['Task'],
     }),
-    getTasksByUser: build.query<Task[], number>({
+    getTasksByUser: build.query<IGenericResponse<Task[]>, number>({
       query: (userId) => `/tasks/user/${userId}`,
       providesTags: (result, error, userId) =>
         result
-          ? result.map(({ id }) => ({ type: 'Task' as const, id }))
+          ? result.data.map(({ id }) => ({ type: 'Task' as const, id }))
           : [{ type: 'Task' as const, id: userId }],
     }),
     updateTaskStatus: build.mutation<Task, { taskId: number; status: string }>({

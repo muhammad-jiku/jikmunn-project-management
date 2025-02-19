@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Pagination, Project, SearchFilter } from '../types';
+import { IGenericResponse, Pagination, Project, SearchFilter } from '../types';
 
 export const projectsApi = createApi({
   reducerPath: 'projectsApi',
@@ -17,7 +17,10 @@ export const projectsApi = createApi({
       }),
       invalidatesTags: ['Project'],
     }),
-    getProjects: build.query<Project[], Pagination & SearchFilter>({
+    getProjects: build.query<
+      IGenericResponse<Project[]>,
+      Pagination & SearchFilter
+    >({
       query: (params) => ({
         url: '/projects',
         params: params,
