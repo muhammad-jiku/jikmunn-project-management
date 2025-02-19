@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Team } from '../types';
+import { IGenericResponse, Pagination, SearchFilter, Team } from '../types';
 
 export const teamsApi = createApi({
   reducerPath: 'teamsApi',
@@ -17,7 +17,7 @@ export const teamsApi = createApi({
       }),
       invalidatesTags: ['Team'],
     }),
-    getTeams: build.query<Team[], void>({
+    getTeams: build.query<IGenericResponse<Team[]>, Pagination & SearchFilter>({
       query: () => '/teams',
       providesTags: ['Team'],
     }),

@@ -25,7 +25,11 @@ const insertIntoDB = async (payload: Team): Promise<Team> => {
   return await prisma.team.create({
     data: payload,
     include: {
-      owner: true,
+      owner: {
+        include: {
+          manager: true,
+        },
+      },
       members: true,
       projectTeams: true,
     },
@@ -41,7 +45,11 @@ const getAllFromDB = async (
     skip,
     take: limit,
     include: {
-      owner: true,
+      owner: {
+        include: {
+          manager: true,
+        },
+      },
       members: true,
       projectTeams: true,
     },
@@ -59,7 +67,11 @@ const getByIdFromDB = async (id: number): Promise<Team | null> => {
   const team = await prisma.team.findUnique({
     where: { id },
     include: {
-      owner: true,
+      owner: {
+        include: {
+          manager: true,
+        },
+      },
       members: true,
       projectTeams: true,
     },
@@ -97,7 +109,11 @@ const updateOneInDB = async (
     where: { id },
     data: payload,
     include: {
-      owner: true,
+      owner: {
+        include: {
+          manager: true,
+        },
+      },
       members: true,
       projectTeams: true,
     },
