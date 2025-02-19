@@ -14,8 +14,17 @@ const insertIntoDB = async (payload: Task): Promise<Task> => {
       data: payload,
       include: {
         project: true,
-        author: true,
-        assignee: true,
+        author: {
+          include: {
+            manager: true,
+            developer: true,
+          },
+        },
+        assignee: {
+          include: {
+            developer: true,
+          },
+        },
         attachments: true,
         comments: true,
         TaskAssignment: true,
@@ -74,8 +83,17 @@ const getAllFromDB = async (
     take: limit,
     include: {
       project: true,
-      author: true,
-      assignee: true,
+      author: {
+        include: {
+          manager: true,
+          developer: true,
+        },
+      },
+      assignee: {
+        include: {
+          developer: true,
+        },
+      },
       attachments: true,
       comments: true,
       TaskAssignment: true,
@@ -107,8 +125,17 @@ const getUserTasksFromDB = async (userId: string): Promise<Task[]> => {
       },
       include: {
         project: true,
-        author: true,
-        assignee: true,
+        author: {
+          include: {
+            manager: true,
+            developer: true,
+          },
+        },
+        assignee: {
+          include: {
+            developer: true,
+          },
+        },
         attachments: true,
         comments: true,
         TaskAssignment: true,
@@ -136,8 +163,17 @@ const updateTaskStatusInDB = async (
       data: { status },
       include: {
         project: true,
-        author: true,
-        assignee: true,
+        author: {
+          include: {
+            manager: true,
+            developer: true,
+          },
+        },
+        assignee: {
+          include: {
+            developer: true,
+          },
+        },
         attachments: true,
         comments: true,
         TaskAssignment: true,
@@ -177,8 +213,17 @@ const deleteByIdFromDB = async (taskId: number): Promise<Task> => {
       where: { id: taskId },
       include: {
         project: true,
-        author: true,
-        assignee: true,
+        author: {
+          include: {
+            manager: true,
+            developer: true,
+          },
+        },
+        assignee: {
+          include: {
+            developer: true,
+          },
+        },
       },
     });
   } catch (error) {

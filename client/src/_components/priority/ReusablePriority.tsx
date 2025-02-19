@@ -1,11 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import Header from '@/_components/Header';
 import ModalNewTask from '@/_components/modals/ModalNewTask';
-import { Priority } from '@/state/types';
-import { GridColDef } from '@mui/x-data-grid';
+import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
+import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
+import { Priority, Task } from '@/state/types';
+import { useAppSelector } from '@/store';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useState } from 'react';
+import TaskCard from '../tasks/TaskCard';
 
 type Props = {
   priority: Priority;
@@ -56,34 +60,49 @@ const columns: GridColDef[] = [
     field: 'author',
     headerName: 'Author',
     width: 150,
-    renderCell: (params) => params.value.username || 'Unknown',
   },
   {
     field: 'assignee',
     headerName: 'Assignee',
     width: 150,
-    renderCell: (params) => params.value.username || 'Unassigned',
   },
 ];
 
-const ReusablePage = ({ priority }: Props) => {
+const ReusablePriority = ({ priority }: Props) => {
   const [view, setView] = useState('list');
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
+  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const globalUser = useAppSelector((state) => state.global.user?.data);
 
-  // const {
-  //   data: tasks,
-  //   isLoading,
-  //   isError: isTasksError,
-  // } = useGetTasksByUserQuery(1, {});
-  // console.log('priority page tasks data', tasks);
+  const userId = globalUser?.userId as string;
+  const {
+    data: tasks,
+    isLoading,
+    isError: isTasksError,
+  } = useGetTasksByUserQuery(userId, {});
+  console.log('priority page tasks data', tasks);
 
-  // const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  // Transform the data to include a flat author and assignee property
+  const filteredTasks = tasks?.data
+    .filter((task: Task) => task.priority === priority)
+    .map((task: any) => {
+      const authorManager = task.author?.manager;
+      const authorDeveloper = task.author?.developer;
+      const assigneeDeveloper = task.assignee?.developer;
 
-  // const filteredTasks = tasks?.data?.filter(
-  //   (task: Task) => task.priority === priority
-  // );
-  // console.log('priority page filtered tasks data', filteredTasks);
-  // if (isTasksError || !tasks) return <div>Error fetching tasks</div>;
+      return {
+        ...task,
+        author: authorManager
+          ? `${authorManager.firstName} ${authorManager.middleName ? authorManager.middleName + ' ' : ''}${authorManager.lastName}`
+          : `${authorDeveloper.firstName} ${authorDeveloper.middleName ? authorDeveloper.middleName + ' ' : ''}${authorDeveloper.lastName}`,
+        assignee: assigneeDeveloper
+          ? `${assigneeDeveloper.firstName} ${assigneeDeveloper.middleName ? assigneeDeveloper.middleName + ' ' : ''}${assigneeDeveloper.lastName}`
+          : task.assignee.username,
+      };
+    });
+  console.log('priority page filtered tasks data', filteredTasks);
+
+  if (isTasksError || !tasks) return <div>Error fetching tasks</div>;
 
   return (
     <div className='m-5 p-4'>
@@ -120,7 +139,7 @@ const ReusablePage = ({ priority }: Props) => {
           Table
         </button>
       </div>
-      {/* {isLoading ? (
+      {isLoading ? (
         <div>Loading tasks...</div>
       ) : view === 'list' ? (
         <div className='grid grid-cols-1 gap-4'>
@@ -142,9 +161,9 @@ const ReusablePage = ({ priority }: Props) => {
             />
           </div>
         )
-      )} */}
+      )}
     </div>
   );
 };
 
-export default ReusablePage;
+export default ReusablePriority;

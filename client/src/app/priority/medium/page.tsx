@@ -1,8 +1,8 @@
-import ReusablePage from '@/_components/priority/ReusablePage';
+import ReusablePriority from '@/_components/priority/ReusablePriority';
 import { Priority } from '@/state/types';
 
 const Medium = () => {
-  return <ReusablePage priority={Priority.Medium} />;
+  return <ReusablePriority priority={Priority.Medium} />;
 };
 
 export default Medium;

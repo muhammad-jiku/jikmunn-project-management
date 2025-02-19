@@ -1,8 +1,8 @@
-import ReusablePage from '@/_components/priority/ReusablePage';
+import ReusablePriority from '@/_components/priority/ReusablePriority';
 import { Priority } from '@/state/types';
 
 const Backlog = () => {
-  return <ReusablePage priority={Priority.Backlog} />;
+  return <ReusablePriority priority={Priority.Backlog} />;
 };
 
 export default Backlog;

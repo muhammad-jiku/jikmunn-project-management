@@ -21,7 +21,7 @@ export const tasksApi = createApi({
       query: () => '/tasks',
       providesTags: ['Task'],
     }),
-    getTasksByUser: build.query<IGenericResponse<Task[]>, number>({
+    getTasksByUser: build.query<IGenericResponse<Task[]>, string>({
       query: (userId) => `/tasks/user/${userId}`,
       providesTags: (result, error, userId) =>
         result

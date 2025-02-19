@@ -1,7 +1,7 @@
 import { Task } from '@/state/types';
 import { format } from 'date-fns';
-// import Image from 'next/image';
-// import i1 from '../../../public/i1.jpg';
+import Image from 'next/image';
+import i1 from '../../../public/i1.jpg';
 
 type Props = {
   task: Task;
@@ -10,7 +10,7 @@ type Props = {
 const TaskCard = ({ task }: Props) => {
   return (
     <div className='mb-3 rounded bg-white p-4 shadow dark:bg-dark-secondary dark:text-white'>
-      {/* {task.attachments && task.attachments.length > 0 && (
+      {task?.attachments && task?.attachments.length > 0 && (
         <div>
           <strong>Attachments:</strong>
           <div className='flex flex-wrap'>
@@ -25,7 +25,7 @@ const TaskCard = ({ task }: Props) => {
             )}
           </div>
         </div>
-      )} */}
+      )}
       <p>
         <strong>ID:</strong> {task.id}
       </p>
@@ -54,12 +54,11 @@ const TaskCard = ({ task }: Props) => {
         {task.dueDate ? format(new Date(task.dueDate), 'P') : 'Not set'}
       </p>
       <p>
-        <strong>Author:</strong>{' '}
-        {/* {task.author ? task.author.username : 'Unknown'} */}
+        <strong>Author:</strong> {task?.author ? `${task?.author}` : 'Unknown'}
       </p>
       <p>
         <strong>Assignee:</strong>{' '}
-        {/* {task.assignee ? task.assignee.username : 'Unassigned'} */}
+        {task?.assignee ? `${task?.assignee}` : 'Unassigned'}
       </p>
     </div>
   );
