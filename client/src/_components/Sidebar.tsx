@@ -11,6 +11,7 @@ import {
   Briefcase,
   ChevronDown,
   ChevronUp,
+  FolderCog,
   Home,
   Layers3,
   LockIcon,
@@ -38,8 +39,8 @@ const Sidebar = () => {
     (state: RootState) => state.global.user?.data
   );
 
-  const [showProjects, setShowProjects] = useState(true);
-  const [showPriority, setShowPriority] = useState(true);
+  // const [showProjects, setShowProjects] = useState(true);
+  const [showPriority, setShowPriority] = useState<boolean>(true);
   const [avatar, setAvatar] = useState<string | undefined>('');
 
   useEffect(() => {
@@ -123,18 +124,17 @@ const Sidebar = () => {
           </div>
         </div>
         {/* NAVBAR LINKS */}
-
         <nav className='z-10 w-full'>
           <SidebarLink icon={Home} label='Home' href='/' />
           <SidebarLink icon={Briefcase} label='Timeline' href='/timeline' />
           <SidebarLink icon={Search} label='Search' href='/search' />
-          {/* <SidebarLink icon={Settings} label='Settings' href='/settings' /> */}
+          <SidebarLink icon={FolderCog} label='Projects' href='/projects' />
           <SidebarLink icon={User} label='Users' href='/users' />
           <SidebarLink icon={Users} label='Teams' href='/teams' />
         </nav>
 
         {/* PROJECTS LINKS */}
-        <button
+        {/* <button
           onClick={() => setShowProjects((prev) => !prev)}
           className='flex w-full items-center justify-between px-8 py-3 text-gray-500'
         >
@@ -144,7 +144,7 @@ const Sidebar = () => {
           ) : (
             <ChevronDown className='h-5 w-5' />
           )}
-        </button>
+        </button> */}
         {/* PROJECTS LIST */}
         {/* {showProjects &&
           projects?.data?.map((project) => (

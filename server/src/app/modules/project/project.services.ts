@@ -26,7 +26,11 @@ const insertIntoDB = async (payload: Project): Promise<Project | null> => {
     const result = await tx.project.create({
       data: payload,
       include: {
-        owner: true,
+        owner: {
+          include: {
+            manager: true,
+          },
+        },
         tasks: true,
         projectTeams: true,
       },
@@ -86,7 +90,11 @@ const getAllFromDB = async (
         ? { [options.sortBy]: options.sortOrder }
         : { createdAt: 'desc' },
     include: {
-      owner: true,
+      owner: {
+        include: {
+          manager: true,
+        },
+      },
       tasks: true,
       projectTeams: {
         include: {
@@ -115,7 +123,11 @@ const getByIdFromDB = async (id: number): Promise<Project | null> => {
   const result = await prisma.project.findUnique({
     where: { id },
     include: {
-      owner: true,
+      owner: {
+        include: {
+          manager: true,
+        },
+      },
       tasks: true,
       projectTeams: {
         include: {
@@ -171,7 +183,11 @@ const updateOneInDB = async (
       where: { id },
       data: payload,
       include: {
-        owner: true,
+        owner: {
+          include: {
+            manager: true,
+          },
+        },
         tasks: true,
         projectTeams: {
           include: {
@@ -227,7 +243,11 @@ const updateProjectTeamsById = async (
         },
       },
       include: {
-        owner: true,
+        owner: {
+          include: {
+            manager: true,
+          },
+        },
         tasks: true,
         projectTeams: {
           include: {
@@ -276,7 +296,11 @@ const deleteByIdFromDB = async (id: number): Promise<Project | null> => {
     const result = await tx.project.delete({
       where: { id },
       include: {
-        owner: true,
+        owner: {
+          include: {
+            manager: true,
+          },
+        },
         tasks: true,
         projectTeams: true,
       },

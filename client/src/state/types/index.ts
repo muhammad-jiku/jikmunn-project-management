@@ -122,6 +122,7 @@ export interface Project {
   startDate?: string;
   endDate?: string;
   projectOwnerId: string;
+  owner?: User;
 }
 
 export interface Team {

@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import Header from '@/_components/Header';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
-import { useGetTeamsQuery } from '@/state/api/teamsApi';
+import { useGetProjectsQuery } from '@/state/api/projectsApi';
+import { Project } from '@/state/types';
 import { useAppSelector } from '@/store';
 import {
   DataGrid,
@@ -12,6 +12,7 @@ import {
   GridToolbarExport,
   GridToolbarFilterButton,
 } from '@mui/x-data-grid';
+import Link from 'next/link';
 
 const CustomToolbar = () => (
   <GridToolbarContainer className='toolbar flex gap-2'>
@@ -21,22 +22,37 @@ const CustomToolbar = () => (
 );
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'Team ID', width: 100 },
-  { field: 'name', headerName: 'Team Name', width: 200 },
+  {
+    field: 'id',
+    headerName: 'Project ID',
+    width: 100,
+    renderCell: (params) => (
+      // Wrap the id in a Link so that clicking it navigates to the project details page.
+      <Link
+        href={`/projects/${params.value}`}
+        className='hover:text-blue-500 hover:underline'
+      >
+        {params.value}
+      </Link>
+    ),
+  },
+  { field: 'title', headerName: 'Title', width: 200 },
+  { field: 'startDate', headerName: 'Start Date', width: 200 },
+  { field: 'endDate', headerName: 'End Date', width: 200 },
   { field: 'projectOwnerFullName', headerName: 'Project Owner', width: 200 },
 ];
 
-const Teams = () => {
+const Projects = () => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-
-  const { data: teams, isLoading, isError } = useGetTeamsQuery({});
-  console.log('teams page data', teams);
+  const { data: projects, isLoading, isError } = useGetProjectsQuery({});
+  console.log('projects data', projects);
 
   // Transform the data to include a flat projectOwnerFullName property
-  const rows = teams?.data.map((team: any) => {
-    const ownerManager = team.owner?.manager;
+  const rows = projects?.data.map((project: Project) => {
+    const ownerManager = project.owner?.manager;
+
     return {
-      ...team,
+      ...project,
       projectOwnerFullName: ownerManager
         ? `${ownerManager.firstName} ${ownerManager.middleName ? ownerManager.middleName + ' ' : ''}${ownerManager.lastName}`
         : 'N/A',
@@ -44,15 +60,15 @@ const Teams = () => {
   });
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError || !teams) return <div>Error fetching teams</div>;
+  if (isError || !projects) return <div>Error fetching projects</div>;
 
   return (
     <div className='flex w-full flex-col p-8'>
-      <Header name='Teams' />
-      {teams.data.length === 0 ? (
+      <Header name='Projects' />
+      {projects?.data.length === 0 ? (
         <div className='flex h-[650px] w-full items-center justify-center'>
           <p className='text-xl sm:text-2xl md:text-3xl font-semibold text-gray-600 dark:text-gray-300'>
-            No team created yet!
+            No project created yet!
           </p>
         </div>
       ) : (
@@ -73,4 +89,4 @@ const Teams = () => {
   );
 };
 
-export default Teams;
+export default Projects;
