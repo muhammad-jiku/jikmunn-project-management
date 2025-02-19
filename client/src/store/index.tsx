@@ -4,8 +4,10 @@ import { adminsApi } from '@/state/api/adminsApi';
 import { authApi } from '@/state/api/authApi';
 import { developersApi } from '@/state/api/developersApi';
 import { managersApi } from '@/state/api/managersApi';
+import { projectsApi } from '@/state/api/projectsApi';
 import { superAdminsApi } from '@/state/api/superAdminsApi';
 import { tasksApi } from '@/state/api/tasksApi';
+import { teamsApi } from '@/state/api/teamsApi';
 import { usersApi } from '@/state/api/usersApi';
 import signupReducer from '@/state/signupSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
@@ -43,13 +45,14 @@ const persistConfig = {
 const rootReducer = combineReducers({
   global: globalReducer,
   signup: signupReducer,
-  // [api.reducerPath]: api.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [developersApi.reducerPath]: developersApi.reducer,
   [managersApi.reducerPath]: managersApi.reducer,
   [adminsApi.reducerPath]: adminsApi.reducer,
   [superAdminsApi.reducerPath]: superAdminsApi.reducer,
+  [projectsApi.reducerPath]: projectsApi.reducer,
+  [teamsApi.reducerPath]: teamsApi.reducer,
   [tasksApi.reducerPath]: tasksApi.reducer,
 });
 
@@ -99,6 +102,14 @@ export const makeStore = () => {
             superAdminsApi.reducerPath + '/executeQuery/pending',
             superAdminsApi.reducerPath + '/executeQuery/fulfilled',
             superAdminsApi.reducerPath + '/executeQuery/rejected',
+            // project api reducer path
+            projectsApi.reducerPath + '/executeQuery/pending',
+            projectsApi.reducerPath + '/executeQuery/fulfilled',
+            projectsApi.reducerPath + '/executeQuery/rejected',
+            // team api reducer path
+            teamsApi.reducerPath + '/executeQuery/pending',
+            teamsApi.reducerPath + '/executeQuery/fulfilled',
+            teamsApi.reducerPath + '/executeQuery/rejected',
             // task api reducer path
             tasksApi.reducerPath + '/executeQuery/pending',
             tasksApi.reducerPath + '/executeQuery/fulfilled',
@@ -112,6 +123,8 @@ export const makeStore = () => {
         managersApi.middleware,
         adminsApi.middleware,
         superAdminsApi.middleware,
+        projectsApi.middleware,
+        teamsApi.middleware,
         tasksApi.middleware
       ),
   });

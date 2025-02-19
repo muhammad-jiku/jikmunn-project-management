@@ -1,3 +1,4 @@
+import { persistor } from '@/store';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logoutUser, setAuthCredentials } from '..';
 import { AuthResponse, User } from '../types';
@@ -28,6 +29,9 @@ export const authApi = createApi({
                 needsPasswordChange: data.needsPasswordChange,
               })
             );
+
+            // Optionally, To clear persisted state:
+            await persistor.purge();
             return;
           }
           // Otherwise, fetch the current user
