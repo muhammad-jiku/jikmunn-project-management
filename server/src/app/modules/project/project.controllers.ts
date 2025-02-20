@@ -28,10 +28,15 @@ const insertIntoDB = catchAsync(
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const user = req.user!;
       const filters = pick(req.query, projectFilterableFields);
       const options = pick(req.query, paginationFields);
 
-      const result = await ProjectServices.getAllFromDB(filters, options);
+      const result = await ProjectServices.getAllFromDB(
+        user!.userId,
+        filters,
+        options
+      );
 
       sendResponse<Project[]>(res, {
         statusCode: httpStatus.OK,
@@ -45,6 +50,24 @@ const getAllFromDB = catchAsync(
     }
   }
 );
+
+// const getUserProjectsFromDB = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const { userId } = req.params;
+//       const result = await ProjectServices.getUserProjectsFromDB(userId);
+
+//       sendResponse<Project[]>(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: 'User tasks retrieved successfully',
+//         data: result,
+//       });
+//     } catch (error) {
+//       return next(error);
+//     }
+//   }
+// );
 
 const getByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -129,6 +152,7 @@ const deleteFromDB = catchAsync(
 export const ProjectControllers = {
   insertIntoDB,
   getAllFromDB,
+  // getUserProjectsFromDB,
   getByIdFromDB,
   updateIntoDB,
   updateProjectTeamsById,

@@ -1,5 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { IGenericResponse, Pagination, Project, SearchFilter } from '../types';
+import {
+  IGenericResponse,
+  NewProject,
+  Pagination,
+  Project,
+  SearchFilter,
+} from '../types';
 
 export const projectsApi = createApi({
   reducerPath: 'projectsApi',
@@ -9,11 +15,11 @@ export const projectsApi = createApi({
   }),
   tagTypes: ['Project'],
   endpoints: (build) => ({
-    createProject: build.mutation<Project, { data: Project }>({
-      query: (data) => ({
+    createProject: build.mutation<Project, NewProject>({
+      query: (newProject) => ({
         url: '/projects/create',
         method: 'POST',
-        body: data,
+        body: newProject,
       }),
       invalidatesTags: ['Project'],
     }),
@@ -27,6 +33,13 @@ export const projectsApi = createApi({
       }),
       providesTags: ['Project'],
     }),
+    // getProjectsByUser: build.query<IGenericResponse<Project[]>, string>({
+    //   query: (userId) => `/projects/me/${userId}`,
+    //   providesTags: (result, error, userId) =>
+    //     result
+    //       ? result.data.map(({ id }) => ({ type: 'Project' as const, id }))
+    //       : [{ type: 'Project' as const, id: userId }],
+    // }),
     getProject: build.query<Project, number>({
       query: (id) => ({
         url: `/projects/${id}`,
@@ -68,6 +81,7 @@ export const projectsApi = createApi({
 export const {
   useCreateProjectMutation,
   useGetProjectsQuery,
+  // useGetProjectsByUserQuery,
   useGetProjectQuery,
   useUpdateProjectMutation,
   useDeleteProjectMutation,

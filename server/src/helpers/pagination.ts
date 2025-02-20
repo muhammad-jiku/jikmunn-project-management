@@ -15,7 +15,7 @@ interface IOptionsResult {
 
 const calculatePagination = (options: IOptions): IOptionsResult => {
   const page = Math.max(Number(options.page || 1), 1); // Ensure page is at least 1
-  const limit = Number(options.limit || 10);
+  const limit = Number(options.limit || 25);
 
   const skip = (page - 1) * limit;
 

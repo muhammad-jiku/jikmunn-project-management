@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Developer {
-  id: string;
+  id?: string;
   developerId: string;
   firstName: string;
   lastName: string;
@@ -13,7 +13,7 @@ export interface Developer {
 }
 
 export interface Manager {
-  id: string;
+  id?: string;
   managerId: string;
   firstName: string;
   lastName: string;
@@ -26,7 +26,7 @@ export interface Manager {
 }
 
 export interface Admin {
-  id: string;
+  id?: string;
   adminId: string;
   firstName: string;
   lastName: string;
@@ -39,7 +39,7 @@ export interface Admin {
 }
 
 export interface SuperAdmin {
-  id: string;
+  id?: string;
   superAdminId: string;
   firstName: string;
   lastName: string;
@@ -98,7 +98,7 @@ export interface SignupPayload {
 }
 
 export interface Task {
-  id: number;
+  id?: number;
   title: string;
   description?: string;
   status?: string;
@@ -117,7 +117,7 @@ export interface Task {
 }
 
 export interface Project {
-  id: number;
+  id?: number;
   title: string;
   description?: string;
   startDate?: string;
@@ -126,26 +126,28 @@ export interface Project {
   owner?: User;
 }
 
+export type NewProject = Omit<Project, 'id' | 'createdAt' | 'updatedAt'>;
+
 export interface Team {
-  id: number;
+  id?: number;
   name: string;
   teamOwnerId: string;
 }
 
 export interface TeamMember {
-  id: number;
+  id?: number;
   teamId: number;
   userId: string;
 }
 
 export interface Attachment {
-  id: number;
+  id?: number;
   fileName: string;
   fileURL: string;
 }
 
 export interface Comment {
-  id: number;
+  id?: number;
   text: string;
   taskId: number;
   userId: string;

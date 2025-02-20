@@ -38,6 +38,13 @@ router
     ProjectControllers.deleteFromDB
   );
 
+// router
+//   .route('/me/:userId')
+//   .get(
+//     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+//     ProjectControllers.getUserProjectsFromDB
+//   );
+
 router
   .route('/teams/update')
   .post(

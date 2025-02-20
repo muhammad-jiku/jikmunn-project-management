@@ -48,7 +48,7 @@ const HomePage = () => {
   if (tasksLoading || isProjectsLoading) return <div>Loading..</div>;
   if (tasksError || !tasks || !projects) return <div>Error fetching data</div>;
 
-  // Compute task priority distribution only if tasks are available
+  // Compute task priority distribution
   const priorityCount =
     tasks.data?.reduce((acc: Record<string, number>, task: Task) => {
       const { priority } = task;
@@ -61,10 +61,24 @@ const HomePage = () => {
     count: priorityCount[key],
   }));
 
-  // Compute project status only if projects are available
+  // Get the current year
+  const currentYear = new Date().getFullYear();
+
+  // Compute project status based on endDate
   const statusCount =
     projects.data?.reduce((acc: Record<string, number>, project: Project) => {
-      const status = project.endDate ? 'Completed' : 'Active';
+      let status = 'Active';
+      if (project.endDate) {
+        const endDate = new Date(project.endDate);
+        if (endDate.getFullYear() < currentYear) {
+          status = 'Completed';
+        } else if (endDate.getFullYear() === currentYear) {
+          // If the end date is in the current year, check if it's already passed
+          status = endDate.getTime() < Date.now() ? 'Completed' : 'Active';
+        } else {
+          status = 'Active';
+        }
+      }
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {}) || {};
@@ -98,7 +112,7 @@ const HomePage = () => {
             Task Priority Distribution
           </h3>
           {tasks.data.length === 0 ? (
-            <div className='flex items-center justify-center h-[300px] text-center'>
+            <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
               No task information added yet!
             </div>
           ) : (
@@ -111,10 +125,7 @@ const HomePage = () => {
                 <XAxis dataKey='name' stroke={chartColors.text} />
                 <YAxis stroke={chartColors.text} />
                 <Tooltip
-                  contentStyle={{
-                    width: 'min-content',
-                    height: 'min-content',
-                  }}
+                  contentStyle={{ width: 'min-content', height: 'min-content' }}
                 />
                 <Legend />
                 <Bar dataKey='count' fill={chartColors.bar} />
@@ -129,7 +140,7 @@ const HomePage = () => {
             Project Status
           </h3>
           {projects.data.length === 0 ? (
-            <div className='flex items-center justify-center h-[300px] text-center'>
+            <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
               No project information added yet!
             </div>
           ) : (
@@ -157,7 +168,7 @@ const HomePage = () => {
           </h3>
           <div style={{ height: 400, width: '100%' }}>
             {tasks.data.length === 0 ? (
-              <div className='flex items-center justify-center h-full text-center'>
+              <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
                 No task information added yet!
               </div>
             ) : (

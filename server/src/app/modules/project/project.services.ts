@@ -10,12 +10,14 @@ import { IProjectFilterRequest } from './project.interfaces';
 
 // Create a new project
 const insertIntoDB = async (payload: Project): Promise<Project | null> => {
+  console.log('first project..', payload);
   return await prisma.$transaction(async (tx) => {
     // Check if project owner exists
     const ownerExists = await tx.user.findUnique({
       where: { userId: payload.projectOwnerId },
     });
 
+    console.log('existed owner', ownerExists);
     if (!ownerExists) {
       throw new ApiError(
         httpStatus.NOT_FOUND,
@@ -36,6 +38,7 @@ const insertIntoDB = async (payload: Project): Promise<Project | null> => {
       },
     });
 
+    console.log('result project', result);
     if (!result) {
       throw new ApiError(
         httpStatus.INTERNAL_SERVER_ERROR,
@@ -49,9 +52,11 @@ const insertIntoDB = async (payload: Project): Promise<Project | null> => {
 
 // Get all projects with filtering and pagination
 const getAllFromDB = async (
+  userId: string,
   filters: IProjectFilterRequest,
   options: IPaginationOptions
 ): Promise<IGenericResponse<Project[]>> => {
+  console.log('user id ', userId);
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
   const { searchTerm, ...filterData } = filters;
 
@@ -78,8 +83,10 @@ const getAllFromDB = async (
     });
   }
 
-  const whereConditions: Prisma.ProjectWhereInput =
-    andConditions.length > 0 ? { AND: andConditions } : {};
+  const whereConditions: Prisma.ProjectWhereInput = {
+    OR: [{ projectOwnerId: userId }],
+    ...(andConditions.length > 0 && { AND: andConditions }),
+  };
 
   const result = await prisma.project.findMany({
     where: whereConditions,
@@ -104,6 +111,7 @@ const getAllFromDB = async (
     },
   });
 
+  console.log('result projects', result);
   const total = await prisma.project.count({
     where: whereConditions,
   });
@@ -117,6 +125,33 @@ const getAllFromDB = async (
     data: result,
   };
 };
+
+// // Get projects by User
+// const getUserProjectsFromDB = async (userId: string): Promise<Project[]> => {
+//   try {
+//     return await prisma.project.findMany({
+//       where: { projectOwnerId: userId },
+//       include: {
+//         owner: {
+//           include: {
+//             manager: true,
+//           },
+//         },
+//         tasks: true,
+//         projectTeams: true,
+//       },
+//       orderBy: {
+//         createdAt: 'desc',
+//       },
+//     });
+//   } catch (error) {
+//     console.error('Error retrieving user projects:', error);
+//     throw new ApiError(
+//       httpStatus.INTERNAL_SERVER_ERROR,
+//       'Failed to retrieve user projects'
+//     );
+//   }
+// };
 
 // Get a single project by ID
 const getByIdFromDB = async (id: number): Promise<Project | null> => {
@@ -317,6 +352,7 @@ const deleteByIdFromDB = async (id: number): Promise<Project | null> => {
 export const ProjectServices = {
   insertIntoDB,
   getAllFromDB,
+  // getUserProjectsFromDB,
   getByIdFromDB,
   updateOneInDB,
   updateProjectTeamsById,
