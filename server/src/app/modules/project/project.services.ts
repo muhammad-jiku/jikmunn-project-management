@@ -126,33 +126,6 @@ const getAllFromDB = async (
   };
 };
 
-// // Get projects by User
-// const getUserProjectsFromDB = async (userId: string): Promise<Project[]> => {
-//   try {
-//     return await prisma.project.findMany({
-//       where: { projectOwnerId: userId },
-//       include: {
-//         owner: {
-//           include: {
-//             manager: true,
-//           },
-//         },
-//         tasks: true,
-//         projectTeams: true,
-//       },
-//       orderBy: {
-//         createdAt: 'desc',
-//       },
-//     });
-//   } catch (error) {
-//     console.error('Error retrieving user projects:', error);
-//     throw new ApiError(
-//       httpStatus.INTERNAL_SERVER_ERROR,
-//       'Failed to retrieve user projects'
-//     );
-//   }
-// };
-
 // Get a single project by ID
 const getByIdFromDB = async (id: number): Promise<Project | null> => {
   const result = await prisma.project.findUnique({
@@ -352,7 +325,6 @@ const deleteByIdFromDB = async (id: number): Promise<Project | null> => {
 export const ProjectServices = {
   insertIntoDB,
   getAllFromDB,
-  // getUserProjectsFromDB,
   getByIdFromDB,
   updateOneInDB,
   updateProjectTeamsById,

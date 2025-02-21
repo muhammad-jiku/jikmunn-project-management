@@ -51,24 +51,6 @@ const getAllFromDB = catchAsync(
   }
 );
 
-// const getUserProjectsFromDB = catchAsync(
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const { userId } = req.params;
-//       const result = await ProjectServices.getUserProjectsFromDB(userId);
-
-//       sendResponse<Project[]>(res, {
-//         statusCode: httpStatus.OK,
-//         success: true,
-//         message: 'User tasks retrieved successfully',
-//         data: result,
-//       });
-//     } catch (error) {
-//       return next(error);
-//     }
-//   }
-// );
-
 const getByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -152,7 +134,6 @@ const deleteFromDB = catchAsync(
 export const ProjectControllers = {
   insertIntoDB,
   getAllFromDB,
-  // getUserProjectsFromDB,
   getByIdFromDB,
   updateIntoDB,
   updateProjectTeamsById,

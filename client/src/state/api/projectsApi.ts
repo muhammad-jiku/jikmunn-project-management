@@ -33,13 +33,6 @@ export const projectsApi = createApi({
       }),
       providesTags: ['Project'],
     }),
-    // getProjectsByUser: build.query<IGenericResponse<Project[]>, string>({
-    //   query: (userId) => `/projects/me/${userId}`,
-    //   providesTags: (result, error, userId) =>
-    //     result
-    //       ? result.data.map(({ id }) => ({ type: 'Project' as const, id }))
-    //       : [{ type: 'Project' as const, id: userId }],
-    // }),
     getProject: build.query<Project, number>({
       query: (id) => ({
         url: `/projects/${id}`,
@@ -81,7 +74,6 @@ export const projectsApi = createApi({
 export const {
   useCreateProjectMutation,
   useGetProjectsQuery,
-  // useGetProjectsByUserQuery,
   useGetProjectQuery,
   useUpdateProjectMutation,
   useDeleteProjectMutation,

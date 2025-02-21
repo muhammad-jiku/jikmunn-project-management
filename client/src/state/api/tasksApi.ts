@@ -1,5 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { IGenericResponse, Pagination, SearchFilter, Task } from '../types';
+import {
+  IGenericResponse,
+  NewTask,
+  Pagination,
+  SearchFilter,
+  Task,
+} from '../types';
 
 export const tasksApi = createApi({
   reducerPath: 'tasksApi',
@@ -9,11 +15,11 @@ export const tasksApi = createApi({
   }),
   tagTypes: ['Task'],
   endpoints: (build) => ({
-    createTask: build.mutation<Task, { data: Task }>({
-      query: (data) => ({
+    createTask: build.mutation<Task, NewTask>({
+      query: (newTask) => ({
         url: '/tasks/create',
         method: 'POST',
-        body: data,
+        body: newTask,
       }),
       invalidatesTags: ['Task'],
     }),

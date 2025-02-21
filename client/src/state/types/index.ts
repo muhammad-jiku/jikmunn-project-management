@@ -101,12 +101,12 @@ export interface Task {
   id?: number;
   title: string;
   description?: string;
-  status?: string;
-  priority?: string;
+  status?: Status;
+  priority?: Priority;
   tags?: string;
+  points?: number;
   startDate?: string;
   dueDate?: string;
-  points?: number;
   projectId: number;
   authorUserId?: string;
   assignedUserId?: string;
@@ -115,6 +115,8 @@ export interface Task {
   attachments?: Attachment[];
   comments?: Comment[];
 }
+
+export type NewTask = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>;
 
 export interface Project {
   id?: number;
