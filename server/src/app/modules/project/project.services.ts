@@ -25,6 +25,13 @@ const insertIntoDB = async (payload: Project): Promise<Project | null> => {
       );
     }
 
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tblproject', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblproject) + 1
+      )
+    `;
+
     const result = await tx.project.create({
       data: payload,
       include: {

@@ -9,47 +9,35 @@ import { taskSearchableFields } from './task.constants';
 import { ITaskFilterRequest } from './task.interfaces';
 
 const insertIntoDB = async (payload: Task): Promise<Task | null> => {
-  // try {
-  //   console.log('task payload', payload);
-  //   // Create a shallow copy and explicitly delete id-related keys.
-  //   const data = { ...payload } as any;
-  //   delete data.id;
-  //   delete data.createdAt;
-  //   delete data.updatedAt;
-  //   console.log('Clean payload', data);
+  console.log('Task payload', payload);
 
-  //   const newTask = await prisma.task.create({
-  //     data, // Only the cleaned fields are sent
-  //     include: {
-  //       project: true,
-  //       author: { include: { manager: true, developer: true } },
-  //       assignee: { include: { developer: true } },
-  //       attachments: true,
-  //       comments: true,
-  //       TaskAssignment: true,
-  //     },
-  //   });
-  //   return newTask;
-  // } catch (error) {
-  //   console.error('Error during task creation:', error);
-  //   throw new ApiError(
-  //     httpStatus.INTERNAL_SERVER_ERROR,
-  //     'Failed to create task'
-  //   );
-  // }
-  console.log('first task..', payload);
   return await prisma.$transaction(async (tx) => {
     // Check if task owner exists
     const ownerExists = await tx.user.findUnique({
       where: { userId: payload.authorUserId },
     });
 
-    console.log('existed owner', ownerExists);
     if (!ownerExists) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Task owner does not exist!');
     }
 
-    console.log(tx.task.create({ data: payload }));
+    // Check if task assignee exists
+    const assigneeExists = await tx.user.findUnique({
+      where: { userId: payload.assignedUserId as string },
+    });
+
+    if (!assigneeExists) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Task assignee does not exist!');
+    }
+
+    // Ensure the auto-increment sequence for tbltask is set correctly
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tbltask', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tbltask) + 1
+      )
+    `;
+
     const result = await tx.task.create({
       data: payload,
       include: {
@@ -71,7 +59,7 @@ const insertIntoDB = async (payload: Task): Promise<Task | null> => {
       },
     });
 
-    console.log('result task', result);
+    console.log('Result task', result);
     if (!result) {
       throw new ApiError(
         httpStatus.INTERNAL_SERVER_ERROR,
