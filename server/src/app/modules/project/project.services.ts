@@ -152,6 +152,7 @@ const getByIdFromDB = async (id: number): Promise<Project | null> => {
     },
   });
 
+  console.log('project result', result);
   if (!result) {
     throw new ApiError(
       httpStatus.NOT_FOUND,

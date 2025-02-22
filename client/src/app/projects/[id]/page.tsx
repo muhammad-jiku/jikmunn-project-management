@@ -1,57 +1,68 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import ProjectComp from '@/_components/projects/ProjectComp';
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
 
-import ModalNewTask from '@/_components/modals/ModalNewTask';
-import BoardView from '@/_components/projects/BoardView';
-import ListView from '@/_components/projects/ListView';
-import ProjectHeader from '@/_components/projects/ProjectHeader';
-import TableView from '@/_components/projects/TableView';
-import TimelineView from '@/_components/projects/TimeLineView';
-import { use, useState } from 'react';
+async function getProject(id: string) {
+  // Get the cookies from the incoming request headers
+  const reqHeaders = await headers();
+  const cookie = reqHeaders.get('cookie') || '';
 
-type Params = {
-  id: string;
-};
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects/${id}`,
+    {
+      cache: 'no-store',
+      // Forward the cookie so that the protected API can authenticate
+      headers: { cookie },
+    }
+  );
+  if (!res.ok) {
+    throw new Error('Failed to fetch project data');
+  }
+  return res.json();
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }> | { id: string };
+}): Promise<Metadata> {
+  // Await the params so you get the resolved object.
+  const resolvedParams = await params;
+  try {
+    const project = await getProject(resolvedParams.id);
+    console.log('project', project);
+    return {
+      title: `${project?.data?.title} - Project Management Dashboard`,
+      description: project?.data?.description || 'Project details',
+      openGraph: {
+        title: `${project?.data?.title} - Project Management Dashboard`,
+        description: project?.data?.description || 'Project details',
+        url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/projects/${resolvedParams.id}`,
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${project?.data?.title} - Project Management Dashboard`,
+        description: project?.data?.description || 'Project details',
+      },
+    };
+  } catch (error: any) {
+    console.error('metadata error', error);
+    return {
+      title: 'Project Management Dashboard',
+      description: 'Manage your projects effectively.',
+    };
+  }
+}
 
 type Props = {
-  // params might be a Promise or an object
-  params: Promise<Params> | Params;
+  params: { id: string };
 };
 
-const Project = ({ params }: Props) => {
-  // If params is a Promise, unwrap it using the experimental use() hook.
-  const resolvedParams: Params =
-    typeof (params as Promise<Params>).then === 'function'
-      ? use(params as Promise<Params>)
-      : (params as Params);
-
-  const { id } = resolvedParams;
-
-  // const { id } = params;
-  const [activeTab, setActiveTab] = useState('Board');
-  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
-
-  return (
-    <div>
-      <ModalNewTask
-        isOpen={isModalNewTaskOpen}
-        onClose={() => setIsModalNewTaskOpen(false)}
-        id={id}
-      />
-      <ProjectHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-      {activeTab === 'Board' && (
-        <BoardView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
-      )}
-      {activeTab === 'List' && (
-        <ListView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
-      )}
-      {activeTab === 'Timeline' && (
-        <TimelineView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
-      )}
-      {activeTab === 'Table' && (
-        <TableView id={id} setIsModalNewTaskOpen={setIsModalNewTaskOpen} />
-      )}
-    </div>
-  );
+const ProjectPage = ({ params }: Props) => {
+  // This is a server component that renders your client component.
+  return <ProjectComp params={params} />;
 };
 
-export default Project;
+export default ProjectPage;

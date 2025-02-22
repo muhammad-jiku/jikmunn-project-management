@@ -55,7 +55,7 @@ const getByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-
+      console.log('id of project', id);
       const result = await ProjectServices.getByIdFromDB(Number(id));
 
       sendResponse<Project>(res, {
