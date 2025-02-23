@@ -7,32 +7,55 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import { prisma } from '../../../shared/prisma';
 
 const insertIntoDB = async (payload: Team): Promise<Team> => {
+  console.log('first project..', payload);
   // Verify team owner exists
-  const ownerExists = await prisma.user.findUnique({
-    where: {
-      userId: payload.teamOwnerId,
-      role: 'MANAGER',
-    },
-  });
-
-  if (!ownerExists) {
-    throw new ApiError(
-      httpStatus.NOT_FOUND,
-      'Team owner must be a manager and must exist!'
-    );
-  }
-
-  return await prisma.team.create({
-    data: payload,
-    include: {
-      owner: {
-        include: {
-          manager: true,
-        },
+  return await prisma.$transaction(async (tx) => {
+    // Check if project owner exists
+    const ownerExists = await tx.user.findUnique({
+      where: {
+        userId: payload?.teamOwnerId,
+        role: 'MANAGER',
       },
-      members: true,
-      projectTeams: true,
-    },
+    });
+
+    console.log('existed owner', ownerExists);
+    if (!ownerExists) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        'Team owner must be a manager and must exist!'
+      );
+    }
+
+    // Ensure the auto-increment sequence for tblteam is set correctly
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tblteam', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
+      )
+    `;
+
+    const result = await tx.team.create({
+      data: payload,
+      include: {
+        owner: {
+          include: {
+            manager: true,
+          },
+        },
+        members: true,
+        projectTeams: true,
+      },
+    });
+
+    console.log('result team', result);
+    if (!result) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Failed to create team!'
+      );
+    }
+
+    return result;
   });
 };
 

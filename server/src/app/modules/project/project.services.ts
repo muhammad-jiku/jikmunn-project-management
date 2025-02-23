@@ -25,6 +25,7 @@ const insertIntoDB = async (payload: Project): Promise<Project | null> => {
       );
     }
 
+    // Ensure the auto-increment sequence for tblproject is set correctly
     await tx.$executeRaw`
       SELECT setval(
         pg_get_serial_sequence('tblproject', 'id'),

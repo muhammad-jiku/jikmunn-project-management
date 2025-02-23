@@ -136,6 +136,8 @@ export interface Team {
   teamOwnerId: string;
 }
 
+export type NewTeam = Omit<Team, 'id' | 'createdAt' | 'updatedAt'>;
+
 export interface TeamMember {
   id?: number;
   teamId: number;

@@ -1,5 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { IGenericResponse, Pagination, SearchFilter, Team } from '../types';
+import {
+  IGenericResponse,
+  NewTeam,
+  Pagination,
+  SearchFilter,
+  Team,
+} from '../types';
 
 export const teamsApi = createApi({
   reducerPath: 'teamsApi',
@@ -9,11 +15,11 @@ export const teamsApi = createApi({
   }),
   tagTypes: ['Team'],
   endpoints: (build) => ({
-    createTeam: build.mutation<Team, { data: Team }>({
-      query: (data) => ({
+    createTeam: build.mutation<Team, NewTeam>({
+      query: (newTeam) => ({
         url: '/teams/create',
         method: 'POST',
-        body: data,
+        body: newTeam,
       }),
       invalidatesTags: ['Team'],
     }),
