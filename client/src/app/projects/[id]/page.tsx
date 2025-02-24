@@ -2,6 +2,7 @@
 import ProjectComp from '@/_components/projects/ProjectComp';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
 
 async function getProject(id: string) {
   // Get the cookies from the incoming request headers
@@ -49,10 +50,11 @@ export async function generateMetadata({
     };
   } catch (error: any) {
     console.error('metadata error', error);
-    return {
-      title: 'Project Management Dashboard',
-      description: 'Manage your projects effectively.',
-    };
+    notFound();
+    // return {
+    //   title: 'Project Management Dashboard',
+    //   description: 'Manage your projects effectively.',
+    // };
   }
 }
 
@@ -61,7 +63,6 @@ type Props = {
 };
 
 const ProjectPage = ({ params }: Props) => {
-  // This is a server component that renders your client component.
   return <ProjectComp params={params} />;
 };
 
