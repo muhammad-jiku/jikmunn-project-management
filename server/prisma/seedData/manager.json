@@ -1,0 +1,24 @@
+[
+  {
+    "managerId": "M-00001",
+    "firstName": "MA",
+    "middleName": "Hoque",
+    "lastName": "Jiku",
+    "profileImage": {
+      "url": "https://res.cloudinary.com/drlcxykvf/image/upload/v1739944110/jikmunn-project-management/avatars/xwi8xa8u8ba484uygo1z.jpg",
+      "public_id": "jikmunn-project-management/avatars/xwi8xa8u8ba484uygo1z"
+    },
+    "contact": "+8801766253827"
+  },
+  {
+    "managerId": "M-00002",
+    "firstName": "MD Azizul",
+    "middleName": "Hoque",
+    "lastName": "Jiku",
+    "profileImage": {
+      "url": "https://res.cloudinary.com/drlcxykvf/image/upload/v1740064788/jikmunn-project-management/avatars/qqqzzw7znbarpyqvq34m.png",
+      "public_id": "jikmunn-project-management/avatars/qqqzzw7znbarpyqvq34m"
+    },
+    "contact": "+8801855613789"
+  }
+]

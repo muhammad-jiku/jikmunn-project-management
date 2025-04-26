@@ -1,0 +1,42 @@
+[
+  {
+    "userId": "SA-00001",
+    "superAdminId": "SA-00001",
+    "username": "muhammadjiku364",
+    "email": "muhammadjiku364@gmail.com",
+    "role": "SUPER_ADMIN",
+    "password": "$2b$12$PtYwJu7mxiLv.N4ki8lgUOcFjGGjxNMxuvMQaAXpTg3JJhlVpwj5a"
+  },
+  {
+    "userId": "A-00001",
+    "adminId": "A-00001",
+    "username": "muhammadjiku64",
+    "email": "muhammadjiku64@gmail.com",
+    "role": "ADMIN",
+    "password": "$2b$12$OrOv64fhwBgrqT4KlfPT7.9y1E/xiDH6/Gz0IiRl7I2fZfhPzEVPa"
+  },
+  {
+    "userId": "M-00001",
+    "managerId": "M-00001",
+    "username": "muhammadjiku164",
+    "email": "muhammadjiku164@gmail.com",
+    "role": "MANAGER",
+    "password": "$2b$12$q6Q4koMtR8MSAfEgioQj7OAL//9clgk3OQrozxnjUrMu6633Gdi9O"
+  },
+  {
+    "userId": "M-00002",
+    "managerId": "M-00002",
+    "username": "muhammadjiku164364",
+    "email": "muhammadjiku164364@gmail.com",
+    "role": "MANAGER",
+    "password": "$2b$12$R/De1VUlysvuXes.19ITReNpMUHtJyrOSQnD0xRUG6lAspyzo6IQW"
+  },
+  {
+    "userId": "D-00001",
+    "developerId": "D-00001",
+    "username": "jonasdarkmartha",
+    "email": "jonasmartha805@gmail.com",
+    "role": "DEVELOPER",
+    "password": "$2b$12$/lbvr1ON17jc.rGbsgGxk.V982D2robybPOF0kf29IL8.SfNZf8b6"
+  }
+]

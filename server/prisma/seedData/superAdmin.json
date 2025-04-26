@@ -1,0 +1,11 @@
+{
+  "superAdminId": "SA-00001",
+  "firstName": "Muhammad Azizul",
+  "middleName": "Hoque",
+  "lastName": "Jiku",
+  "profileImage": {
+    "url": "https://res.cloudinary.com/drlcxykvf/image/upload/v1739943611/jikmunn-project-management/avatars/yseorpqfxbviiwuads3y.jpg",
+    "public_id": "jikmunn-project-management/avatars/yseorpqfxbviiwuads3y"
+  },
+  "contact": "+8801855613783"
+}
