@@ -30,7 +30,7 @@ const taskColumns: GridColDef[] = [
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-const HomePage = () => {
+const Home = () => {
   const {
     data: tasks,
     isLoading: tasksLoading,
@@ -190,4 +190,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Home;

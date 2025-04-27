@@ -1,4 +1,3 @@
-// components/CountdownTimer.tsx
 'use client';
 
 import { useAppSelector } from '@/store';

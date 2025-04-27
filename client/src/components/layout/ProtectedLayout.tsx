@@ -2,7 +2,7 @@
 
 import StoreProvider, { useAppSelector } from '@/store';
 import React, { useEffect } from 'react';
-import ProtectedRoute from '../auth/ProtectedRoute';
+import ProtectedRoute from './ProtectedRoute';
 import Navbar from '../shared/Navbar';
 import Sidebar from '../shared/Sidebar';
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ProjectComp from '@/components/projects/ProjectComp';
+import ProjectComp from '@/components/projects/Project';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';

@@ -17,14 +17,11 @@ import {
   Typography,
 } from '@mui/material';
 import { Eye, EyeClosed } from 'lucide-react';
-import {
-  // useRouter,
-  useSearchParams,
-} from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import TextInput from '../FormInputs/TextInput';
-import CountdownTimer from './CountdownTimer';
+import CountdownTimer from '../FormInputs/CountdownTimer';
 
 interface ResetPasswordFormInputs {
   newPassword: string;
@@ -32,7 +29,7 @@ interface ResetPasswordFormInputs {
 }
 
 const ResetPassword: React.FC = () => {
-  // const router = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
@@ -92,12 +89,12 @@ const ResetPassword: React.FC = () => {
   // When time expires, show message and redirect
   const handleExpire = () => {
     setMessage('Time expired. Redirecting...');
-    // setTimeout(
-    //   () => {
-    //     router.push('/sign-in');
-    //   },
-    //   10 * 60 * 60 * 1000
-    // );
+    setTimeout(
+      () => {
+        router.push('/sign-in');
+      },
+      10 * 60 * 60 * 1000
+    );
   };
 
   const onSubmit: SubmitHandler<ResetPasswordFormInputs> = async (data) => {
@@ -112,7 +109,7 @@ const ResetPassword: React.FC = () => {
     try {
       await resetPassword({ token, newPassword: data.newPassword }).unwrap();
       setMessage('Password has been reset successfully');
-      // setTimeout(() => router.push('/sign-in'), 10 * 60 * 60 * 1000);
+      setTimeout(() => router.push('/sign-in'), 10 * 60 * 60 * 1000);
     } catch (err: any) {
       setMessage(err.data?.message || 'Failed to reset password');
     }
