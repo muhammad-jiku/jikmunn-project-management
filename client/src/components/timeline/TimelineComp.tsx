@@ -1,6 +1,6 @@
 'use client';
 
-import Header from '@/components/Header';
+import Header from '@/components/shared/Header';
 import { useGetProjectsQuery } from '@/state/api/projectsApi';
 import { useAppSelector } from '@/store';
 import { DisplayOption, Gantt, ViewMode } from 'gantt-task-react';

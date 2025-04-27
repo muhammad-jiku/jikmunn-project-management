@@ -8,8 +8,8 @@ import {
   Table,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import Header from '../Header';
 import ModalNewProject from '../modals/ModalNewProject';
+import Header from '../shared/Header';
 
 type Props = {
   activeTab: string;

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import Header from '@/components/Header';
 import ModalNewTask from '@/components/modals/ModalNewTask';
+import Header from '@/components/shared/Header';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { Priority, Task } from '@/state/types';

@@ -1,7 +1,7 @@
 'use client';
 
-import Header from '@/components/Header';
 import ModalNewProject from '@/components/modals/ModalNewProject';
+import Header from '@/components/shared/Header';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetProjectsQuery } from '@/state/api/projectsApi';
 import { Project } from '@/state/types';

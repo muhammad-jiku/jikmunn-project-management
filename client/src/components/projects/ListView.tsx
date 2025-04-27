@@ -4,7 +4,7 @@
 import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { Task } from '@/state/types';
 import { useAppSelector } from '@/store';
-import Header from '../Header';
+import Header from '../shared/Header';
 import TaskCard from '../tasks/TaskCard';
 
 type Props = {

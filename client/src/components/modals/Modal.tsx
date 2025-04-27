@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Header from '../Header';
+import Header from '../shared/Header';
 
 type Props = {
   children: React.ReactNode;

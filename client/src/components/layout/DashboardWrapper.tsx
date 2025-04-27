@@ -2,9 +2,9 @@
 
 import StoreProvider, { useAppSelector } from '@/store';
 import React, { useEffect } from 'react';
-import Navbar from '../Navbar';
-import Sidebar from '../Sidebar';
 import ProtectedRoute from '../auth/ProtectedRoute';
+import Navbar from '../shared/Navbar';
+import Sidebar from '../shared/Sidebar';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const isSidebarCollapsed = useAppSelector(

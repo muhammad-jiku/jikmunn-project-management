@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import Header from '@/components/Header';
+import Header from '@/components/shared/Header';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetTeamsQuery } from '@/state/api/teamsApi';
 import { useAppSelector } from '@/store';

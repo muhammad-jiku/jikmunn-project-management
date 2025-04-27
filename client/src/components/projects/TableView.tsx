@@ -3,7 +3,7 @@ import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { useAppSelector } from '@/store';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import Header from '../Header';
+import Header from '../shared/Header';
 
 type Props = {
   id: string;

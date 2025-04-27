@@ -1,6 +1,6 @@
 'use client';
 
-import Header from '@/components/Header';
+import Header from '@/components/shared/Header';
 
 // import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 // import { useGetUsersQuery } from '@/state/api';
