@@ -1,6 +1,6 @@
 'use client';
 
-import Header from '@/_components/Header';
+import Header from '@/components/Header';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetProjectsQuery } from '@/state/api/projectsApi';
 import { useGetTasksQuery } from '@/state/api/tasksApi';

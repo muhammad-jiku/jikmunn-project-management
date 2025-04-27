@@ -1,4 +1,4 @@
-import PageNotFound from '@/_components/auth/PageNotFound';
+import PageNotFound from '@/components/auth/PageNotFound';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

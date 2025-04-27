@@ -1,4 +1,3 @@
-import DashboardWrapper from '@/_components/layout/DashboardWrapper';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -18,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body suppressHydrationWarning className={inter.className}>
-        <DashboardWrapper>{children}</DashboardWrapper>
+        {children}
       </body>
     </html>
   );
