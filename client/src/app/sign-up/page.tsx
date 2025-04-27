@@ -1,4 +1,4 @@
-import SignupForm from '@/_components/auth/signup/SignUpForm';
+import SignupForm from '@/_components/auth/signup/SignupForm';
 import { Metadata } from 'next';
 import React from 'react';
 

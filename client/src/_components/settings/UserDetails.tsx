@@ -30,6 +30,7 @@ const UserDetails: React.FC = () => {
   const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
   const globalUser = useSelector((state: RootState) => state.global.user?.data);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [imageChanged, setImageChanged] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<string | undefined>(
     // Use an existing personal image if available or fall back to default
     globalUser?.developer?.profileImage?.url ||
@@ -91,7 +92,8 @@ const UserDetails: React.FC = () => {
       middleName: profileData.middleName,
       lastName: profileData.lastName,
       contact: profileData.contact,
-      profileImage: profileData.profileImage?.url,
+      // profileImage: profileData.profileImage?.url,
+      profileImage: null, // Initially null instead of URL
     },
   });
 
@@ -103,6 +105,7 @@ const UserDetails: React.FC = () => {
         const result = reader.result as string;
         setAvatar(result);
         setValue('profileImage', result);
+        setImageChanged(true); // Mark that the image has been changed
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -123,8 +126,13 @@ const UserDetails: React.FC = () => {
       firstName: getValues('firstName'),
       middleName: getValues('middleName'),
       lastName: getValues('lastName'),
-      profileImage: getValues('profileImage'),
+      // profileImage: getValues('profileImage'),
     };
+
+    // Only include profileImage if it was actually changed
+    if (imageChanged && getValues('profileImage')) {
+      (payload as any).profileImage = getValues('profileImage');
+    }
 
     try {
       let result;

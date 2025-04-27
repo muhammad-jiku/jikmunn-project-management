@@ -104,7 +104,11 @@ const updateOneInDB = async (
   }
 
   // If a new profile image is provided (and not an empty string)
-  if (payload.profileImage && payload.profileImage !== '') {
+  if (
+    payload.profileImage &&
+    typeof payload.profileImage === 'string' &&
+    payload.profileImage.startsWith('data:image')
+  ) {
     // If the existing developer has a profile image, destroy it on Cloudinary
     if (
       existingDeveloper.profileImage &&
@@ -164,6 +168,12 @@ const updateOneInDB = async (
     }
 
     return result;
+  } else {
+    // If profileImage is in the payload but is not a base64 string,
+    // remove it to prevent unwanted updates to the existing image
+    if (payload.profileImage) {
+      delete payload.profileImage;
+    }
   }
 
   // If no new image is provided, update without changing the profile image

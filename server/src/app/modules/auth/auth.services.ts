@@ -182,9 +182,12 @@ const resetPasswordHandler = async (
   payload: IResetPasswordPayload
 ): Promise<void> => {
   const { token, newPassword } = payload;
+  console.log('reset password token received:', token);
+  console.log('reset password:', newPassword);
 
   // Hash the token for comparison
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  console.log('hashed token:', hashedToken);
 
   const user = await prisma.user.findFirst({
     where: {
@@ -194,11 +197,12 @@ const resetPasswordHandler = async (
       },
     },
   });
+  console.log('user found for password reset:', user);
 
   if (!user) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      'Invalid or expired password reset token'
+      'Invalid or expired password reset token!'
     );
   }
 
@@ -211,6 +215,8 @@ const resetPasswordHandler = async (
   }
 
   const hashedPassword = await hashPassword(newPassword);
+  console.log('hashed password:', hashedPassword);
+
   await prisma.user.update({
     where: { userId: user.userId },
     data: {
@@ -260,9 +266,9 @@ const setAuthCookies = (
 
 const verifyEmail = async (token: string): Promise<void> => {
   // Hash the incoming token so you can compare with what is stored in the database
-  console.log('(5) token received', token);
+  console.log('verify email token received', token);
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-  console.log('(5.1) verified hash token', hashedToken);
+  console.log('verified hash token', hashedToken);
 
   // Find the user with a matching emailVerificationToken that hasn't expired
   const user = await prisma.user.findFirst({
@@ -271,6 +277,7 @@ const verifyEmail = async (token: string): Promise<void> => {
       emailVerificationExpires: { gt: new Date() },
     },
   });
+  console.log('verified user found', user);
 
   if (!user) {
     throw new ApiError(
@@ -294,10 +301,11 @@ const sendVerificationEmail = async (
   email: string,
   token: string
 ): Promise<void> => {
-  console.log('(3) send verification email', email);
-  console.log('(3.1) send verification token', token);
+  console.log('send verification email:', email);
+  console.log('send verification token:', token);
 
   const verificationUrl = `${config.frontend_url}/verify-email?token=${token}`;
+  console.log('verification URL:', verificationUrl);
   await EmailHelper.sendEmail({
     email,
     subject: 'Verify your email',

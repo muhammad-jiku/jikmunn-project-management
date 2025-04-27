@@ -2,6 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "main": "src/server.ts",
+  "prisma": {
+    "seed": "ts-node-dev prisma/seed.ts"
+  },
   "scripts": {
     "start": "ts-node-dev --respawn --transpile-only src/server.ts",
     "seed": "ts-node-dev prisma/seed.ts",
