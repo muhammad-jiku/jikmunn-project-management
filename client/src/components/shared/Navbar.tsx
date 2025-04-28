@@ -6,7 +6,7 @@ import { Menu, Moon, Search, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import profileDefault from '../../public/p7.jpeg';
+import profileDefault from '../../../public/images/p7.jpeg';
 
 const Navbar = () => {
   const router = useRouter();

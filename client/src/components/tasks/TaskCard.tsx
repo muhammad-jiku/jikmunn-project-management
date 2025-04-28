@@ -1,7 +1,7 @@
 import { Task } from '@/state/types';
 import { format } from 'date-fns';
 import Image from 'next/image';
-import i1 from '../../../public/i1.jpg';
+import i1 from '../../../public/images/i1.jpg';
 
 type Props = {
   task: Task;

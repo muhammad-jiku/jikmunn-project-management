@@ -13,7 +13,7 @@ import Header from '@/components/shared/Header';
 // GridToolbarFilterButton,
 // } from '@mui/x-data-grid';
 // import Image from 'next/image';
-// import p11 from '../../../../../public/p11.jpeg';
+// import p11 from '../../../../../public/images/p11.jpeg';
 
 // const CustomToolbar = () => (
 //   <GridToolbarContainer className='toolbar flex gap-2'>

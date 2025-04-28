@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
-import no from '@/public/no.gif';
+import no from '../../../../public/gifs/no.gif';
 
 function PageNotFound() {
   const isDarkMode = useAppSelector(

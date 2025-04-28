@@ -23,7 +23,7 @@ import { Pencil } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import profileDefault from '../../../public/p7.jpeg';
+import profileDefault from '../../../public/images/p7.jpeg';
 import TextInput from '../auth/FormInputs/TextInput';
 
 const UserDetails: React.FC = () => {

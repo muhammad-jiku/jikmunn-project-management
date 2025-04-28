@@ -26,8 +26,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import logo from '../../public/logo.png';
-import profileDefault from '../../public/p7.jpeg';
+import logo from '../../../public/images/logo.png';
+import profileDefault from '../../../public/images/p7.jpeg';
 
 const Sidebar = () => {
   const router = useRouter();

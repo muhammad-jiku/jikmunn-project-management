@@ -1,6 +1,6 @@
 import { User } from '@/state/types';
 // import Image from 'next/image';
-// import p3 from '../../../public/p3.jpeg';
+// import p3 from '../../../public/images/p3.jpeg';
 
 type Props = {
   user: User;
