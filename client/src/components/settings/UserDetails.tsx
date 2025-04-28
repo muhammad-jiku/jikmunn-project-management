@@ -36,11 +36,10 @@ const UserDetails: React.FC = () => {
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [imageChanged, setImageChanged] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<string | undefined>(
-    // Use an existing personal image if available or fall back to default
-    globalUser?.developer?.profileImage?.url ||
-      globalUser?.manager?.profileImage?.url ||
-      globalUser?.admin?.profileImage?.url ||
-      globalUser?.superAdmin?.profileImage?.url ||
+    globalUser?.data?.developer?.profileImage?.url ||
+      globalUser?.data?.manager?.profileImage?.url ||
+      globalUser?.data?.admin?.profileImage?.url ||
+      globalUser?.data?.superAdmin?.profileImage?.url ||
       profileDefault.src
   );
 
@@ -75,14 +74,20 @@ const UserDetails: React.FC = () => {
   });
 
   let profileData: any = {};
-  if (globalUser?.role === 'DEVELOPER' && globalUser?.developer) {
-    profileData = globalUser?.developer;
-  } else if (globalUser?.role === 'MANAGER' && globalUser?.manager) {
-    profileData = globalUser?.manager;
-  } else if (globalUser?.role === 'ADMIN' && globalUser?.admin) {
-    profileData = globalUser?.admin;
-  } else if (globalUser?.role === 'SUPER_ADMIN' && globalUser?.superAdmin) {
-    profileData = globalUser?.superAdmin;
+  if (globalUser?.data?.role === 'DEVELOPER' && globalUser?.data?.developer) {
+    profileData = globalUser?.data?.developer;
+  } else if (
+    globalUser?.data?.role === 'MANAGER' &&
+    globalUser?.data?.manager
+  ) {
+    profileData = globalUser?.data?.manager;
+  } else if (globalUser?.data?.role === 'ADMIN' && globalUser?.data?.admin) {
+    profileData = globalUser?.data?.admin;
+  } else if (
+    globalUser?.data?.role === 'SUPER_ADMIN' &&
+    globalUser?.data?.superAdmin
+  ) {
+    profileData = globalUser?.data?.superAdmin;
   }
 
   const {
@@ -124,41 +129,56 @@ const UserDetails: React.FC = () => {
     event.preventDefault();
     setUpdateError(null);
 
-    // Construct your update payload only from form values (do not include the event object)
-    // For example, if you use react-hook-form, you might use getValues() or your own payload object.
-    const payload = {
+    // Create the data object that matches the expected type structure
+    // The structure needs to match what each role-specific API expects
+    const formData = {
       firstName: getValues('firstName'),
       middleName: getValues('middleName'),
       lastName: getValues('lastName'),
-      // profileImage: getValues('profileImage'),
     };
 
-    // Only include profileImage if it was actually changed
-    if (imageChanged && getValues('profileImage')) {
-      (payload as any).profileImage = getValues('profileImage');
-    }
+    // Create a properly structured payload with 'data' property
+    // that contains fields specific to the user type
+    const createPayload = () => {
+      // Base payload structure
+      const payload: any = {
+        data: {
+          // Include these fields for all role types
+          firstName: formData.firstName,
+          middleName: formData.middleName,
+          lastName: formData.lastName,
+        },
+      };
+
+      // Add profile image if it was changed
+      if (imageChanged && getValues('profileImage')) {
+        payload.data.profileImage = getValues('profileImage');
+      }
+
+      return payload;
+    };
 
     try {
       let result;
-      if (globalUser?.role === 'DEVELOPER') {
+      if (globalUser?.data?.role === 'DEVELOPER') {
         result = await updateDeveloper({
-          id: globalUser.userId,
-          data: payload,
+          id: globalUser?.data?.userId,
+          data: createPayload().data, // Pass the data portion
         }).unwrap();
-      } else if (globalUser?.role === 'MANAGER') {
+      } else if (globalUser?.data?.role === 'MANAGER') {
         result = await updateManager({
-          id: globalUser.userId,
-          data: payload,
+          id: globalUser?.data?.userId,
+          data: createPayload().data, // Pass the data portion
         }).unwrap();
-      } else if (globalUser?.role === 'ADMIN') {
+      } else if (globalUser?.data?.role === 'ADMIN') {
         result = await updateAdmin({
-          id: globalUser.userId,
-          data: payload,
+          id: globalUser?.data?.userId,
+          data: createPayload().data, // Pass the data portion
         }).unwrap();
-      } else if (globalUser?.role === 'SUPER_ADMIN') {
+      } else if (globalUser?.data?.role === 'SUPER_ADMIN') {
         result = await updateSuperAdmin({
-          id: globalUser.userId,
-          data: payload,
+          id: globalUser?.data?.userId,
+          data: createPayload().data, // Pass the data portion
         }).unwrap();
       } else {
         throw new Error('Invalid user role');
@@ -172,6 +192,60 @@ const UserDetails: React.FC = () => {
       );
     }
   };
+
+  // // Handle form submission (update)
+  // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   setUpdateError(null);
+
+  //   // Construct your update payload only from form values (do not include the event object)
+  //   // For example, if you use react-hook-form, you might use getValues() or your own payload object.
+  //   const payload = {
+  //     firstName: getValues('firstName'),
+  //     middleName: getValues('middleName'),
+  //     lastName: getValues('lastName'),
+  //     // profileImage: getValues('profileImage'),
+  //   };
+
+  //   // Only include profileImage if it was actually changed
+  //   if (imageChanged && getValues('profileImage')) {
+  //     (payload as any).profileImage = getValues('profileImage');
+  //   }
+
+  //   try {
+  //     let result;
+  //     if (globalUser?.data?.role === 'DEVELOPER') {
+  //       result = await updateDeveloper({
+  //         id: globalUser?.data?.userId,
+  //         data: payload,
+  //       }).unwrap();
+  //     } else if (globalUser?.data?.role === 'MANAGER') {
+  //       result = await updateManager({
+  //         id: globalUser?.data?.userId,
+  //         data: payload,
+  //       }).unwrap();
+  //     } else if (globalUser?.data?.role === 'ADMIN') {
+  //       result = await updateAdmin({
+  //         id: globalUser?.data?.userId,
+  //         data: payload,
+  //       }).unwrap();
+  //     } else if (globalUser?.data?.role === 'SUPER_ADMIN') {
+  //       result = await updateSuperAdmin({
+  //         id: globalUser?.data?.userId,
+  //         data: payload,
+  //       }).unwrap();
+  //     } else {
+  //       throw new Error('Invalid user role');
+  //     }
+  //     console.log('Update successful:', result);
+  //   } catch (error: any) {
+  //     console.error('Error processing form data:', error);
+  //     console.error('Error processing form data message:', error?.message);
+  //     setUpdateError(
+  //       error.message || 'Something went wrong, Please try again!'
+  //     );
+  //   }
+  // };
 
   return (
     <ThemeProvider theme={theme}>
@@ -266,7 +340,7 @@ const UserDetails: React.FC = () => {
                       <TextInput
                         label='User ID'
                         name='userId'
-                        defaultValue={globalUser?.userId}
+                        defaultValue={globalUser?.data?.userId}
                         register={register}
                         errors={errors}
                         InputProps={{ readOnly: true }}
@@ -279,7 +353,7 @@ const UserDetails: React.FC = () => {
                       <TextInput
                         label='Username'
                         name='username'
-                        defaultValue={globalUser?.username}
+                        defaultValue={globalUser?.data?.username}
                         register={register}
                         errors={errors}
                         InputProps={{ readOnly: true }}
@@ -292,7 +366,7 @@ const UserDetails: React.FC = () => {
                       <TextInput
                         label='Email'
                         name='email'
-                        defaultValue={globalUser?.email}
+                        defaultValue={globalUser?.data?.email}
                         register={register}
                         errors={errors}
                         InputProps={{ readOnly: true }}
@@ -305,7 +379,7 @@ const UserDetails: React.FC = () => {
                       <TextInput
                         label='Role'
                         name='role'
-                        defaultValue={globalUser?.role}
+                        defaultValue={globalUser?.data?.role}
                         register={register}
                         errors={errors}
                         InputProps={{ readOnly: true }}

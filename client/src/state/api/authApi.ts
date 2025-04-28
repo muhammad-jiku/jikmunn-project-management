@@ -1,7 +1,38 @@
-import { persistor } from '@/store';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// import { persistor } from '@/store';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logoutUser, setAuthCredentials } from '..';
+import { logoutUser, setAuthCredentials, setAuthError } from '..';
 import { AuthResponse, User } from '../types';
+
+export const checkAuthStatus = () => async (dispatch: any) => {
+  try {
+    // Attempt to fetch current user
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
+      { credentials: 'include' }
+    );
+
+    if (response.ok) {
+      const userData = await response.json();
+      dispatch(
+        setAuthCredentials({
+          user: { data: userData }, // Ensure consistent format
+          needsEmailVerification: false,
+          needsPasswordChange: false,
+        })
+      );
+      return true;
+    } else {
+      // Clear auth state if unable to get user
+      dispatch(logoutUser());
+      return false;
+    }
+  } catch (error) {
+    console.error('Failed to check auth status:', error);
+    dispatch(logoutUser());
+    return false;
+  }
+};
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -11,6 +42,47 @@ export const authApi = createApi({
   }),
   tagTypes: ['Auth', 'User'],
   endpoints: (build) => ({
+    // login: build.mutation<AuthResponse, { email: string; password: string }>({
+    //   query: (credentials) => ({
+    //     url: '/auth/login',
+    //     method: 'POST',
+    //     body: credentials,
+    //   }),
+    //   async onQueryStarted(_, { dispatch, queryFulfilled }) {
+    //     try {
+    //       const { data } = await queryFulfilled;
+    //       // If the response indicates that email verification is needed, skip fetching /auth/me.
+    //       if (data.needsEmailVerification) {
+    //         dispatch(
+    //           setAuthCredentials({
+    //             user: null, // No fully authenticated user yet
+    //             needsEmailVerification: true,
+    //             needsPasswordChange: data.needsPasswordChange,
+    //           })
+    //         );
+
+    //         // Optionally, To clear persisted state:
+    //         await persistor.purge();
+    //         return;
+    //       }
+    //       // Otherwise, fetch the current user
+    //       const userResponse = await fetch(
+    //         `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
+    //         { credentials: 'include' }
+    //       );
+    //       const userData = await userResponse.json();
+    //       dispatch(
+    //         setAuthCredentials({
+    //           user: userData,
+    //           needsPasswordChange: data.needsPasswordChange,
+    //         })
+    //       );
+    //     } catch {
+    //       // Handle errors if needed.
+    //     }
+    //   },
+    //   invalidatesTags: ['Auth', 'User'],
+    // }),
     login: build.mutation<AuthResponse, { email: string; password: string }>({
       query: (credentials) => ({
         url: '/auth/login',
@@ -24,30 +96,34 @@ export const authApi = createApi({
           if (data.needsEmailVerification) {
             dispatch(
               setAuthCredentials({
-                user: null, // No fully authenticated user yet
+                user: null,
                 needsEmailVerification: true,
-                needsPasswordChange: data.needsPasswordChange,
+                needsPasswordChange: data.needsPasswordChange || false,
               })
             );
-
-            // Optionally, To clear persisted state:
-            await persistor.purge();
             return;
           }
+
           // Otherwise, fetch the current user
           const userResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
             { credentials: 'include' }
           );
-          const userData = await userResponse.json();
-          dispatch(
-            setAuthCredentials({
-              user: userData,
-              needsPasswordChange: data.needsPasswordChange,
-            })
-          );
-        } catch {
-          // Handle errors if needed.
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            dispatch(
+              setAuthCredentials({
+                user: { data: userData }, // Ensure consistent format
+                needsPasswordChange: data.needsPasswordChange || false,
+              })
+            );
+          } else {
+            dispatch(setAuthError('Failed to fetch user data'));
+          }
+        } catch (error) {
+          console.error('Login error:', error);
+          dispatch(setAuthError('Authentication failed'));
         }
       },
       invalidatesTags: ['Auth', 'User'],

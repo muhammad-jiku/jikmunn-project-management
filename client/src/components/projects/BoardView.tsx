@@ -24,7 +24,7 @@ const taskStatus = ['TO_DO', 'WORK_IN_PROGRESS', 'UNDER_REVIEW', 'COMPLETED'];
 const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
   const globalUser = useAppSelector((state) => state?.global?.user?.data);
 
-  const userId = globalUser?.userId as string;
+  const userId = globalUser?.data?.userId as string;
   const {
     data: tasks,
     isLoading,
@@ -243,9 +243,9 @@ const Task = ({ task }: TaskProps) => {
           <div className='flex -space-x-[6px] overflow-hidden'>
             {task.assignee && (
               <Image
-                key={task.assignee.userId}
+                key={task?.assignee?.data?.userId}
                 src={p3}
-                alt={task.assignee.username}
+                alt={task?.assignee?.data?.username}
                 width={30}
                 height={30}
                 className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'
@@ -253,9 +253,9 @@ const Task = ({ task }: TaskProps) => {
             )}
             {task.author && (
               <Image
-                key={task.author.userId}
+                key={task?.author?.data?.userId}
                 src={p7}
-                alt={task.author.username}
+                alt={task?.author?.data?.username}
                 width={30}
                 height={30}
                 className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'

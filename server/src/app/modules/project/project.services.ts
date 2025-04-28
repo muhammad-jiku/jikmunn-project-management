@@ -67,6 +67,9 @@ const getAllFromDB = async (
   console.log('user id ', userId);
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
   const { searchTerm, ...filterData } = filters;
+  console.log('filters', filters);
+  console.log('options', options);
+  console.log('{ limit, page, skip }', { limit, page, skip });
 
   const andConditions = [];
 
@@ -95,6 +98,8 @@ const getAllFromDB = async (
     OR: [{ projectOwnerId: userId }],
     ...(andConditions.length > 0 && { AND: andConditions }),
   };
+  console.log('whereConditions', whereConditions);
+  console.log('andConditions', andConditions);
 
   const result = await prisma.project.findMany({
     where: whereConditions,

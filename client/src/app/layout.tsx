@@ -1,3 +1,5 @@
+import InitializeAuth from '@/components/layout/InitializeAuth';
+import StoreProvider from '@/store';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -17,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body suppressHydrationWarning className={inter.className}>
-        {children}
+        <StoreProvider>
+          <InitializeAuth>{children}</InitializeAuth>
+        </StoreProvider>
       </body>
     </html>
   );

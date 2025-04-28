@@ -25,12 +25,12 @@ const Navbar = () => {
   useEffect(() => {
     let imageUrl;
 
-    if (globalUser) {
+    if (globalUser?.data) {
       const profileImages = [
-        globalUser?.developer?.profileImage,
-        globalUser?.manager?.profileImage,
-        globalUser?.admin?.profileImage,
-        globalUser?.superAdmin?.profileImage,
+        globalUser?.data?.developer?.profileImage,
+        globalUser?.data?.manager?.profileImage,
+        globalUser?.data?.admin?.profileImage,
+        globalUser?.data?.superAdmin?.profileImage,
       ];
 
       for (const img of profileImages) {
@@ -111,16 +111,16 @@ const Navbar = () => {
                 className='flex h-9 items-center jusify-between p-1 box-border'
               >
                 <Avatar
-                  alt={globalUser?.username || `Avatar`}
+                  alt={globalUser?.data?.username || `Avatar`}
                   src={avatar}
                   className='h-4 w-4 mr-2 cursor-pointer self-center rounded-full'
                 />
                 <div className='flex flex-col items-start box-border'>
                   <h6 className='text-[#1f2937] dark:text-[#f3f4f6]'>
-                    {globalUser?.username}
+                    {globalUser?.data?.username}
                   </h6>
                   <h6 className='text-[#374151] dark:text-[#6b7280]'>
-                    {globalUser?.email}
+                    {globalUser?.data?.email}
                   </h6>
                 </div>
               </Link>

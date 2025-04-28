@@ -1,78 +1,143 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export interface Developer {
-  id?: string;
+// export interface Developer {
+//   data: {
+//     id?: string;
+//     developerId: string;
+//     firstName: string;
+//     lastName: string;
+//     middleName?: string;
+//     profileImage?: {
+//       public_id: string;
+//       url: string;
+//     };
+//     contact: string;
+//   };
+// }
+
+// export interface Manager {
+//   data: {
+//     id?: string;
+//     managerId: string;
+//     firstName: string;
+//     lastName: string;
+//     middleName?: string;
+//     profileImage?: {
+//       public_id: string;
+//       url: string;
+//     };
+//     contact: string;
+//   };
+// }
+
+// export interface Admin {
+//   data: {
+//     id?: string;
+//     adminId: string;
+//     firstName: string;
+//     lastName: string;
+//     middleName?: string;
+//     profileImage?: {
+//       public_id: string;
+//       url: string;
+//     };
+//     contact: string;
+//   };
+// }
+
+// export interface SuperAdmin {
+//   data: {
+//     id?: string;
+//     superAdminId: string;
+//     firstName: string;
+//     lastName: string;
+//     middleName?: string;
+//     profileImage?: {
+//       public_id: string;
+//       url: string;
+//     };
+//     contact: string;
+//     // createdAt: string;
+//     // updatedAt: string;
+//   };
+// }
+
+export interface ProfileData {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  profileImage?: {
+    public_id: string;
+    url: string;
+  };
+  contact: string;
+}
+
+export interface Developer extends ProfileData {
   developerId: string;
-  firstName: string;
-  lastName: string;
-  middleName?: string;
-  profileImage?: {
-    public_id: string;
-    url: string;
-  };
-  contact: string;
 }
 
-export interface Manager {
-  id?: string;
+export interface Manager extends ProfileData {
   managerId: string;
-  firstName: string;
-  lastName: string;
-  middleName?: string;
-  profileImage?: {
-    public_id: string;
-    url: string;
-  };
-  contact: string;
 }
 
-export interface Admin {
-  id?: string;
+export interface Admin extends ProfileData {
   adminId: string;
-  firstName: string;
-  lastName: string;
-  middleName?: string;
-  profileImage?: {
-    public_id: string;
-    url: string;
-  };
-  contact: string;
 }
 
-export interface SuperAdmin {
-  id?: string;
+export interface SuperAdmin extends ProfileData {
   superAdminId: string;
-  firstName: string;
-  lastName: string;
-  middleName?: string;
-  profileImage?: {
-    public_id: string;
-    url: string;
-  };
-  contact: string;
-  createdAt: string;
-  updatedAt: string;
 }
+
+// export interface ProfileData {
+//   id?: string;
+//   firstName: string;
+//   lastName: string;
+//   middleName?: string;
+//   profileImage?: {
+//     public_id: string;
+//     url: string;
+//   };
+//   contact: string;
+// }
+
+// export interface Developer {
+//   data: ProfileData & { developerId: string };
+// }
+
+// export interface Manager {
+//   data: ProfileData & { managerId: string };
+// }
+
+// export interface Admin {
+//   data: ProfileData & { adminId: string };
+// }
+
+// export interface SuperAdmin {
+//   data: ProfileData & { superAdminId: string };
+// }
 
 export interface User {
-  userId: string;
-  username: string;
-  email: string;
-  role: string;
-  developerId?: string;
-  managerId?: string;
-  adminId?: string;
-  superAdminId?: string;
-  needsPasswordChange?: boolean;
-  emailVerified?: boolean;
-  developer?: Developer;
-  manager?: Manager;
-  admin?: Admin;
-  superAdmin?: SuperAdmin;
-  authoredTasks?: Task[];
-  assignedTasks?: Task[];
-  ownedTeams?: Team[];
-  assignedTeams?: TeamMember[];
-  Project?: Project[];
+  data: {
+    userId: string;
+    username: string;
+    email: string;
+    role: string;
+    developerId?: string;
+    managerId?: string;
+    adminId?: string;
+    superAdminId?: string;
+    needsPasswordChange?: boolean;
+    emailVerified?: boolean;
+    developer?: Developer;
+    manager?: Manager;
+    admin?: Admin;
+    superAdmin?: SuperAdmin;
+    authoredTasks?: Task[];
+    assignedTasks?: Task[];
+    ownedTeams?: Team[];
+    assignedTeams?: TeamMember[];
+    Project?: Project[];
+  };
 }
 
 export interface AuthResponse {

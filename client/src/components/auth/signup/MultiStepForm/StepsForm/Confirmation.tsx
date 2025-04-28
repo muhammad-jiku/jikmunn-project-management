@@ -36,7 +36,7 @@ const Confirmation: React.FC = () => {
   const isDarkMode = useSelector(
     (state: RootState) => state?.global?.isDarkMode
   );
-  const formData = useSelector((state: RootState) => state?.signup?..formData);
+  const formData = useSelector((state: RootState) => state?.signup?.formData);
   const globalUser = useSelector(
     (state: RootState) => state?.global?.user?.data
   );
@@ -174,7 +174,7 @@ const Confirmation: React.FC = () => {
   // If email is not verified, reset the signup state and redirect back to signup (step 1).
   const handleCheckVerification = async () => {
     console.log('Checking verification, global user:', globalUser);
-    if (globalUser && globalUser.emailVerified) {
+    if (globalUser && globalUser?.data?.emailVerified) {
       // Navigate to the home route once verified.
       router.push('/');
     } else {

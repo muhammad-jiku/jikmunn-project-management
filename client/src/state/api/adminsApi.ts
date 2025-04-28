@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
 import { Admin } from '../types';
@@ -24,11 +25,22 @@ export const adminsApi = createApi({
         method: 'PATCH',
         body: data,
       }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          // Dispatch with the plain user object
-          dispatch(updateUserInfo(data));
+          // const { data: adminData } = await queryFulfilled;
+          // // Format the update to match the User structure
+          // const userData = {
+          //   data: {
+          //     // Only update the admin property
+          //     admin: {
+          //       data: adminData.data,
+          //     },
+          //   },
+          // };
+          // dispatch(updateUserInfo(userData));
+          const { data: adminData } = await queryFulfilled;
+          // With our modified updateUserInfo reducer, we can simply pass the admin data
+          dispatch(updateUserInfo({ admin: adminData }));
         } catch {
           // Optionally handle errors here.
         }

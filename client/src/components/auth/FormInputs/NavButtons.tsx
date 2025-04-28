@@ -18,7 +18,7 @@ interface NavButtonsProps {
 const NavButtons: React.FC<NavButtonsProps> = ({ disabled }) => {
   const dispatch = useDispatch();
   const currentStep = useSelector(
-    (state: RootState) => state?.signup?..currentStep
+    (state: RootState) => state?.signup?.currentStep
   );
   const isDarkMode = useSelector(
     (state: RootState) => state?.global?.isDarkMode

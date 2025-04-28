@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from './types';
 
@@ -44,7 +45,7 @@ export const globalSlice = createSlice({
       const { user, needsEmailVerification, needsPasswordChange } =
         action.payload;
       state.user = user;
-      state.isAuthenticated = !!user;
+      state.isAuthenticated = !!user?.data; // Check for user.data explicitly
       state.needsEmailVerification = needsEmailVerification || false;
       state.needsPasswordChange = needsPasswordChange || false;
       state.error = null;
@@ -70,14 +71,40 @@ export const globalSlice = createSlice({
     clearAuthError: (state) => {
       state.error = null;
     },
-    updateUserInfo: (state, action: PayloadAction<Partial<User>>) => {
-      if (state?.user && state?.user?.data) {
-        state.user.data = { ...state?.user?.data, ...action?.payload };
+    // Modified updateUserInfo reducer to handle multiple update patterns
+    updateUserInfo: (state, action: PayloadAction<any>) => {
+      if (state?.user?.data) {
+        // Handle role-based updates (developer, manager, etc.)
+        if (
+          'developer' in action.payload ||
+          'manager' in action.payload ||
+          'admin' in action.payload ||
+          'superAdmin' in action.payload
+        ) {
+          state.user.data = {
+            ...state.user.data,
+            ...action.payload,
+          };
+        }
+        // Handle updates directly to the user data object
+        else if ('data' in action.payload) {
+          state.user.data.data = {
+            ...state.user.data.data,
+            ...action.payload.data,
+          };
+        }
+        // Handle other property updates
+        else {
+          state.user.data = {
+            ...state.user.data,
+            ...action.payload,
+          };
+        }
       }
     },
     setEmailVerified: (state) => {
-      if (state?.user?.data) {
-        state.user.data.emailVerified = true;
+      if (state?.user?.data?.data) {
+        state.user.data.data.emailVerified = true;
       }
       state.needsEmailVerification = false;
     },

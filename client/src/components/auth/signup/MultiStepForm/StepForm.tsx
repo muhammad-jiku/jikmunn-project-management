@@ -15,7 +15,7 @@ type StepComponentMap = {
 
 const StepForm: React.FC = () => {
   const currentStep = useSelector(
-    (state: RootState) => state?.signup?..currentStep
+    (state: RootState) => state?.signup?.currentStep
   );
   const isDarkMode = useSelector(
     (state: RootState) => state?.global?.isDarkMode

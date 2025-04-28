@@ -19,7 +19,7 @@ type TransformedTask = Omit<Task, 'author' | 'assignee'> & {
 
 const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const globalUser = useAppSelector((state) => state?.global?.user?.data);
-  const userId = globalUser?.userId as string;
+  const userId = globalUser?.data?.userId as string;
 
   const {
     data: tasks,
@@ -38,9 +38,9 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
   // Transform the tasks data to include flattened author and assignee strings.
   const transformedTasks: TransformedTask[] = (tasks?.data ?? []).map(
     (task: Task) => {
-      const authorManager = task.author?.manager;
-      const authorDeveloper = task.author?.developer;
-      const assigneeDeveloper = task.assignee?.developer;
+       const authorManager = task?.author?.data?.manager;
+       const authorDeveloper = task?.author?.data?.developer;
+       const assigneeDeveloper = task?.assignee?.data?.developer;
 
       return {
         ...task,
@@ -48,10 +48,10 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
           ? `${authorManager.firstName} ${authorManager.middleName ? authorManager.middleName + ' ' : ''}${authorManager.lastName}`
           : authorDeveloper
             ? `${authorDeveloper.firstName} ${authorDeveloper.middleName ? authorDeveloper.middleName + ' ' : ''}${authorDeveloper.lastName}`
-            : task.author?.username || 'Unknown',
+            : task?.author?.data?.username || 'Unknown',
         assignee: assigneeDeveloper
           ? `${assigneeDeveloper.firstName} ${assigneeDeveloper.middleName ? assigneeDeveloper.middleName + ' ' : ''}${assigneeDeveloper.lastName}`
-          : task.assignee?.username || 'Unassigned',
+          : task?.assignee?.data?.username || 'Unassigned',
       };
     }
   );

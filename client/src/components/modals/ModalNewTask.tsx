@@ -26,7 +26,7 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
   const globalUser = useAppSelector((state) => state?.global?.user?.data);
   const [createTask, { isLoading }] = useCreateTaskMutation();
 
-  const authorUserId = globalUser?.userId as string;
+  const authorUserId = globalUser?.data?.userId as string;
 
   const handleSubmit = async () => {
     if (!title || !authorUserId || !(id !== null || projectId)) return;

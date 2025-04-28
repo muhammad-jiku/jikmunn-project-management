@@ -67,7 +67,7 @@ const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const globalUser = useAppSelector((state) => state?.global?.user?.data);
 
-  const userId = globalUser?.userId as string;
+  const userId = globalUser?.data?.userId as string;
   const {
     data: tasks,
     isLoading,

@@ -14,7 +14,7 @@ const Step: React.FC<StepProps> = ({ step }) => {
   const { number, title } = step;
   const theme = useTheme();
   const currentStep = useSelector(
-    (state: RootState) => state?.signup?..currentStep
+    (state: RootState) => state?.signup?.currentStep
   );
   const isDarkMode = useSelector(
     (state: RootState) => state?.global?.isDarkMode

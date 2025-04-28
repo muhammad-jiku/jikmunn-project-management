@@ -30,9 +30,9 @@ interface FormData {
 const PersonalInfo: React.FC = () => {
   const dispatch = useDispatch();
   const currentStep = useSelector(
-    (state: RootState) => state?.signup?..currentStep
+    (state: RootState) => state?.signup?.currentStep
   );
-  const formData = useSelector((state: RootState) => state?.signup?..formData);
+  const formData = useSelector((state: RootState) => state?.signup?.formData);
   const isDarkMode = useSelector(
     (state: RootState) => state?.global?.isDarkMode
   );

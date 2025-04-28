@@ -35,7 +35,7 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
       description,
       startDate: formattedStartDate,
       endDate: formattedEndDate,
-      projectOwnerId: globalUser?.userId as string,
+      projectOwnerId: globalUser?.data?.userId as string,
     };
 
     console.log('Creating project with payload:', newProjectPayload);
