@@ -23,7 +23,7 @@ interface ForgotPasswordFormInputs {
 }
 
 const ForgetPassword: React.FC = () => {
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   // Replace with your selector if you have dark mode state
   const theme = React.useMemo(
     () =>

@@ -17,7 +17,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const persistState = useAppSelector(
     (state: RootState) => (state as any)._persist
   );
-  const user = useAppSelector((state: RootState) => state.global.user?.data);
+  const user = useAppSelector((state: RootState) => state?.global?.user?.data);
 
   const [hasRedirected, setHasRedirected] = useState<boolean>(false);
 

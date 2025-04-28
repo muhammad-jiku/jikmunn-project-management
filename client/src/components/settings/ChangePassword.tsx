@@ -27,7 +27,7 @@ interface ChangePassowordFormInputs {
 }
 
 const ChangePassword: React.FC = () => {
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const [changePassword, { isLoading, error }] = useChangePasswordMutation();
 
   const {

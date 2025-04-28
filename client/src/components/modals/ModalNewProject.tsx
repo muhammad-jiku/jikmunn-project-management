@@ -16,7 +16,7 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
-  const globalUser = useAppSelector((state) => state.global.user?.data);
+  const globalUser = useAppSelector((state) => state?.global?.user?.data);
   const [createProject, { isLoading }] = useCreateProjectMutation();
 
   const handleSubmit = async () => {

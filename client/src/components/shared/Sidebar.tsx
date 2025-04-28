@@ -33,10 +33,10 @@ const Sidebar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
-    (state) => state.global.isSidebarCollapsed
+    (state) => state?.global?.isSidebarCollapsed
   );
   const globalUser = useAppSelector(
-    (state: RootState) => state.global.user?.data
+    (state: RootState) => state?.global?.user?.data
   );
 
   const [showPriority, setShowPriority] = useState<boolean>(true);

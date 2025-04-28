@@ -31,7 +31,7 @@ interface SignInFormInputs {
 
 const SignInForm: React.FC = () => {
   const router = useRouter();
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const [login, { isLoading, error }] = useLoginMutation();
   const {
     register,

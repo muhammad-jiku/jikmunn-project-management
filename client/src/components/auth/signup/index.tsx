@@ -22,7 +22,9 @@ interface Step {
 
 const SignupForm: React.FC = () => {
   const dispatch = useDispatch();
-  const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
+  const isDarkMode = useSelector(
+    (state: RootState) => state?.global?.isDarkMode
+  );
 
   useEffect(() => {
     dispatch(resetSignup());

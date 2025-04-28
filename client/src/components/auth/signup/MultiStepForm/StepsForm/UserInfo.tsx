@@ -28,10 +28,12 @@ interface FormData {
 const UserInfo: React.FC = () => {
   const dispatch = useDispatch();
   const currentStep = useSelector(
-    (state: RootState) => state.signup.currentStep
+    (state: RootState) => state?.signup?..currentStep
   );
-  const formData = useSelector((state: RootState) => state.signup.formData);
-  const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
+  const formData = useSelector((state: RootState) => state?.signup?..formData);
+  const isDarkMode = useSelector(
+    (state: RootState) => state?.global?.isDarkMode
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =

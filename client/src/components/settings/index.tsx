@@ -16,7 +16,9 @@ import UserDetails from './UserDetails';
 
 export default function SettingsProfile() {
   const [value, setValue] = useState<number>(0);
-  const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
+  const isDarkMode = useSelector(
+    (state: RootState) => state?.global?.isDarkMode
+  );
 
   const theme = createTheme({
     palette: {

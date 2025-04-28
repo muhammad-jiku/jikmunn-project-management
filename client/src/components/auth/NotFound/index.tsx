@@ -15,7 +15,7 @@ import no from '../../../../public/gifs/no.gif';
 
 function PageNotFound() {
   const isDarkMode = useAppSelector(
-    (state: RootState) => state.global.isDarkMode
+    (state: RootState) => state?.global?.isDarkMode
   );
 
   const theme = createTheme({

@@ -18,7 +18,7 @@ type TransformedTask = Omit<Task, 'author' | 'assignee'> & {
 };
 
 const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
-  const globalUser = useAppSelector((state) => state.global.user?.data);
+  const globalUser = useAppSelector((state) => state?.global?.user?.data);
   const userId = globalUser?.userId as string;
 
   const {

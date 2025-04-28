@@ -27,7 +27,7 @@ const columns: GridColDef[] = [
 ];
 
 const TeamsComp = () => {
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
   const { data: teams, isLoading, isError } = useGetTeamsQuery({});
   console.log('teams page data', teams);

@@ -23,7 +23,7 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
   const [projectId, setProjectId] = useState<number>();
   const [assignedUserId, setAssignedUserId] = useState<string>('');
 
-  const globalUser = useAppSelector((state) => state.global.user?.data);
+  const globalUser = useAppSelector((state) => state?.global?.user?.data);
   const [createTask, { isLoading }] = useCreateTaskMutation();
 
   const authorUserId = globalUser?.userId as string;

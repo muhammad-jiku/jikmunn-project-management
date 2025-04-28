@@ -12,13 +12,13 @@ const Navbar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
-    (state: RootState) => state.global.isSidebarCollapsed
+    (state: RootState) => state?.global?.isSidebarCollapsed
   );
   const isDarkMode = useAppSelector(
-    (state: RootState) => state.global.isDarkMode
+    (state: RootState) => state?.global?.isDarkMode
   );
   const globalUser = useAppSelector(
-    (state: RootState) => state.global.user?.data
+    (state: RootState) => state?.global?.user?.data
   );
   const [avatar, setAvatar] = useState<string | undefined>('');
 

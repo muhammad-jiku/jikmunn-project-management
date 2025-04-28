@@ -19,7 +19,7 @@ const EmailVerifyComp: React.FC = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const isDarkMode = useAppSelector(
-    (state: RootState) => state.global.isDarkMode
+    (state: RootState) => state?.global?.isDarkMode
   );
 
   const theme = createTheme({

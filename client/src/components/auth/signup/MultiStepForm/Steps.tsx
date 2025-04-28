@@ -40,7 +40,9 @@ const StepsContainer = styled(Paper)(({ theme }) => ({
 }));
 
 const Steps: React.FC<StepsProps> = ({ steps }) => {
-  const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
+  const isDarkMode = useSelector(
+    (state: RootState) => state?.global?.isDarkMode
+  );
 
   // Create theme based on Tailwind config and dark mode preference
   const theme = React.useMemo(

@@ -20,8 +20,8 @@ import { Eye, EyeClosed } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import TextInput from '../FormInputs/TextInput';
 import CountdownTimer from '../FormInputs/CountdownTimer';
+import TextInput from '../FormInputs/TextInput';
 
 interface ResetPasswordFormInputs {
   newPassword: string;
@@ -32,7 +32,7 @@ const ResetPassword: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const [message, setMessage] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =

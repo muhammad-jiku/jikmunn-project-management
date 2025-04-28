@@ -1,6 +1,6 @@
 'use client';
 
-import StoreProvider from '@/store';
+import StoreProvider, { useAppSelector } from '@/store';
 import {
   Container,
   CssBaseline,
@@ -9,12 +9,11 @@ import {
 } from '@mui/material';
 import { Inter } from 'next/font/google';
 import React, { useEffect } from 'react';
-import { useAppSelector } from '@/store';
 
 const inter = Inter({ subsets: ['latin'] });
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
   // Create theme based on dark mode
   const theme = React.useMemo(

@@ -27,8 +27,12 @@ import profileDefault from '../../../public/images/p7.jpeg';
 import TextInput from '../auth/FormInputs/TextInput';
 
 const UserDetails: React.FC = () => {
-  const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
-  const globalUser = useSelector((state: RootState) => state.global.user?.data);
+  const isDarkMode = useSelector(
+    (state: RootState) => state?.global?.isDarkMode
+  );
+  const globalUser = useSelector(
+    (state: RootState) => state?.global?.user?.data
+  );
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [imageChanged, setImageChanged] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<string | undefined>(

@@ -39,7 +39,7 @@ const TextInput: React.FC<TextInputProps> = ({
   InputProps,
   inputProps,
 }) => {
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
   const theme = React.useMemo(
     () =>

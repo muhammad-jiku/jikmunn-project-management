@@ -28,10 +28,10 @@ export const globalSlice = createSlice({
   initialState,
   reducers: {
     setIsSidebarCollapsed: (state, action: PayloadAction<boolean>) => {
-      state.isSidebarCollapsed = action.payload;
+      state.isSidebarCollapsed = action?.payload;
     },
     setIsDarkMode: (state, action: PayloadAction<boolean>) => {
-      state.isDarkMode = action.payload;
+      state.isDarkMode = action?.payload;
     },
     setAuthCredentials: (
       state,
@@ -50,7 +50,7 @@ export const globalSlice = createSlice({
       state.error = null;
     },
     setUser: (state, action: PayloadAction<{ data: User | null } | null>) => {
-      state.user = action.payload;
+      state.user = action?.payload;
       state.isAuthenticated = !!action.payload;
     },
     logoutUser: (state) => {
@@ -61,22 +61,22 @@ export const globalSlice = createSlice({
       state.error = null;
     },
     setAuthLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+      state.isLoading = action?.payload;
     },
     setAuthError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
+      state.error = action?.payload;
       state.isLoading = false;
     },
     clearAuthError: (state) => {
       state.error = null;
     },
     updateUserInfo: (state, action: PayloadAction<Partial<User>>) => {
-      if (state.user && state.user.data) {
-        state.user.data = { ...state.user.data, ...action.payload };
+      if (state?.user && state?.user?.data) {
+        state.user.data = { ...state?.user?.data, ...action?.payload };
       }
     },
     setEmailVerified: (state) => {
-      if (state.user?.data) {
+      if (state?.user?.data) {
         state.user.data.emailVerified = true;
       }
       state.needsEmailVerification = false;

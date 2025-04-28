@@ -49,7 +49,7 @@ const signupSlice = createSlice({
   initialState,
   reducers: {
     setCurrentStep: (state, action: PayloadAction<number>) => {
-      state.currentStep = action.payload;
+      state.currentStep = action?.payload;
     },
     updateFormData: (state, action: PayloadAction<SignupFormPayload>) => {
       // Keys that belong to personal info
@@ -71,33 +71,33 @@ const signupSlice = createSlice({
         }
       }
 
-      // Merge the base fields into state.formData.
-      state.formData = { ...state.formData, ...baseData };
+      // Merge the base fields into state?.formData.
+      state.formData = { ...state?.formData, ...baseData };
 
       // If any personal info fields exist, nest them under the proper key.
       if (Object.keys(personalInfo).length > 0) {
-        switch (state.formData.role) {
+        switch (state?.formData.role) {
           case 'MANAGER':
             state.formData.manager = {
-              ...(state.formData.manager || {}),
+              ...(state?.formData?.manager || {}),
               ...personalInfo,
             } as PersonalInfo;
             break;
           case 'DEVELOPER':
             state.formData.developer = {
-              ...(state.formData.developer || {}),
+              ...(state?.formData?.developer || {}),
               ...personalInfo,
             } as PersonalInfo;
             break;
           case 'ADMIN':
             state.formData.admin = {
-              ...(state.formData.admin || {}),
+              ...(state?.formData?.admin || {}),
               ...personalInfo,
             } as PersonalInfo;
             break;
           case 'SUPER_ADMIN':
             state.formData.superAdmin = {
-              ...(state.formData.superAdmin || {}),
+              ...(state?.formData?.superAdmin || {}),
               ...personalInfo,
             } as PersonalInfo;
             break;
@@ -105,7 +105,7 @@ const signupSlice = createSlice({
             break;
         }
       }
-    }, // New action to reset the state.
+    }, // New action to reset the state?.
     resetSignup: (state) => {
       state.currentStep = 1;
       state.formData = {

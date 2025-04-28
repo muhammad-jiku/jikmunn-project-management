@@ -71,8 +71,8 @@ const columns: GridColDef[] = [
 const ReusablePriority = ({ priority }: Props) => {
   const [view, setView] = useState('list');
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  const globalUser = useAppSelector((state) => state.global.user?.data);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
+  const globalUser = useAppSelector((state) => state?.global?.user?.data);
 
   const userId = globalUser?.userId as string;
   const {

@@ -46,7 +46,7 @@ const columns: GridColDef[] = [
 ];
 
 const ProjectsComp = () => {
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const { data: projects, isLoading, isError } = useGetProjectsQuery({});
   console.log('projects data', projects);
   const [isModalNewProjectOpen, setIsModalNewProjectOpen] = useState(false);

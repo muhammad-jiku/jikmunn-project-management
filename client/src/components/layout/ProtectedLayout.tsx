@@ -2,15 +2,15 @@
 
 import StoreProvider, { useAppSelector } from '@/store';
 import React, { useEffect } from 'react';
-import ProtectedRoute from './ProtectedRoute';
 import Navbar from '../shared/Navbar';
 import Sidebar from '../shared/Sidebar';
+import ProtectedRoute from './ProtectedRoute';
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const isSidebarCollapsed = useAppSelector(
-    (state) => state.global.isSidebarCollapsed
+    (state) => state?.global?.isSidebarCollapsed
   );
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -36,7 +36,11 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 // This wrapper is specifically for protected routes
-const ProtectedLayoutWrapper = ({ children }: { children: React.ReactNode }) => {
+const ProtectedLayoutWrapper = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   return (
     <StoreProvider>
       <ProtectedRoute>

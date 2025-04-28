@@ -33,9 +33,13 @@ import StepFormHeader from '../StepFormHeader';
 const Confirmation: React.FC = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const isDarkMode = useSelector((state: RootState) => state.global.isDarkMode);
-  const formData = useSelector((state: RootState) => state.signup.formData);
-  const globalUser = useSelector((state: RootState) => state.global.user?.data);
+  const isDarkMode = useSelector(
+    (state: RootState) => state?.global?.isDarkMode
+  );
+  const formData = useSelector((state: RootState) => state?.signup?..formData);
+  const globalUser = useSelector(
+    (state: RootState) => state?.global?.user?.data
+  );
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);

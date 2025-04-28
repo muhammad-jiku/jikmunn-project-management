@@ -43,14 +43,14 @@ const Home = () => {
   );
   console.log('projects data', projects);
 
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
   if (tasksLoading || isProjectsLoading) return <div>Loading..</div>;
   if (tasksError || !tasks || !projects) return <div>Error fetching data</div>;
 
   // Compute task priority distribution
   const priorityCount =
-    tasks.data?.reduce((acc: Record<string, number>, task: Task) => {
+    tasks?.data?.reduce((acc: Record<string, number>, task: Task) => {
       const { priority } = task;
       acc[priority as Priority] = (acc[priority as Priority] || 0) + 1;
       return acc;
@@ -66,7 +66,7 @@ const Home = () => {
 
   // Compute project status based on endDate
   const statusCount =
-    projects.data?.reduce((acc: Record<string, number>, project: Project) => {
+    projects?.data?.reduce((acc: Record<string, number>, project: Project) => {
       let status = 'Active';
       if (project.endDate) {
         const endDate = new Date(project.endDate);

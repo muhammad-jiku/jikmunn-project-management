@@ -22,7 +22,7 @@ type BoardProps = {
 const taskStatus = ['TO_DO', 'WORK_IN_PROGRESS', 'UNDER_REVIEW', 'COMPLETED'];
 
 const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
-  const globalUser = useAppSelector((state) => state.global.user?.data);
+  const globalUser = useAppSelector((state) => state?.global?.user?.data);
 
   const userId = globalUser?.userId as string;
   const {

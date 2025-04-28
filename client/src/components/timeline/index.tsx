@@ -10,7 +10,7 @@ import React, { useMemo, useState } from 'react';
 type TaskTypeItems = 'task' | 'milestone' | 'project';
 
 const TimelineComp = () => {
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
     locale: 'en-US',

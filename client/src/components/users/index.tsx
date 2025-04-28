@@ -48,7 +48,7 @@ import Header from '@/components/shared/Header';
 const UsersComp = () => {
   // const { data, isLoading, isError } = useGetUsersQuery({});
   // console.log('users page data', data);
-  // const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  // const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
   // if (isLoading) return <div>Loading...</div>;
   // if (isError || !data) return <div>Error fetching users</div>;
