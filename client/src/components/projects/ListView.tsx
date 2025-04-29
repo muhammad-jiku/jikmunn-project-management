@@ -4,6 +4,7 @@
 import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { Task } from '@/state/types';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import Header from '../shared/Header';
 import TaskCard from '../tasks/TaskCard';
 
@@ -31,16 +32,12 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
   console.log('list view modal check', setIsModalNewTaskOpen);
   console.log('list view tasks data', tasks);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isTasksError || !tasks)
-    return <div>An error occurred while fetching tasks</div>;
-
   // Transform the tasks data to include flattened author and assignee strings.
   const transformedTasks: TransformedTask[] = (tasks?.data ?? []).map(
     (task: Task) => {
-       const authorManager = task?.author?.data?.manager;
-       const authorDeveloper = task?.author?.data?.developer;
-       const assigneeDeveloper = task?.assignee?.data?.developer;
+      const authorManager = task?.author?.data?.manager;
+      const authorDeveloper = task?.author?.data?.developer;
+      const assigneeDeveloper = task?.assignee?.data?.developer;
 
       return {
         ...task,
@@ -57,6 +54,19 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
   );
 
   console.log('transformed tasks data', transformedTasks);
+
+  if (isLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
+  if (isTasksError || !tasks)
+    return (
+      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+        No task information added yet!
+      </div>
+    );
 
   return (
     <div className='px-4 pb-8 xl:px-6'>

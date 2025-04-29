@@ -5,6 +5,7 @@ import Header from '@/components/shared/Header';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetTeamsQuery } from '@/state/api/teamsApi';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import {
   DataGrid,
   GridColDef,
@@ -43,8 +44,18 @@ const TeamsComp = () => {
     };
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !teams) return <div>Error fetching teams</div>;
+  if (isLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
+  if (isError || !teams)
+    return (
+      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+        No team information added yet!
+      </div>
+    );
 
   return (
     <div className='flex w-full flex-col p-8'>

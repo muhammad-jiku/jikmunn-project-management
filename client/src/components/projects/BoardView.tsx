@@ -5,6 +5,7 @@ import {
 } from '@/state/api/tasksApi';
 import { Task as TaskType } from '@/state/types';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import { format } from 'date-fns';
 import { EllipsisVertical, MessageSquareMore, Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -43,9 +44,18 @@ const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
     updateTaskStatus({ taskId, status: toStatus });
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
   if (isTasksError || !tasks)
-    return <div>An error occurred while fetching tasks</div>;
+    return (
+      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+        No task information added yet!
+      </div>
+    );
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -88,10 +98,10 @@ const TaskColumn = ({
   const tasksCount = tasks.filter((task) => task.status === status).length;
 
   const statusColor: any = {
-    'To Do': '#2563EB',
-    'Work In Progress': '#059669',
-    'Under Review': '#D97706',
-    Completed: '#000000',
+    TO_DO: '#2563EB',
+    WORK_IN_PROGRESS: '#059669',
+    UNDER_REVIEW: '#D97706',
+    COMPLETED: '#000000',
   };
 
   return (
@@ -108,7 +118,13 @@ const TaskColumn = ({
         />
         <div className='flex w-full items-center justify-between rounded-e-lg bg-white px-5 py-4 dark:bg-dark-secondary'>
           <h3 className='flex items-center text-lg font-semibold dark:text-white'>
-            {status}{' '}
+            {status === 'TO_DO'
+              ? 'To Do'
+              : status === 'WORK_IN_PROGRESS'
+                ? 'Work In Progress'
+                : status === 'UNDER_REVIEW'
+                  ? 'Under Review'
+                  : status}
             <span
               className='ml-2 inline-block rounded-full bg-gray-200 p-1 text-center text-sm leading-none dark:bg-dark-tertiary'
               style={{ width: '1.5rem', height: '1.5rem' }}

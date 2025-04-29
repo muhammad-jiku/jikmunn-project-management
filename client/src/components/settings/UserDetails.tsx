@@ -193,60 +193,6 @@ const UserDetails: React.FC = () => {
     }
   };
 
-  // // Handle form submission (update)
-  // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   setUpdateError(null);
-
-  //   // Construct your update payload only from form values (do not include the event object)
-  //   // For example, if you use react-hook-form, you might use getValues() or your own payload object.
-  //   const payload = {
-  //     firstName: getValues('firstName'),
-  //     middleName: getValues('middleName'),
-  //     lastName: getValues('lastName'),
-  //     // profileImage: getValues('profileImage'),
-  //   };
-
-  //   // Only include profileImage if it was actually changed
-  //   if (imageChanged && getValues('profileImage')) {
-  //     (payload as any).profileImage = getValues('profileImage');
-  //   }
-
-  //   try {
-  //     let result;
-  //     if (globalUser?.data?.role === 'DEVELOPER') {
-  //       result = await updateDeveloper({
-  //         id: globalUser?.data?.userId,
-  //         data: payload,
-  //       }).unwrap();
-  //     } else if (globalUser?.data?.role === 'MANAGER') {
-  //       result = await updateManager({
-  //         id: globalUser?.data?.userId,
-  //         data: payload,
-  //       }).unwrap();
-  //     } else if (globalUser?.data?.role === 'ADMIN') {
-  //       result = await updateAdmin({
-  //         id: globalUser?.data?.userId,
-  //         data: payload,
-  //       }).unwrap();
-  //     } else if (globalUser?.data?.role === 'SUPER_ADMIN') {
-  //       result = await updateSuperAdmin({
-  //         id: globalUser?.data?.userId,
-  //         data: payload,
-  //       }).unwrap();
-  //     } else {
-  //       throw new Error('Invalid user role');
-  //     }
-  //     console.log('Update successful:', result);
-  //   } catch (error: any) {
-  //     console.error('Error processing form data:', error);
-  //     console.error('Error processing form data message:', error?.message);
-  //     setUpdateError(
-  //       error.message || 'Something went wrong, Please try again!'
-  //     );
-  //   }
-  // };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

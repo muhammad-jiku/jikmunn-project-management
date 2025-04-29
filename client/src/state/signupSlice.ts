@@ -10,7 +10,8 @@ export interface PersonalInfo {
 }
 
 export interface BaseFormData {
-  role: 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';
+  // role: 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';
+  role: 'DEVELOPER' | 'MANAGER';
   username: string;
   email: string;
   password: string;
@@ -89,18 +90,18 @@ const signupSlice = createSlice({
               ...personalInfo,
             } as PersonalInfo;
             break;
-          case 'ADMIN':
-            state.formData.admin = {
-              ...(state?.formData?.admin || {}),
-              ...personalInfo,
-            } as PersonalInfo;
-            break;
-          case 'SUPER_ADMIN':
-            state.formData.superAdmin = {
-              ...(state?.formData?.superAdmin || {}),
-              ...personalInfo,
-            } as PersonalInfo;
-            break;
+          // case 'ADMIN':
+          //   state.formData.admin = {
+          //     ...(state?.formData?.admin || {}),
+          //     ...personalInfo,
+          //   } as PersonalInfo;
+          //   break;
+          // case 'SUPER_ADMIN':
+          //   state.formData.superAdmin = {
+          //     ...(state?.formData?.superAdmin || {}),
+          //     ...personalInfo,
+          //   } as PersonalInfo;
+          //   break;
           default:
             break;
         }

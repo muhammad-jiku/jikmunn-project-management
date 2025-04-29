@@ -1,5 +1,6 @@
 import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import { DisplayOption, Gantt, ViewMode } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
 import React, { useMemo, useState } from 'react';
@@ -55,9 +56,18 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
     }));
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
   if (isTasksError || !tasks)
-    return <div>An error occurred while fetching tasks</div>;
+    return (
+      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+        No task information added yet!
+      </div>
+    );
 
   return (
     <div className='px-4 xl:px-6'>

@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import ModalNewProject from '@/components/modals/ModalNewProject';
 import Header from '@/components/shared/Header';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetProjectsQuery } from '@/state/api/projectsApi';
-import { Project } from '@/state/types';
+// import { Project } from '@/state/types';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import {
   DataGrid,
   GridColDef,
@@ -52,7 +54,8 @@ const ProjectsComp = () => {
   const [isModalNewProjectOpen, setIsModalNewProjectOpen] = useState(false);
 
   // Transform the data to include a flat projectOwnerFullName property
-  const rows = projects?.data.map((project: Project) => {
+  // const rows = projects?.data.map((project: Project) => {
+  const rows = projects?.data.map((project: any) => {
     const ownerManager = project.owner?.manager;
 
     return {
@@ -63,42 +66,46 @@ const ProjectsComp = () => {
     };
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !projects) return <div>Error fetching projects</div>;
+  if (isLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
+  if (isError || !projects)
+    return (
+      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+        No project information added yet!
+      </div>
+    );
 
   return (
     <div className='flex w-full flex-col p-8'>
       <Header name='Projects' />
-      {projects?.data.length === 0 ? (
-        <div className='flex flex-col lg:flex-row h-[650px] w-full items-center justify-center'>
-          <ModalNewProject
-            isOpen={isModalNewProjectOpen}
-            onClose={() => setIsModalNewProjectOpen(false)}
-          />
-          <p className='text-xl sm:text-2xl md:text-3xl font-semibold text-gray-600 dark:text-gray-300'>
-            No project created yet!
-          </p>
-          <button
-            className='my-4 lg:mx-2 flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600'
-            onClick={() => setIsModalNewProjectOpen(true)}
-          >
-            <PlusSquare className='mr-2 h-5 w-5' /> New Boards
-          </button>
-        </div>
-      ) : (
-        <div style={{ height: 650, width: '100%' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pagination
-            slots={{
-              toolbar: CustomToolbar,
-            }}
-            className={dataGridClassNames}
-            sx={dataGridSxStyles(isDarkMode)}
-          />
-        </div>
-      )}
+      <div className='flex flex-col lg:flex-row h-[650px] w-full items-center justify-center'>
+        <ModalNewProject
+          isOpen={isModalNewProjectOpen}
+          onClose={() => setIsModalNewProjectOpen(false)}
+        />
+        <button
+          className='my-4 lg:mx-2 flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600'
+          onClick={() => setIsModalNewProjectOpen(true)}
+        >
+          <PlusSquare className='mr-2 h-5 w-5' /> New Boards
+        </button>
+      </div>
+      <div style={{ height: 650, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pagination
+          slots={{
+            toolbar: CustomToolbar,
+          }}
+          className={dataGridClassNames}
+          sx={dataGridSxStyles(isDarkMode)}
+        />
+      </div>
     </div>
   );
 };

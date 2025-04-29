@@ -45,6 +45,19 @@ const SearchComp = ({ params }: Props) => {
     return handleSearch.cancel;
   }, [handleSearch]);
 
+  //  if (isLoadingProjects || isLoadingTasks || isLoadingUsers)
+  //    return (
+  //      <div className='flex flex-col items-center justify-center h-full'>
+  //        <CircularProgress />
+  //      </div>
+  //    );
+  //   if (isErrorProjects || isErrorTasks || isErrorUsers)
+  //     return (
+  //       <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+  //         Something went wrong!
+  //       </div>
+  //     );
+
   return (
     <div className='p-8'>
       <Header name='Search' />

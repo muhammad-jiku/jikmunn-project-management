@@ -50,8 +50,16 @@ const UsersComp = () => {
   // console.log('users page data', data);
   // const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
-  // if (isLoading) return <div>Loading...</div>;
-  // if (isError || !data) return <div>Error fetching users</div>;
+  //  if (isLoading) return (
+  //       <div className='flex flex-col items-center justify-center h-full'>
+  //         <CircularProgress />
+  //       </div>
+  //     );
+  // if (isError || !data)  return (
+  //   <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+  //     No user information added yet!
+  //   </div>
+  // );
 
   return (
     <div className='flex w-full flex-col p-8'>

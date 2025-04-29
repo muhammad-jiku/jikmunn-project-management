@@ -7,6 +7,7 @@ import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { Priority, Task } from '@/state/types';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useState } from 'react';
 import TaskCard from '../tasks/TaskCard';
@@ -102,7 +103,18 @@ const ReusablePriority = ({ priority }: Props) => {
     });
   console.log('priority page filtered tasks data', filteredTasks);
 
-  if (isTasksError || !tasks) return <div>Error fetching tasks</div>;
+  if (isLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
+  if (isTasksError || !tasks)
+    return (
+      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+        No task information added yet!
+      </div>
+    );
 
   return (
     <div className='m-5 p-4'>
@@ -121,6 +133,7 @@ const ReusablePriority = ({ priority }: Props) => {
           </button>
         }
       />
+
       <div className='mb-4 flex justify-start'>
         <button
           className={`px-4 py-2 ${
@@ -139,29 +152,35 @@ const ReusablePriority = ({ priority }: Props) => {
           Table
         </button>
       </div>
-      {isLoading ? (
-        <div>Loading tasks...</div>
-      ) : view === 'list' ? (
-        <div className='grid grid-cols-1 gap-4'>
-          {filteredTasks?.map((task: Task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </div>
-      ) : (
-        view === 'table' &&
-        filteredTasks && (
-          <div className='z-0 w-full'>
-            <DataGrid
-              rows={filteredTasks}
-              columns={columns}
-              checkboxSelection
-              getRowId={(row) => row.id}
-              className={dataGridClassNames}
-              sx={dataGridSxStyles(isDarkMode)}
-            />
+      {
+        //   isLoading ? (
+        //   <div>Loading tasks...</div>
+        // ) :
+        view === 'list' ? (
+          // {isLoading ? (
+          //   <div>Loading tasks...</div>
+          // ) : view === 'list' ? (
+          <div className='grid grid-cols-1 gap-4'>
+            {filteredTasks?.map((task: Task) => (
+              <TaskCard key={task.id} task={task} />
+            ))}
           </div>
+        ) : (
+          view === 'table' &&
+          filteredTasks && (
+            <div className='z-0 w-full'>
+              <DataGrid
+                rows={filteredTasks}
+                columns={columns}
+                checkboxSelection
+                getRowId={(row) => row.id}
+                className={dataGridClassNames}
+                sx={dataGridSxStyles(isDarkMode)}
+              />
+            </div>
+          )
         )
-      )}
+      }
     </div>
   );
 };

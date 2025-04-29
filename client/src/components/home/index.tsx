@@ -6,6 +6,7 @@ import { useGetProjectsQuery } from '@/state/api/projectsApi';
 import { useGetTasksQuery } from '@/state/api/tasksApi';
 import { Priority, Project, Task } from '@/state/types';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
   Bar,
@@ -44,9 +45,6 @@ const Home = () => {
   console.log('projects data', projects);
 
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
-
-  if (tasksLoading || isProjectsLoading) return <div>Loading..</div>;
-  if (tasksError || !tasks || !projects) return <div>Error fetching data</div>;
 
   // Compute task priority distribution
   const priorityCount =
@@ -102,6 +100,14 @@ const Home = () => {
         text: '#000000',
       };
 
+  if (tasksLoading || isProjectsLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
+  // if (tasksError || !tasks || !projects) return <div>Error fetching data</div>;
+
   return (
     <div className='container h-full w-full bg-gray-50 dark:bg-dark-bg p-8'>
       <Header name='Project Management Dashboard' />
@@ -111,8 +117,8 @@ const Home = () => {
           <h3 className='mb-4 text-lg font-semibold dark:text-white'>
             Task Priority Distribution
           </h3>
-          {tasks.data.length === 0 ? (
-            <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
+          {tasksError || !tasks ? (
+            <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
               No task information added yet!
             </div>
           ) : (
@@ -125,7 +131,10 @@ const Home = () => {
                 <XAxis dataKey='name' stroke={chartColors.text} />
                 <YAxis stroke={chartColors.text} />
                 <Tooltip
-                  contentStyle={{ width: 'min-content', height: 'min-content' }}
+                  contentStyle={{
+                    width: 'min-content',
+                    height: 'min-content',
+                  }}
                 />
                 <Legend />
                 <Bar dataKey='count' fill={chartColors.bar} />
@@ -139,8 +148,8 @@ const Home = () => {
           <h3 className='mb-4 text-lg font-semibold dark:text-white'>
             Project Status
           </h3>
-          {projects.data.length === 0 ? (
-            <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
+          {!projects ? (
+            <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
               No project information added yet!
             </div>
           ) : (
@@ -167,13 +176,13 @@ const Home = () => {
             Your Tasks
           </h3>
           <div style={{ height: 400, width: '100%' }}>
-            {tasks.data.length === 0 ? (
+            {tasksError || !tasks ? (
               <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
                 No task information added yet!
               </div>
             ) : (
               <DataGrid
-                rows={tasks.data}
+                rows={tasks.data!}
                 columns={taskColumns}
                 checkboxSelection
                 loading={tasksLoading}

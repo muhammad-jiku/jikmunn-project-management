@@ -3,6 +3,7 @@
 import Header from '@/components/shared/Header';
 import { useGetProjectsQuery } from '@/state/api/projectsApi';
 import { useAppSelector } from '@/store';
+import { CircularProgress } from '@mui/material';
 import { DisplayOption, Gantt, ViewMode } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
 import React, { useMemo, useState } from 'react';
@@ -44,9 +45,18 @@ const TimelineComp = () => {
     }));
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <CircularProgress />
+      </div>
+    );
   if (isError || !projects)
-    return <div>An error occurred while fetching projects</div>;
+    return (
+      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+        No project information added yet!
+      </div>
+    );
 
   return (
     <div className='max-w-full p-8'>

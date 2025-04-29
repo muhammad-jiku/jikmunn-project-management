@@ -22,7 +22,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../../FormInputs/NavButtons';
 import StepFormHeader from '../StepFormHeader';
 
-type UserRole = 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';
+// type UserRole = 'DEVELOPER' | 'MANAGER' | 'ADMIN' | 'SUPER_ADMIN';
+type UserRole = 'DEVELOPER' | 'MANAGER';
 
 interface FormData {
   role: UserRole;
