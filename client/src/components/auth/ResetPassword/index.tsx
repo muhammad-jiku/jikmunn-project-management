@@ -89,12 +89,9 @@ const ResetPassword: React.FC = () => {
   // When time expires, show message and redirect
   const handleExpire = () => {
     setMessage('Time expired. Redirecting...');
-    setTimeout(
-      () => {
-        router.push('/sign-in');
-      },
-      10 * 60 * 60 * 1000
-    );
+    setTimeout(() => {
+      router.push('/sign-in');
+    }, 1000);
   };
 
   const onSubmit: SubmitHandler<ResetPasswordFormInputs> = async (data) => {
@@ -109,7 +106,7 @@ const ResetPassword: React.FC = () => {
     try {
       await resetPassword({ token, newPassword: data.newPassword }).unwrap();
       setMessage('Password has been reset successfully');
-      setTimeout(() => router.push('/sign-in'), 10 * 60 * 60 * 1000);
+      setTimeout(() => router.push('/sign-in'), 1000);
     } catch (err: any) {
       setMessage(err.data?.message || 'Failed to reset password');
     }

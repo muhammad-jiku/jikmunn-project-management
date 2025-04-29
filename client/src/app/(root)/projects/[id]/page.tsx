@@ -10,7 +10,7 @@ async function getProject(id: string) {
   const cookie = reqHeaders.get('cookie') || '';
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects/${id}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
     {
       cache: 'no-store',
       // Forward the cookie so that the protected API can authenticate
@@ -39,7 +39,7 @@ export async function generateMetadata({
       openGraph: {
         title: `${project?.data?.title} - Project Management Dashboard`,
         description: project?.data?.description || 'Project details',
-        url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/projects/${resolvedParams.id}`,
+        url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}projects/${resolvedParams.id}`,
         type: 'website',
       },
       twitter: {

@@ -193,7 +193,7 @@ const Task = ({ task }: TaskProps) => {
       {task.attachments && task.attachments.length > 0 && (
         <Image
           src={i1}
-          alt={task.attachments[0].fileName}
+          alt={task.attachments[0].fileName || 'task'}
           width={400}
           height={200}
           className='h-auto w-full rounded-t-md'
@@ -245,7 +245,7 @@ const Task = ({ task }: TaskProps) => {
               <Image
                 key={task?.assignee?.data?.userId}
                 src={p3}
-                alt={task?.assignee?.data?.username}
+                alt={task?.assignee?.data?.username || 'username'}
                 width={30}
                 height={30}
                 className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'
@@ -255,7 +255,7 @@ const Task = ({ task }: TaskProps) => {
               <Image
                 key={task?.author?.data?.userId}
                 src={p7}
-                alt={task?.author?.data?.username}
+                alt={task?.author?.data?.username || 'username'}
                 width={30}
                 height={30}
                 className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'

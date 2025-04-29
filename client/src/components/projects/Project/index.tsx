@@ -26,8 +26,8 @@ const ProjectComp = ({ params }: Props) => {
 
   const { id } = resolvedParams;
 
-  const [activeTab, setActiveTab] = useState('Board');
-  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('Board');
+  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState<boolean>(false);
 
   return (
     <div>
