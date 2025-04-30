@@ -11,9 +11,9 @@ import { EllipsisVertical, MessageSquareMore, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import i1 from '../../../public/images/i1.jpg';
-import p3 from '../../../public/images/p3.jpeg';
-import p7 from '../../../public/images/p7.jpeg';
+import i1 from '../../../../public/images/i1.jpg';
+import p3 from '../../../../public/images/p3.jpeg';
+import p7 from '../../../../public/images/p7.jpeg';
 
 type BoardProps = {
   id: string;

@@ -125,7 +125,7 @@ const Navbar = () => {
                 </div>
               </Link>
               <button
-                className='hidden rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:block'
+                className='hidden rounded bg-blue-primary px-4 py-2 text-xs font-bold text-white hover:bg-blue-600 md:block'
                 onClick={handleSignOut}
                 disabled={logoutLoading}
               >
@@ -134,7 +134,7 @@ const Navbar = () => {
             </>
           ) : (
             <Link href='/sign-in'>
-              <button className='rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
+              <button className='rounded bg-blue-primary px-4 py-2 text-xs font-bold text-white hover:bg-blue-600'>
                 Sign in
               </button>
             </Link>

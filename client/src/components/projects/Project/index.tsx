@@ -1,11 +1,11 @@
 'use client';
 
-import ModalNewTask from '@/components/modals/ModalNewTask';
-import BoardView from '@/components/projects/BoardView';
-import ListView from '@/components/projects/ListView';
 import ProjectHeader from '@/components/projects/ProjectHeader';
-import TableView from '@/components/projects/TableView';
-import TimelineView from '@/components/projects/TimeLineView';
+import BoardView from '@/components/projects/views/BoardView';
+import ListView from '@/components/projects/views/ListView';
+import TableView from '@/components/projects/views/TableView';
+import TimelineView from '@/components/projects/views/TimeLineView';
+import ModalNewTask from '@/components/shared/modals/tasks/ModalNewTask';
 import { use, useState } from 'react';
 
 type Params = {

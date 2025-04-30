@@ -3,7 +3,7 @@ import { NewTask, Priority, Status } from '@/state/types';
 import { useAppSelector } from '@/store';
 import { formatISO } from 'date-fns';
 import { useState } from 'react';
-import Modal from './Modal';
+import Modal from '../Modal';
 
 type Props = {
   isOpen: boolean;

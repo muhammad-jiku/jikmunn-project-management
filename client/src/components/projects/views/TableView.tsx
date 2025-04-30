@@ -4,7 +4,7 @@ import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import Header from '../shared/Header';
+import Header from '../../shared/Header';
 
 type Props = {
   id: string;

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import ModalNewTask from '@/components/modals/ModalNewTask';
 import Header from '@/components/shared/Header';
+import ModalNewTask from '@/components/shared/modals/tasks/ModalNewTask';
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
 import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { Priority, Task } from '@/state/types';
@@ -110,12 +110,12 @@ const ReusablePriority = ({ priority }: Props) => {
         <CircularProgress />
       </div>
     );
-  if (isTasksError || !tasks)
-    return (
-      <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
-        No task information added yet!
-      </div>
-    );
+  // if (isTasksError || !tasks)
+  //   return (
+  //     <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+  //       No task information added yet!
+  //     </div>
+  //   );
 
   return (
     <div className='m-5 p-4'>
@@ -134,54 +134,53 @@ const ReusablePriority = ({ priority }: Props) => {
           </button>
         }
       />
-
-      <div className='mb-4 flex justify-start'>
-        <button
-          className={`px-4 py-2 ${
-            view === 'list' ? 'bg-gray-300' : 'bg-white'
-          } rounded-l`}
-          onClick={() => setView('list')}
-        >
-          List
-        </button>
-        <button
-          className={`px-4 py-2 ${
-            view === 'table' ? 'bg-gray-300' : 'bg-white'
-          } rounded-l`}
-          onClick={() => setView('table')}
-        >
-          Table
-        </button>
-      </div>
-      {
-        //   isLoading ? (
-        //   <div>Loading tasks...</div>
-        // ) :
-        view === 'list' ? (
-          // {isLoading ? (
-          //   <div>Loading tasks...</div>
-          // ) : view === 'list' ? (
-          <div className='grid grid-cols-1 gap-4'>
-            {filteredTasks?.map((task: Task) => (
-              <TaskCard key={task.id} task={task} />
-            ))}
+      {isTasksError || !tasks ? (
+        <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+          No task information added yet!{' '}
+        </div>
+      ) : (
+        <>
+          <div className='mb-4 flex justify-start'>
+            <button
+              className={`px-4 py-2 ${
+                view === 'list' ? 'bg-gray-300' : 'bg-white'
+              } rounded-l`}
+              onClick={() => setView('list')}
+            >
+              List
+            </button>
+            <button
+              className={`px-4 py-2 ${
+                view === 'table' ? 'bg-gray-300' : 'bg-white'
+              } rounded-l`}
+              onClick={() => setView('table')}
+            >
+              Table
+            </button>
           </div>
-        ) : (
-          view === 'table' &&
-          filteredTasks && (
-            <div className='z-0 w-full'>
-              <DataGrid
-                rows={filteredTasks}
-                columns={columns}
-                checkboxSelection
-                getRowId={(row) => row.id}
-                className={dataGridClassNames}
-                sx={dataGridSxStyles(isDarkMode)}
-              />
+          {view === 'list' ? (
+            <div className='grid grid-cols-1 gap-4'>
+              {filteredTasks?.map((task: Task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
             </div>
-          )
-        )
-      }
+          ) : (
+            view === 'table' &&
+            filteredTasks && (
+              <div className='z-0 w-full'>
+                <DataGrid
+                  rows={filteredTasks}
+                  columns={columns}
+                  checkboxSelection
+                  getRowId={(row) => row.id}
+                  className={dataGridClassNames}
+                  sx={dataGridSxStyles(isDarkMode)}
+                />
+              </div>
+            )
+          )}
+        </>
+      )}
     </div>
   );
 };

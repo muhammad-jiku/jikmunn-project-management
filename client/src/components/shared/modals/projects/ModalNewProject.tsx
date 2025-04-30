@@ -4,7 +4,7 @@ import { NewProject } from '@/state/types'; // Import the new type
 import { useAppSelector } from '@/store';
 import { formatISO } from 'date-fns';
 import { useState } from 'react';
-import Modal from './Modal';
+import Modal from '../Modal';
 
 type Props = {
   isOpen: boolean;

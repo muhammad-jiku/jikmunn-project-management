@@ -5,8 +5,8 @@ import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
 import { Task } from '@/state/types';
 import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
-import Header from '../shared/Header';
-import TaskCard from '../tasks/TaskCard';
+import Header from '../../shared/Header';
+import TaskCard from '../../tasks/TaskCard';
 
 type Props = {
   id: string;

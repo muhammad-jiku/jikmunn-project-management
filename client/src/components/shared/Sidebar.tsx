@@ -192,7 +192,7 @@ const Sidebar = () => {
                 </div>
               </SidebarLink>
               <button
-                className='block mt-4 w-full rounded bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500 md:hidden'
+                className='block mt-4 w-full rounded bg-blue-primary px-4 py-2 text-xs font-bold text-white hover:bg-blue-600 md:hidden'
                 onClick={handleSignOut}
                 disabled={logoutLoading}
               >
@@ -201,7 +201,7 @@ const Sidebar = () => {
             </div>
           ) : (
             <Link href='/sign-in' className='w-full'>
-              <button className='rounded w-full bg-blue-400 px-4 py-2 text-xs font-bold text-white hover:bg-blue-500'>
+              <button className='rounded w-full bg-blue-primary px-4 py-2 text-xs font-bold text-white hover:bg-blue-600'>
                 Sign in
               </button>
             </Link>
