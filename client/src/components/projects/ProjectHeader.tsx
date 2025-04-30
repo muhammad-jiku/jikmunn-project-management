@@ -33,7 +33,7 @@ const ProjectHeader = ({ activeTab, setActiveTab }: Props) => {
               className='flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600'
               onClick={() => setIsModalNewProjectOpen(true)}
             >
-              <PlusSquare className='mr-2 h-5 w-5' /> New Boards
+              <PlusSquare className='mr-2 h-5 w-5' /> Add Project
             </button>
           }
         />

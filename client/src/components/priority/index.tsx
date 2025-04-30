@@ -9,6 +9,7 @@ import { Priority, Task } from '@/state/types';
 import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { PlusSquare } from 'lucide-react';
 import { useState } from 'react';
 import TaskCard from '../tasks/TaskCard';
 
@@ -129,7 +130,7 @@ const ReusablePriority = ({ priority }: Props) => {
             className='mr-3 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700'
             onClick={() => setIsModalNewTaskOpen(true)}
           >
-            Add Task
+            <PlusSquare className='mr-2 h-5 w-5' /> Add Task
           </button>
         }
       />

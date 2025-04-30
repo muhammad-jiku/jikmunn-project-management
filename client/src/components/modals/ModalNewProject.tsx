@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCreateProjectMutation } from '@/state/api/projectsApi';
 import { NewProject } from '@/state/types'; // Import the new type
 import { useAppSelector } from '@/store';
@@ -39,7 +40,24 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
     };
 
     console.log('Creating project with payload:', newProjectPayload);
-    await createProject(newProjectPayload);
+    const newProjectData: any = await createProject(newProjectPayload);
+    console.log('Project creation response check:', newProjectData);
+    if (newProjectData?.data?.success || newProjectData?.data?.data) {
+      // Close the modal if creation was successful
+      resetForm();
+      onClose();
+    } else {
+      // Keep modal open and possibly show an error message
+      // setError(newProjectData?.error?.message || 'Failed to create project');
+    }
+  };
+
+  const resetForm = () => {
+    setProjectTitle('');
+    setDescription('');
+    setStartDate('');
+    setEndDate('');
+    // setError(null);
   };
 
   const isFormValid = () => {

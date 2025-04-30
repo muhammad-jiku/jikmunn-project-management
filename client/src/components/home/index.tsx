@@ -118,7 +118,7 @@ const Home = () => {
             Task Priority Distribution
           </h3>
           {tasksError || !tasks ? (
-            <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+            <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
               No task information added yet!
             </div>
           ) : (
@@ -149,7 +149,7 @@ const Home = () => {
             Project Status
           </h3>
           {!projects ? (
-            <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+            <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
               No project information added yet!
             </div>
           ) : (
@@ -177,7 +177,7 @@ const Home = () => {
           </h3>
           <div style={{ height: 400, width: '100%' }}>
             {tasksError || !tasks ? (
-              <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
+              <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
                 No task information added yet!
               </div>
             ) : (
