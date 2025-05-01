@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   IGenericResponse,
@@ -27,8 +28,8 @@ export const tasksApi = createApi({
       query: () => '/tasks',
       providesTags: ['Task'],
     }),
-    // getTask: build.query<any, number>({
-    getTask: build.query<Task, number>({
+    getTask: build.query<any, number>({
+      // getTask: build.query<Task, number>({
       query: (id) => ({
         url: `/tasks/${id}`,
       }),

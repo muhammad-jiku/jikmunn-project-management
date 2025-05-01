@@ -42,7 +42,7 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
     console.log('Creating project with payload:', newProjectPayload);
     const newProjectData: any = await createProject(newProjectPayload);
     console.log('Project creation response check:', newProjectData);
-    if (newProjectData?.data?.success || newProjectData?.data?.data) {
+    if (newProjectData?.data?.success) {
       // Close the modal if creation was successful
       resetForm();
       onClose();

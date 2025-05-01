@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCreateTaskMutation } from '@/state/api/tasksApi';
 import { NewTask, Priority, Status } from '@/state/types';
 import { useAppSelector } from '@/store';
@@ -57,18 +58,48 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
     // This ensures we send only the expected fields.
 
     console.log('Creating task with payload:', newTaskPayload);
+    const newTaskData: any = await createTask(newTaskPayload);
+    console.log('Task creation response check:', newTaskData);
+    if (newTaskData?.data?.success) {
+      // Close the modal if creation was successful
+      resetForm();
+      onClose();
+    } else {
+      // Keep modal open and possibly show an error message
+      // setError(newProjectData?.error?.message || 'Failed to create project');
+    }
+  };
 
-    await createTask(newTaskPayload);
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setTags('');
+    setPoints(undefined);
+    setStatus(Status.TO_DO);
+    setPriority(Priority.Backlog);
+    setStartDate('');
+    setDueDate('');
+    setProjectId(undefined);
+    setAssignedUserId('');
+    // setError(null);
   };
 
   // Updated validation logic:
   // If id is provided, only title and author are required.
   // Otherwise, projectId is also required.
   const isFormValid = () => {
-    if (id !== null) {
-      return Boolean(title && authorUserId);
-    }
-    return Boolean(title && authorUserId && projectId);
+    return Boolean(
+      title &&
+        description &&
+        tags &&
+        status &&
+        priority &&
+        startDate &&
+        dueDate &&
+        authorUserId &&
+        assignedUserId &&
+        projectId
+    );
   };
 
   const selectStyles =

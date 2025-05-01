@@ -35,7 +35,7 @@ const ModalUpdateProject = ({ isOpen, onClose, projectId }: Props) => {
   useEffect(() => {
     if (project) {
       setProjectTitle(project?.data?.title);
-      setDescription(project?.data?.description || '');
+      setDescription(project?.data?.description);
 
       // Format dates for the date input (YYYY-MM-DD)
       if (project?.data?.startDate) {
@@ -76,20 +76,11 @@ const ModalUpdateProject = ({ isOpen, onClose, projectId }: Props) => {
 
       console.log('Project updated successfully:', result);
       if (result.success) {
-        // resetForm();
         onClose();
       }
     } catch (error) {
       console.error('Failed to update project:', error);
     }
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const resetForm = () => {
-    setProjectTitle('');
-    setDescription('');
-    setStartDate('');
-    setEndDate('');
   };
 
   const isFormValid = () => {

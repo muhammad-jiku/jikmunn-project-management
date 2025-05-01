@@ -10,16 +10,20 @@ import {
 import React, { useState } from 'react';
 import Header from '../shared/Header';
 // import ModalNewProject from '../shared/modals/projects/ModalNewProject';
+import { useGetProjectQuery } from '@/state/api/projectsApi';
 import ModalNewTask from '../shared/modals/tasks/ModalNewTask';
 
 type Props = {
+  id: number | null | string;
   activeTab: string;
   setActiveTab: (tabName: string) => void;
 };
 
-const ProjectHeader = ({ activeTab, setActiveTab }: Props) => {
+const ProjectHeader = ({ id, activeTab, setActiveTab }: Props) => {
   // const [isModalNewProjectOpen, setIsModalNewProjectOpen] = useState<boolean>(false);
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState<boolean>(false);
+
+  const { data: project } = useGetProjectQuery(id as number);
 
   return (
     <div className='px-4 xl:px-6'>
@@ -33,7 +37,7 @@ const ProjectHeader = ({ activeTab, setActiveTab }: Props) => {
       /> */}
       <div className='pb-6 pt-6 lg:pb-4 lg:pt-8'>
         <Header
-          name='Inspection'
+          name={`${project?.data?.title || 'Projects'}'s tasks tracking`}
           buttonComponent={
             <button
               className='flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600'
