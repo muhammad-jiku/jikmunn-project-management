@@ -7,7 +7,45 @@ type Props = {
   task: Task;
 };
 
+// Status color mapping
+const statusColor: Record<string, string> = {
+  TO_DO: '#2563EB',
+  WORK_IN_PROGRESS: '#059669',
+  UNDER_REVIEW: '#D97706',
+  COMPLETED: '#00ff0d',
+};
+
+// Priority color mapping
+const priorityColor: Record<string, string> = {
+  Backlog: '#6B7280', // Gray
+  Low: '#3B82F6', // Blue
+  Medium: '#FBBF24', // Amber
+  High: '#F59E0B', // Orange
+  Urgent: '#EF4444', // Red
+};
+
 const TaskCard = ({ task }: Props) => {
+  // Make sure status is not undefined before using it as an index
+  const status = task?.status || 'TO_DO'; // Default to 'TO_DO' if status is undefined
+  const statusColorValue = statusColor[status] || '#2563EB'; // Default to blue if status is not in our map
+
+  // Make sure priority is not undefined before using it as an index
+  const priority = task?.priority || 'Medium'; // Default to 'Medium' if priority is undefined
+  const priorityColorValue = priorityColor[priority] || '#FBBF24'; // Default to amber if priority is not in our map
+
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case 'TO_DO':
+        return 'To Do';
+      case 'WORK_IN_PROGRESS':
+        return 'Work In Progress';
+      case 'UNDER_REVIEW':
+        return 'Under Review';
+      default:
+        return 'Completed';
+    }
+  };
+
   return (
     <div className='mb-3 rounded bg-white p-4 shadow dark:bg-dark-secondary dark:text-white'>
       {task?.attachments && task?.attachments.length > 0 && (
@@ -37,10 +75,14 @@ const TaskCard = ({ task }: Props) => {
         {task.description || 'No description provided'}
       </p>
       <p>
-        <strong>Status:</strong> {task.status}
+        <strong>Status:</strong>{' '}
+        <span style={{ color: statusColorValue }}>
+          {getStatusLabel(status)}
+        </span>
       </p>
       <p>
-        <strong>Priority:</strong> {task.priority}
+        <strong>Priority:</strong>{' '}
+        <span style={{ color: priorityColorValue }}>{priority}</span>
       </p>
       <p>
         <strong>Tags:</strong> {task.tags || 'No tags'}

@@ -1,4 +1,4 @@
-import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
+import { useGetTasksByUserProjectQuery } from '@/state/api/tasksApi';
 import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
 import { DisplayOption, Gantt, ViewMode } from 'gantt-task-react';
@@ -14,14 +14,14 @@ type TaskTypeItems = 'task' | 'milestone' | 'project';
 
 const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
-  const globalUser = useAppSelector((state) => state?.global?.user?.data);
+  // const globalUser = useAppSelector((state) => state?.global?.user?.data);
+  // const userId = globalUser?.data?.userId as string;
 
-  const userId = globalUser?.data?.userId as string;
   const {
     data: tasks,
     isLoading,
     isError: isTasksError,
-  } = useGetTasksByUserQuery(userId, {});
+  } = useGetTasksByUserProjectQuery(id, {});
   console.log('timeline view param id', id);
   console.log('timeline view modal check', setIsModalNewTaskOpen);
   console.log('timeline view tasks data', tasks);
@@ -73,7 +73,7 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
     <div className='px-4 xl:px-6'>
       <div className='flex flex-wrap items-center justify-between gap-2 py-5'>
         <h1 className='me-2 text-lg font-bold dark:text-white'>
-          Project Tasks Timeline
+          Tasks Timeline
         </h1>
         <div className='relative inline-block w-64'>
           <select
@@ -99,14 +99,14 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
             barBackgroundSelectedColor={isDarkMode ? '#000' : '#9ba1a6'}
           />
         </div>
-        <div className='px-4 pb-5 pt-1'>
+        {/* <div className='px-4 pb-5 pt-1'>
           <button
             className='flex items-center rounded bg-blue-primary px-3 py-2 text-white hover:bg-blue-600'
             onClick={() => setIsModalNewTaskOpen(true)}
           >
             Add New Task
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

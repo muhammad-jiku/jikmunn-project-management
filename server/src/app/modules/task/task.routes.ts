@@ -7,21 +7,27 @@ import { TaskValidations } from './task.validations';
 
 const router = express.Router();
 
-router.post(
-  '/create',
-  validateRequest(TaskValidations.createTask),
-  auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
-  TaskControllers.insertIntoDB
-);
+router
+  .route('/create')
+  .post(
+    validateRequest(TaskValidations.createTask),
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    TaskControllers.insertIntoDB
+  );
 
-router.get(
-  '/',
-  auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
-  TaskControllers.getAllFromDB
-);
+router
+  .route('/')
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    TaskControllers.getAllFromDB
+  );
 
 router
   .route('/:id')
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    TaskControllers.getProjectTasksFromDB
+  )
   .patch(
     validateRequest(TaskValidations.updateTask),
     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
@@ -37,10 +43,11 @@ router
     TaskControllers.deleteByIdFromDB
   );
 
-router.get(
-  '/user/:userId',
-  auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
-  TaskControllers.getUserTasksFromDB
-);
+router
+  .route('/user/:userId')
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    TaskControllers.getUserTasksFromDB
+  );
 
 export const TaskRoutes = router;

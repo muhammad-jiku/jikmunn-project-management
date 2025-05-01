@@ -22,10 +22,64 @@ import {
   YAxis,
 } from 'recharts';
 
+// Status color mapping
+const statusColor: Record<string, string> = {
+  TO_DO: '#2563EB',
+  WORK_IN_PROGRESS: '#059669',
+  UNDER_REVIEW: '#D97706',
+  COMPLETED: '#00ff0d',
+};
+
+// Priority color mapping
+const priorityColor: Record<string, string> = {
+  Backlog: '#6B7280', // Gray
+  Low: '#3B82F6', // Blue
+  Medium: '#FBBF24', // Amber
+  High: '#F59E0B', // Orange
+  Urgent: '#EF4444', // Red
+};
+
 const taskColumns: GridColDef[] = [
   { field: 'title', headerName: 'Title', width: 200 },
-  { field: 'status', headerName: 'Status', width: 150 },
-  { field: 'priority', headerName: 'Priority', width: 150 },
+  {
+    field: 'status',
+    headerName: 'Status',
+    width: 150,
+    renderCell: (params) => {
+      const status = params.value || 'TO_DO';
+      const color = statusColor[status] || '#2563EB';
+
+      const statusLabel =
+        status === 'TO_DO'
+          ? 'To Do'
+          : status === 'WORK_IN_PROGRESS'
+            ? 'Work In Progress'
+            : status === 'UNDER_REVIEW'
+              ? 'Under Review'
+              : 'Completed';
+
+      return (
+        <span className='px-2 font-semibold leading-5' style={{ color }}>
+          {statusLabel}
+        </span>
+      );
+    },
+  },
+  {
+    field: 'priority',
+    headerName: 'Priority',
+    width: 150,
+    renderCell: (params) => {
+      const priority = params.value || 'Medium';
+      const color = priorityColor[priority] || '#FBBF24';
+
+      return (
+        <span className='px-2 font-semibold leading-5' style={{ color }}>
+          {priority}
+        </span>
+      );
+    },
+  },
   { field: 'dueDate', headerName: 'Due Date', width: 150 },
 ];
 
@@ -106,7 +160,6 @@ const Home = () => {
         <CircularProgress />
       </div>
     );
-  // if (tasksError || !tasks || !projects) return <div>Error fetching data</div>;
 
   return (
     <div className='container h-full w-full bg-gray-50 dark:bg-dark-bg p-8'>

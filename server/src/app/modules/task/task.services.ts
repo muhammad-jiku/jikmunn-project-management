@@ -147,6 +147,69 @@ const getAllFromDB = async (
   };
 };
 
+const getProjectTasksFromDB = async (
+  projectId: number,
+  userId: string
+): Promise<Task[]> => {
+  try {
+    // First check if any tasks exist for this user
+    const userTasks = await prisma.task.findMany({
+      where: {
+        OR: [{ authorUserId: userId }, { assignedUserId: userId }],
+      },
+    });
+
+    // If no tasks found for this user, return empty array
+    if (userTasks.length === 0) {
+      // return [];
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        'Task owner or assignee does not exist!'
+      );
+    }
+
+    // Now check if tasks exist for the specific project and user
+    const projectTasks = await prisma.task.findMany({
+      where: {
+        AND: [
+          { projectId },
+          {
+            OR: [{ authorUserId: userId }, { assignedUserId: userId }],
+          },
+        ],
+      },
+      include: {
+        project: true,
+        author: {
+          include: {
+            manager: true,
+            developer: true,
+          },
+        },
+        assignee: {
+          include: {
+            developer: true,
+          },
+        },
+        attachments: true,
+        comments: true,
+        TaskAssignment: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return projectTasks;
+  } catch (error) {
+    console.error('Error retrieving project tasks:', error);
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to retrieve project tasks'
+    );
+  }
+};
+
 const getUserTasksFromDB = async (userId: string): Promise<Task[]> => {
   try {
     return await prisma.task.findMany({
@@ -268,6 +331,7 @@ const deleteByIdFromDB = async (taskId: number): Promise<Task> => {
 export const TaskServices = {
   insertIntoDB,
   getAllFromDB,
+  getProjectTasksFromDB,
   getUserTasksFromDB,
   updateTaskStatusInDB,
   deleteByIdFromDB,

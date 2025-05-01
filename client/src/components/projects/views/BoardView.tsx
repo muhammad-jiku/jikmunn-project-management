@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  useGetTasksByUserQuery,
+  useGetTasksByUserProjectQuery,
+  // useGetTasksByUserQuery,
   useUpdateTaskStatusMutation,
 } from '@/state/api/tasksApi';
 import { Task as TaskType } from '@/state/types';
-import { useAppSelector } from '@/store';
+// import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
 import { format } from 'date-fns';
 import { EllipsisVertical, MessageSquareMore, Plus } from 'lucide-react';
@@ -23,14 +24,13 @@ type BoardProps = {
 const taskStatus = ['TO_DO', 'WORK_IN_PROGRESS', 'UNDER_REVIEW', 'COMPLETED'];
 
 const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
-  const globalUser = useAppSelector((state) => state?.global?.user?.data);
-
-  const userId = globalUser?.data?.userId as string;
+  // const globalUser = useAppSelector((state) => state?.global?.user?.data);
+  // const userId = globalUser?.data?.userId as string;
   const {
     data: tasks,
     isLoading,
     isError: isTasksError,
-  } = useGetTasksByUserQuery(userId, {});
+  } = useGetTasksByUserProjectQuery(id, {});
 
   console.log('board view param id', id);
   console.log('board view modal check', setIsModalNewTaskOpen);
@@ -101,7 +101,7 @@ const TaskColumn = ({
     TO_DO: '#2563EB',
     WORK_IN_PROGRESS: '#059669',
     UNDER_REVIEW: '#D97706',
-    COMPLETED: '#000000',
+    COMPLETED: '#00ff0d',
   };
 
   return (
@@ -124,7 +124,7 @@ const TaskColumn = ({
                 ? 'Work In Progress'
                 : status === 'UNDER_REVIEW'
                   ? 'Under Review'
-                  : status}
+                  : 'Completed'}
             <span
               className='ml-2 inline-block rounded-full bg-gray-200 p-1 text-center text-sm leading-none dark:bg-dark-tertiary'
               style={{ width: '1.5rem', height: '1.5rem' }}
@@ -223,7 +223,7 @@ const Task = ({ task }: TaskProps) => {
               {taskTagsSplit.map((tag) => (
                 <div
                   key={tag}
-                  className='rounded-full bg-blue-100 px-2 py-1 text-xs'
+                  className='rounded-full bg-blue-100 dark:bg-blue-600 px-2 py-1 text-xs'
                 >
                   {' '}
                   {tag}

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
+import { useGetTasksByUserProjectQuery } from '@/state/api/tasksApi';
 import { Task } from '@/state/types';
-import { useAppSelector } from '@/store';
+// import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
-import Header from '../../shared/Header';
+// import Header from '../../shared/Header';
 import TaskCard from '../../tasks/TaskCard';
 
 type Props = {
@@ -19,14 +19,14 @@ type TransformedTask = Omit<Task, 'author' | 'assignee'> & {
 };
 
 const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
-  const globalUser = useAppSelector((state) => state?.global?.user?.data);
-  const userId = globalUser?.data?.userId as string;
+  // const globalUser = useAppSelector((state) => state?.global?.user?.data);
+  // const userId = globalUser?.data?.userId as string;
 
   const {
     data: tasks,
     isLoading,
     isError: isTasksError,
-  } = useGetTasksByUserQuery(userId, {});
+  } = useGetTasksByUserProjectQuery(id, {});
 
   console.log('list view param id', id);
   console.log('list view modal check', setIsModalNewTaskOpen);
@@ -34,10 +34,10 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
 
   // Transform the tasks data to include flattened author and assignee strings.
   const transformedTasks: TransformedTask[] = (tasks?.data ?? []).map(
-    (task: Task) => {
-      const authorManager = task?.author?.data?.manager;
-      const authorDeveloper = task?.author?.data?.developer;
-      const assigneeDeveloper = task?.assignee?.data?.developer;
+    (task: any) => {
+      const authorManager = task.author?.manager;
+      const authorDeveloper = task.author?.developer;
+      const assigneeDeveloper = task.assignee?.developer;
 
       return {
         ...task,
@@ -70,7 +70,7 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
 
   return (
     <div className='px-4 pb-8 xl:px-6'>
-      <div className='pt-5'>
+      {/* <div className='pt-5'>
         <Header
           name='List'
           buttonComponent={
@@ -83,8 +83,8 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
           }
           isSmallText
         />
-      </div>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6'>
+      </div> */}
+      <div className='my-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6'>
         {transformedTasks.map((task: any) => (
           <TaskCard key={task.id} task={task} />
         ))}

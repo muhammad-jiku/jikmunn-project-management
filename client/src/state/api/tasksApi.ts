@@ -27,6 +27,13 @@ export const tasksApi = createApi({
       query: () => '/tasks',
       providesTags: ['Task'],
     }),
+    getTasksByUserProject: build.query<IGenericResponse<Task[]>, string>({
+      query: (projectId) => `/tasks/${projectId}`,
+      providesTags: (result, error, projectId) =>
+        result
+          ? result.data.map(({ id }) => ({ type: 'Task' as const, id }))
+          : [{ type: 'Task' as const, id: projectId }],
+    }),
     getTasksByUser: build.query<IGenericResponse<Task[]>, string>({
       query: (userId) => `/tasks/user/${userId}`,
       providesTags: (result, error, userId) =>
@@ -57,6 +64,7 @@ export const tasksApi = createApi({
 export const {
   useCreateTaskMutation,
   useGetTasksQuery,
+  useGetTasksByUserProjectQuery,
   useGetTasksByUserQuery,
   useUpdateTaskStatusMutation,
   useDeleteTaskMutation,

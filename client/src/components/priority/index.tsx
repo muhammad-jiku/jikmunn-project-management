@@ -17,6 +17,23 @@ type Props = {
   priority: Priority;
 };
 
+// Status color mapping
+const statusColor: Record<string, string> = {
+  TO_DO: '#2563EB',
+  WORK_IN_PROGRESS: '#059669',
+  UNDER_REVIEW: '#D97706',
+  COMPLETED: '#00ff0d',
+};
+
+// Priority color mapping
+const priorityColor: Record<string, string> = {
+  Backlog: '#6B7280', // Gray
+  Low: '#3B82F6', // Blue
+  Medium: '#FBBF24', // Amber
+  High: '#F59E0B', // Orange
+  Urgent: '#EF4444', // Red
+};
+
 const columns: GridColDef[] = [
   {
     field: 'title',
@@ -31,17 +48,41 @@ const columns: GridColDef[] = [
   {
     field: 'status',
     headerName: 'Status',
-    width: 130,
-    renderCell: (params) => (
-      <span className='inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800'>
-        {params.value}
-      </span>
-    ),
+    width: 150,
+    renderCell: (params) => {
+      const status = params.value || 'TO_DO';
+      const color = statusColor[status] || '#2563EB';
+
+      const statusLabel =
+        status === 'TO_DO'
+          ? 'To Do'
+          : status === 'WORK_IN_PROGRESS'
+            ? 'Work In Progress'
+            : status === 'UNDER_REVIEW'
+              ? 'Under Review'
+              : 'Completed';
+
+      return (
+        <span className='px-2 font-semibold leading-5' style={{ color }}>
+          {statusLabel}
+        </span>
+      );
+    },
   },
   {
     field: 'priority',
     headerName: 'Priority',
-    width: 75,
+    width: 150,
+    renderCell: (params) => {
+      const priority = params.value || 'Medium';
+      const color = priorityColor[priority] || '#FBBF24';
+
+      return (
+        <span className='px-2 font-semibold leading-5' style={{ color }}>
+          {priority}
+        </span>
+      );
+    },
   },
   {
     field: 'tags',
@@ -119,21 +160,21 @@ const ReusablePriority = ({ priority }: Props) => {
 
   return (
     <div className='m-5 p-4'>
-      <ModalNewTask
-        isOpen={isModalNewTaskOpen}
-        onClose={() => setIsModalNewTaskOpen(false)}
-      />
-      <Header
-        name='Priority Page'
-        buttonComponent={
+      <div className='flex items-center justify-between'>
+        <Header name="Task's Proirity" />
+        <div className='flex w-full items-center justify-end'>
+          <ModalNewTask
+            isOpen={isModalNewTaskOpen}
+            onClose={() => setIsModalNewTaskOpen(false)}
+          />
           <button
-            className='mr-3 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700'
+            className='mb-4 flex justify-center items-center rounded-md bg-blue-primary p-3 text-white hover:bg-blue-600'
             onClick={() => setIsModalNewTaskOpen(true)}
           >
             <PlusSquare className='mr-2 h-5 w-5' /> Add Task
           </button>
-        }
-      />
+        </div>
+      </div>
       {isTasksError || !tasks ? (
         <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
           No task information added yet!{' '}
@@ -143,16 +184,16 @@ const ReusablePriority = ({ priority }: Props) => {
           <div className='mb-4 flex justify-start'>
             <button
               className={`px-4 py-2 ${
-                view === 'list' ? 'bg-gray-300' : 'bg-white'
-              } rounded-l`}
+                view === 'list' ? 'bg-gray-800' : 'bg-gray-700'
+              } text-white rounded-l`}
               onClick={() => setView('list')}
             >
               List
             </button>
             <button
               className={`px-4 py-2 ${
-                view === 'table' ? 'bg-gray-300' : 'bg-white'
-              } rounded-l`}
+                view === 'table' ? 'bg-gray-800' : 'bg-gray-700'
+              } text-white rounded-l`}
               onClick={() => setView('table')}
             >
               Table

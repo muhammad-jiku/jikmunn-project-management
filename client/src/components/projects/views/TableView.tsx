@@ -1,14 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { dataGridClassNames, dataGridSxStyles } from '@/lib/utils';
-import { useGetTasksByUserQuery } from '@/state/api/tasksApi';
+import { useGetTasksByUserProjectQuery } from '@/state/api/tasksApi';
 import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import Header from '../../shared/Header';
 
 type Props = {
   id: string;
   setIsModalNewTaskOpen: (isOpen: boolean) => void;
+};
+
+// Status color mapping
+const statusColor: Record<string, string> = {
+  TO_DO: '#2563EB',
+  WORK_IN_PROGRESS: '#059669',
+  UNDER_REVIEW: '#D97706',
+  COMPLETED: '#00ff0d',
+};
+
+// Priority color mapping
+const priorityColor: Record<string, string> = {
+  Backlog: '#6B7280', // Gray
+  Low: '#3B82F6', // Blue
+  Medium: '#FBBF24', // Amber
+  High: '#F59E0B', // Orange
+  Urgent: '#EF4444', // Red
 };
 
 const columns: GridColDef[] = [
@@ -26,16 +42,46 @@ const columns: GridColDef[] = [
     field: 'status',
     headerName: 'Status',
     width: 130,
-    renderCell: (params) => (
-      <span className='inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800'>
-        {params.value}
-      </span>
-    ),
+    renderCell: (params) => {
+      const status = params.value || 'TO_DO';
+      const color = statusColor[status] || '#2563EB';
+
+      const statusLabel =
+        status === 'TO_DO'
+          ? 'To Do'
+          : status === 'WORK_IN_PROGRESS'
+            ? 'Work In Progress'
+            : status === 'UNDER_REVIEW'
+              ? 'Under Review'
+              : 'Completed';
+
+      return (
+        <span
+          className='inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5'
+          style={{ color }}
+        >
+          {statusLabel}
+        </span>
+      );
+    },
   },
   {
     field: 'priority',
     headerName: 'Priority',
     width: 75,
+    renderCell: (params) => {
+      const priority = params.value || 'Medium';
+      const color = priorityColor[priority] || '#FBBF24';
+
+      return (
+        <span
+          className='inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5'
+          style={{ color }}
+        >
+          {priority}
+        </span>
+      );
+    },
   },
   {
     field: 'tags',
@@ -66,14 +112,12 @@ const columns: GridColDef[] = [
 
 const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
-  const globalUser = useAppSelector((state) => state?.global?.user?.data);
 
-  const userId = globalUser?.data?.userId as string;
   const {
     data: tasks,
     isLoading,
     isError: isTasksError,
-  } = useGetTasksByUserQuery(userId, {});
+  } = useGetTasksByUserProjectQuery(id, {});
   console.log('table view param id', id);
   console.log('table view modal check', setIsModalNewTaskOpen);
   console.log('table view tasks data', tasks);
@@ -110,21 +154,7 @@ const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
     );
 
   return (
-    <div className='h-[540px] w-full px-4 pb-8 xl:px-6'>
-      <div className='pt-5'>
-        <Header
-          name='Table'
-          buttonComponent={
-            <button
-              className='flex items-center rounded bg-blue-primary px-3 py-2 text-white hover:bg-blue-600'
-              onClick={() => setIsModalNewTaskOpen(true)}
-            >
-              Add Task
-            </button>
-          }
-          isSmallText
-        />
-      </div>
+    <div className='my-4 h-auto w-full px-4 pb-8 xl:px-6'>
       <DataGrid
         rows={transformedTaskRows || []}
         columns={columns}

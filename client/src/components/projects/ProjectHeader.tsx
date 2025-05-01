@@ -9,7 +9,8 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import Header from '../shared/Header';
-import ModalNewProject from '../shared/modals/projects/ModalNewProject';
+// import ModalNewProject from '../shared/modals/projects/ModalNewProject';
+import ModalNewTask from '../shared/modals/tasks/ModalNewTask';
 
 type Props = {
   activeTab: string;
@@ -17,23 +18,29 @@ type Props = {
 };
 
 const ProjectHeader = ({ activeTab, setActiveTab }: Props) => {
-  const [isModalNewProjectOpen, setIsModalNewProjectOpen] = useState(false);
+  // const [isModalNewProjectOpen, setIsModalNewProjectOpen] = useState<boolean>(false);
+  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState<boolean>(false);
 
   return (
     <div className='px-4 xl:px-6'>
-      <ModalNewProject
+      <ModalNewTask
+        isOpen={isModalNewTaskOpen}
+        onClose={() => setIsModalNewTaskOpen(false)}
+      />
+      {/* <ModalNewProject
         isOpen={isModalNewProjectOpen}
         onClose={() => setIsModalNewProjectOpen(false)}
-      />
+      /> */}
       <div className='pb-6 pt-6 lg:pb-4 lg:pt-8'>
         <Header
-          name='Product Design Development'
+          name='Inspection'
           buttonComponent={
             <button
               className='flex items-center rounded-md bg-blue-primary px-3 py-2 text-white hover:bg-blue-600'
-              onClick={() => setIsModalNewProjectOpen(true)}
+              onClick={() => setIsModalNewTaskOpen(true)}
+              // onClick={() => setIsModalNewProjectOpen(true)}
             >
-              <PlusSquare className='mr-2 h-5 w-5' /> Add Project
+              <PlusSquare className='mr-2 h-5 w-5' /> Add Task
             </button>
           }
         />
