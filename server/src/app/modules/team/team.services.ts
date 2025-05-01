@@ -26,13 +26,13 @@ const insertIntoDB = async (payload: Team): Promise<Team> => {
       );
     }
 
-    // Ensure the auto-increment sequence for tblteam is set correctly
-    await tx.$executeRaw`
-      SELECT setval(
-        pg_get_serial_sequence('tblteam', 'id'),
-        (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
-      )
-    `;
+    // // Ensure the auto-increment sequence for tblteam is set correctly
+    // await tx.$executeRaw`
+    //   SELECT setval(
+    //     pg_get_serial_sequence('tblteam', 'id'),
+    //     (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
+    //   )
+    // `;
 
     const result = await tx.team.create({
       data: payload,

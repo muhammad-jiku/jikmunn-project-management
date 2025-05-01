@@ -27,8 +27,15 @@ export const tasksApi = createApi({
       query: () => '/tasks',
       providesTags: ['Task'],
     }),
+    // getTask: build.query<any, number>({
+    getTask: build.query<Task, number>({
+      query: (id) => ({
+        url: `/tasks/${id}`,
+      }),
+      providesTags: ['Task'],
+    }),
     getTasksByUserProject: build.query<IGenericResponse<Task[]>, string>({
-      query: (projectId) => `/tasks/${projectId}`,
+      query: (projectId) => `/tasks/project/${projectId}`,
       providesTags: (result, error, projectId) =>
         result
           ? result.data.map(({ id }) => ({ type: 'Task' as const, id }))
@@ -41,9 +48,17 @@ export const tasksApi = createApi({
           ? result.data.map(({ id }) => ({ type: 'Task' as const, id }))
           : [{ type: 'Task' as const, id: userId }],
     }),
+    updateTask: build.mutation<Task, { id: number; data: Partial<Task> }>({
+      query: ({ id, data }) => ({
+        url: `/tasks/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['Task'],
+    }),
     updateTaskStatus: build.mutation<Task, { taskId: number; status: string }>({
       query: ({ taskId, status }) => ({
-        url: `/tasks/${taskId}`,
+        url: `/tasks/status/${taskId}`,
         method: 'PATCH',
         body: { status },
       }),
@@ -64,8 +79,10 @@ export const tasksApi = createApi({
 export const {
   useCreateTaskMutation,
   useGetTasksQuery,
+  useGetTaskQuery,
   useGetTasksByUserProjectQuery,
   useGetTasksByUserQuery,
+  useUpdateTaskMutation,
   useUpdateTaskStatusMutation,
   useDeleteTaskMutation,
 } = tasksApi;

@@ -7,20 +7,32 @@ const createTask = z.object({
       title: z.string({
         required_error: 'Title is required',
       }),
-      description: z.string().optional(),
-      status: z.nativeEnum(TaskStatus).optional(),
-      priority: z.string().optional(),
-      tags: z.string().optional(),
+      description: z.string({
+        required_error: 'Description is required',
+      }),
+      status: z.nativeEnum(TaskStatus, {
+        required_error: 'Status is required',
+      }),
+      priority: z.string({
+        required_error: 'Priority is required',
+      }),
+      tags: z.string({
+        required_error: 'Tag is required',
+      }),
       startDate: z
         .string({
-          required_error: 'Start date must be a valid date string',
+          required_error: 'Start date is required',
         })
-        .optional(),
+        .refine((val) => !isNaN(new Date(val).getTime()), {
+          message: 'Start date must be a valid date string',
+        }),
       dueDate: z
         .string({
-          required_error: 'Due date must be a valid date string',
+          required_error: 'Due date is required',
         })
-        .optional(),
+        .refine((val) => !isNaN(new Date(val).getTime()), {
+          message: 'Due date must be a valid date string',
+        }),
       points: z.number().optional(),
       projectId: z.number({
         required_error: 'Project ID is required',
@@ -28,7 +40,9 @@ const createTask = z.object({
       authorUserId: z.string({
         required_error: 'Author User ID is required',
       }),
-      assignedUserId: z.string().optional(),
+      assignedUserId: z.string({
+        required_error: 'Assignee User ID is required',
+      }),
     })
     .strict()
     .refine(
@@ -39,7 +53,7 @@ const createTask = z.object({
         return true;
       },
       {
-        message: 'Due date must be after start date',
+        message: 'Due date must be set after start date',
       }
     ),
 });
@@ -52,8 +66,18 @@ const updateTask = z.object({
       status: z.nativeEnum(TaskStatus).optional(),
       priority: z.string().optional(),
       tags: z.string().optional(),
-      startDate: z.string().optional(),
-      dueDate: z.string().optional(),
+      startDate: z
+        .string()
+        .refine((val) => !val || !isNaN(new Date(val).getTime()), {
+          message: 'Start date must be a valid date string',
+        })
+        .optional(),
+      dueDate: z
+        .string()
+        .refine((val) => !val || !isNaN(new Date(val).getTime()), {
+          message: 'Due date must be a valid date string',
+        })
+        .optional(),
       points: z.number().optional(),
       projectId: z.number().optional(),
       authorUserId: z.string().optional(),
@@ -68,7 +92,7 @@ const updateTask = z.object({
         return true;
       },
       {
-        message: 'Due date must be after start date',
+        message: 'Due date must be set after start date',
       }
     )
     .optional(),

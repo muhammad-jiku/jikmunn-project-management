@@ -52,6 +52,25 @@ const getAllFromDB = catchAsync(
   }
 );
 
+const getByIdFromDB = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      const result = await TaskServices.getByIdFromDB(Number(id));
+
+      sendResponse<Task>(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Task data fetched successfully!!',
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
+
 const getProjectTasksFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -84,6 +103,26 @@ const getUserTasksFromDB = catchAsync(
         statusCode: httpStatus.OK,
         success: true,
         message: 'User tasks retrieved successfully',
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
+
+const updateInDB = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const payload = await req.body;
+
+      const result = await TaskServices.updateOneInDB(Number(id), payload);
+
+      sendResponse<Task>(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Task data updated successfully!!',
         data: result,
       });
     } catch (error) {
@@ -136,8 +175,10 @@ const deleteByIdFromDB = catchAsync(
 export const TaskControllers = {
   insertIntoDB,
   getAllFromDB,
+  getByIdFromDB,
   getProjectTasksFromDB,
   getUserTasksFromDB,
+  updateInDB,
   updateTaskStatusInDB,
   deleteByIdFromDB,
 };

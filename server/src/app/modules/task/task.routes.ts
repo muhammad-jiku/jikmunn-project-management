@@ -26,12 +26,12 @@ router
   .route('/:id')
   .get(
     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
-    TaskControllers.getProjectTasksFromDB
+    TaskControllers.getByIdFromDB
   )
   .patch(
     validateRequest(TaskValidations.updateTask),
     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
-    TaskControllers.updateTaskStatusInDB
+    TaskControllers.updateInDB
   )
   .delete(
     auth(
@@ -41,6 +41,21 @@ router
       USER_ROLES.DEVELOPER
     ),
     TaskControllers.deleteByIdFromDB
+  );
+
+router
+  .route('/status/:id')
+  .patch(
+    validateRequest(TaskValidations.updateTask),
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    TaskControllers.updateTaskStatusInDB
+  );
+
+router
+  .route('/project/:id')
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    TaskControllers.getProjectTasksFromDB
   );
 
 router
