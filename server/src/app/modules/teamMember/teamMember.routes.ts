@@ -2,39 +2,40 @@ import express from 'express';
 import { USER_ROLES } from '../../../enums/user';
 import { auth } from '../../middlewares/auth';
 import { validateRequest } from '../../middlewares/validateRequest';
-import { ProjectTeamControllers } from './projectTeam.controllers';
-import { ProjectTeamValidations } from './projectTeam.validations';
+import { TeamMemberControllers } from './teamMember.controllers';
+import { TeamMemberValidations } from './teamMember.validations';
 
 const router = express.Router();
 
 router
   .route('/create')
   .post(
-    validateRequest(ProjectTeamValidations.createProjectTeam),
+    validateRequest(TeamMemberValidations.createTeamMember),
     auth(USER_ROLES.MANAGER),
-    ProjectTeamControllers.insertIntoDB
+    TeamMemberControllers.insertIntoDB
   );
+
 router
   .route('/')
   .get(
     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
-    ProjectTeamControllers.getAllFromDB
+    TeamMemberControllers.getAllFromDB
   );
 
 router
   .route('/:id')
   .get(
     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
-    ProjectTeamControllers.getByIdFromDB
+    TeamMemberControllers.getByIdFromDB
   )
   .patch(
-    validateRequest(ProjectTeamValidations.updateProjectTeam),
+    validateRequest(TeamMemberValidations.updateTeamMember),
     auth(USER_ROLES.MANAGER),
-    ProjectTeamControllers.updateOneInDB
+    TeamMemberControllers.updateOneInDB
   )
   .delete(
     auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.MANAGER),
-    ProjectTeamControllers.deleteByIdFromDB
+    TeamMemberControllers.deleteByIdFromDB
   );
 
-export const ProjectTeamRoutes = router;
+export const TeamMemberRoutes = router;

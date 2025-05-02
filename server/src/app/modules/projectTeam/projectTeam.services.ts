@@ -1,3 +1,4 @@
+import { ProjectTeam } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/handleApiError';
 import { paginationHelpers } from '../../../helpers/pagination';
@@ -5,7 +6,7 @@ import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { prisma } from '../../../shared/prisma';
 
-const insertIntoDB = async (payload: { projectId: number; teamId: number }) => {
+const insertIntoDB = async (payload: ProjectTeam) => {
   const [proj, team] = await Promise.all([
     prisma.project.findUnique({ where: { id: payload.projectId } }),
     prisma.team.findUnique({ where: { id: payload.teamId } }),
@@ -17,7 +18,7 @@ const insertIntoDB = async (payload: { projectId: number; teamId: number }) => {
 
 const getAllFromDB = async (
   options: IPaginationOptions
-): Promise<IGenericResponse<any[]>> => {
+): Promise<IGenericResponse<ProjectTeam[]>> => {
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
   const data = await prisma.projectTeam.findMany({
     skip,
@@ -37,10 +38,7 @@ const getByIdFromDB = async (id: number) => {
   return item;
 };
 
-const updateOneInDB = async (
-  id: number,
-  payload: Partial<{ projectId: number; teamId: number }>
-) => {
+const updateOneInDB = async (id: number, payload: Partial<ProjectTeam>) => {
   return prisma.projectTeam.update({ where: { id }, data: payload });
 };
 

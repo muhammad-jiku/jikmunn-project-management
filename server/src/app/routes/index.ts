@@ -8,6 +8,7 @@ import { ProjectTeamRoutes } from '../modules/projectTeam/projectTeam.routes';
 import { SuperAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { TaskRoutes } from '../modules/task/task.routes';
 import { TeamRoutes } from '../modules/team/team.routes';
+import { TeamMemberRoutes } from '../modules/teamMember/teamMember.routes';
 import { UserRoutes } from '../modules/user/user.routes';
 
 const routes = express.Router();
@@ -49,6 +50,10 @@ const moduleRoutes = [
   {
     path: '/teams',
     route: TeamRoutes,
+  },
+  {
+    path: '/team-members',
+    route: TeamMemberRoutes,
   },
   {
     path: '/project-teams',
