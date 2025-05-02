@@ -23,14 +23,30 @@ router
   );
 
 router
+  .route('/team')
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    validateRequest(TeamMemberValidations.teamIdQuery),
+    TeamMemberControllers.getByTeamIdFromDB
+  );
+
+router
+  .route('/user')
+  .get(
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    validateRequest(TeamMemberValidations.userIdQuery),
+    TeamMemberControllers.getByUserIdFromDB
+  );
+
+router
   .route('/:id')
   .get(
     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
     TeamMemberControllers.getByIdFromDB
   )
   .patch(
-    validateRequest(TeamMemberValidations.updateTeamMember),
     auth(USER_ROLES.MANAGER),
+    validateRequest(TeamMemberValidations.updateTeamMember),
     TeamMemberControllers.updateOneInDB
   )
   .delete(

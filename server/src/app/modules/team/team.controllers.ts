@@ -10,7 +10,8 @@ import { TeamServices } from './team.services';
 const insertIntoDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await TeamServices.insertIntoDB(req.body);
+      const payload = await req.body;
+      const result = await TeamServices.insertIntoDB(payload);
 
       sendResponse<Team>(res, {
         statusCode: httpStatus.CREATED,
@@ -34,7 +35,7 @@ const getAllFromDB = catchAsync(
       sendResponse<Team[]>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Teams retrieved successfully!',
+        message: 'Teams data retrieved successfully!',
         meta: result.meta,
         data: result.data,
       });
@@ -53,7 +54,7 @@ const getByIdFromDB = catchAsync(
       sendResponse<Team>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Team retrieved successfully!',
+        message: 'Team data retrieved successfully!',
         data: result,
       });
     } catch (error) {
@@ -71,7 +72,7 @@ const updateOneInDB = catchAsync(
       sendResponse<Team>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Team updated successfully!',
+        message: 'Team data updated successfully!',
         data: result,
       });
     } catch (error) {
@@ -89,7 +90,7 @@ const deleteByIdFromDB = catchAsync(
       sendResponse<Team>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Team deleted successfully!',
+        message: 'Team data deleted successfully!',
         data: result,
       });
     } catch (error) {

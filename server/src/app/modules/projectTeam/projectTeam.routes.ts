@@ -14,11 +14,28 @@ router
     auth(USER_ROLES.MANAGER),
     ProjectTeamControllers.insertIntoDB
   );
+
 router
   .route('/')
   .get(
     auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
     ProjectTeamControllers.getAllFromDB
+  );
+
+router
+  .route('/project')
+  .get(
+    validateRequest(ProjectTeamValidations.projectIdQuery),
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    ProjectTeamControllers.getByProjectIdFromDB
+  );
+
+router
+  .route('/team')
+  .get(
+    validateRequest(ProjectTeamValidations.teamIdQuery),
+    auth(USER_ROLES.MANAGER, USER_ROLES.DEVELOPER),
+    ProjectTeamControllers.getByTeamIdFromDB
   );
 
 router
@@ -33,7 +50,7 @@ router
     ProjectTeamControllers.updateOneInDB
   )
   .delete(
-    auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.MANAGER),
+    auth(USER_ROLES.MANAGER, USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
     ProjectTeamControllers.deleteByIdFromDB
   );
 

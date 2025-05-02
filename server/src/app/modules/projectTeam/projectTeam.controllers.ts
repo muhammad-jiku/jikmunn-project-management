@@ -10,12 +10,13 @@ import { ProjectTeamServices } from './projectTeam.services';
 const insertIntoDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await await ProjectTeamServices.insertIntoDB(req.body);
+      const payload = await req.body;
+      const result = await ProjectTeamServices.insertIntoDB(payload);
 
       sendResponse<ProjectTeam>(res, {
         statusCode: httpStatus.CREATED,
         success: true,
-        message: 'Project team data created successfully!',
+        message: 'Project team association created successfully!',
         data: result,
       });
     } catch (error) {
@@ -27,13 +28,13 @@ const insertIntoDB = catchAsync(
 const getAllFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const options = pick(req.query, paginationFields);
-      const result = await ProjectTeamServices.getAllFromDB(options);
+      const paginationOptions = pick(req.query, paginationFields);
+      const result = await ProjectTeamServices.getAllFromDB(paginationOptions);
 
       sendResponse<ProjectTeam[]>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'List of project teams data fetched successfully!',
+        message: 'Project team associations data retrieved successfully.',
         meta: result.meta,
         data: result.data,
       });
@@ -47,13 +48,53 @@ const getByIdFromDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const data = await ProjectTeamServices.getByIdFromDB(Number(id));
+      const result = await ProjectTeamServices.getByIdFromDB(Number(id));
 
       sendResponse<ProjectTeam>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Project team data fetched successfully!',
-        data,
+        message: 'Project team association data retrieved successfully!',
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
+
+const getByProjectIdFromDB = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { projectId } = req.query;
+      const result = await ProjectTeamServices.getByProjectIdFromDB(
+        Number(projectId)
+      );
+
+      sendResponse<ProjectTeam[]>(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Project team associations data retrieved successfully',
+        data: result,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
+
+const getByTeamIdFromDB = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { teamId } = req.query;
+      const result = await ProjectTeamServices.getByTeamIdFromDB(
+        Number(teamId)
+      );
+
+      sendResponse<ProjectTeam[]>(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Project team associations data retrieved successfully!',
+        data: result,
       });
     } catch (error) {
       return next(error);
@@ -65,16 +106,18 @@ const updateOneInDB = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const data = await ProjectTeamServices.updateOneInDB(
+      const payload = await req.body;
+
+      const result = await ProjectTeamServices.updateOneInDB(
         Number(id),
-        req.body
+        payload
       );
 
       sendResponse<ProjectTeam>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Project team data updated successfully!',
-        data,
+        message: 'Project team association data updated successfully!',
+        data: result,
       });
     } catch (error) {
       return next(error);
@@ -91,7 +134,7 @@ const deleteByIdFromDB = catchAsync(
       sendResponse<ProjectTeam>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Project team data deleted successfully!',
+        message: 'Project team association data deleted successfully!',
         data: result,
       });
     } catch (error) {
@@ -104,6 +147,8 @@ export const ProjectTeamControllers = {
   insertIntoDB,
   getAllFromDB,
   getByIdFromDB,
+  getByProjectIdFromDB,
+  getByTeamIdFromDB,
   updateOneInDB,
   deleteByIdFromDB,
 };
