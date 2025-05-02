@@ -1,65 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// export interface Developer {
-//   data: {
-//     id?: string;
-//     developerId: string;
-//     firstName: string;
-//     lastName: string;
-//     middleName?: string;
-//     profileImage?: {
-//       public_id: string;
-//       url: string;
-//     };
-//     contact: string;
-//   };
-// }
-
-// export interface Manager {
-//   data: {
-//     id?: string;
-//     managerId: string;
-//     firstName: string;
-//     lastName: string;
-//     middleName?: string;
-//     profileImage?: {
-//       public_id: string;
-//       url: string;
-//     };
-//     contact: string;
-//   };
-// }
-
-// export interface Admin {
-//   data: {
-//     id?: string;
-//     adminId: string;
-//     firstName: string;
-//     lastName: string;
-//     middleName?: string;
-//     profileImage?: {
-//       public_id: string;
-//       url: string;
-//     };
-//     contact: string;
-//   };
-// }
-
-// export interface SuperAdmin {
-//   data: {
-//     id?: string;
-//     superAdminId: string;
-//     firstName: string;
-//     lastName: string;
-//     middleName?: string;
-//     profileImage?: {
-//       public_id: string;
-//       url: string;
-//     };
-//     contact: string;
-//     // createdAt: string;
-//     // updatedAt: string;
-//   };
-// }
 
 export interface ProfileData {
   firstName: string;
@@ -87,34 +26,6 @@ export interface Admin extends ProfileData {
 export interface SuperAdmin extends ProfileData {
   superAdminId: string;
 }
-
-// export interface ProfileData {
-//   id?: string;
-//   firstName: string;
-//   lastName: string;
-//   middleName?: string;
-//   profileImage?: {
-//     public_id: string;
-//     url: string;
-//   };
-//   contact: string;
-// }
-
-// export interface Developer {
-//   data: ProfileData & { developerId: string };
-// }
-
-// export interface Manager {
-//   data: ProfileData & { managerId: string };
-// }
-
-// export interface Admin {
-//   data: ProfileData & { adminId: string };
-// }
-
-// export interface SuperAdmin {
-//   data: ProfileData & { superAdminId: string };
-// }
 
 export interface User {
   data: {

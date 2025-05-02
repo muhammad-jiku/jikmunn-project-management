@@ -61,57 +61,6 @@ const ProjectsComp = () => {
     setIsDeleteModalOpen(true);
   };
 
-  // const columns: GridColDef[] = [
-  //   {
-  //     field: 'id',
-  //     headerName: 'Project ID',
-  //     width: 100,
-  //     renderCell: (params) => (
-  //       <Link
-  //         href={`/projects/${params.value}`}
-  //         className='hover:text-blue-500 hover:underline'
-  //       >
-  //         {params.value}
-  //       </Link>
-  //     ),
-  //   },
-  //   { field: 'title', headerName: 'Title', width: 200 },
-  //   { field: 'startDate', headerName: 'Start Date', width: 200 },
-  //   { field: 'endDate', headerName: 'End Date', width: 200 },
-  //   { field: 'projectOwnerFullName', headerName: 'Project Owner', width: 200 },
-  //   {
-  //     field: 'actions',
-  //     headerName: 'Actions',
-  //     width: 200,
-  //     sortable: false,
-  //     filterable: false,
-  //     renderCell: (params) => (
-  //       <div className='my-3 flex gap-3 items-center'>
-  //         <button
-  //           onClick={(e) => {
-  //             e.stopPropagation();
-  //             handleEdit(params.row.id);
-  //           }}
-  //           className='text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700'
-  //           title='Edit'
-  //         >
-  //           <Edit size={18} />
-  //         </button>
-  //         <button
-  //           onClick={(e) => {
-  //             e.stopPropagation();
-  //             handleDelete(params.row.id);
-  //           }}
-  //           className='text-red-600 hover:text-red-800 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700'
-  //           title='Delete'
-  //         >
-  //           <Trash2 size={18} />
-  //         </button>
-  //       </div>
-  //     ),
-  //   },
-  // ];
-
   const getColumns = (): GridColDef[] => {
     const baseColumns: GridColDef[] = [
       {

@@ -4,6 +4,7 @@ import { AuthRoutes } from '../modules/auth/auth.routes';
 import { DeveloperRoutes } from '../modules/developer/developer.routes';
 import { ManagerRoutes } from '../modules/manager/manager.routes';
 import { ProjectRoutes } from '../modules/project/project.routes';
+import { ProjectTeamRoutes } from '../modules/projectTeam/projectTeam.routes';
 import { SuperAdminRoutes } from '../modules/superAdmin/superAdmin.routes';
 import { TaskRoutes } from '../modules/task/task.routes';
 import { TeamRoutes } from '../modules/team/team.routes';
@@ -45,10 +46,13 @@ const moduleRoutes = [
     path: '/tasks',
     route: TaskRoutes,
   },
-
   {
     path: '/teams',
     route: TeamRoutes,
+  },
+  {
+    path: '/project-teams',
+    route: ProjectTeamRoutes,
   },
 ];
 
