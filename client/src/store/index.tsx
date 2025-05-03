@@ -7,8 +7,10 @@ import { authApi } from '@/state/api/authApi';
 import { developersApi } from '@/state/api/developersApi';
 import { managersApi } from '@/state/api/managersApi';
 import { projectsApi } from '@/state/api/projectsApi';
+import { projectTeamsApi } from '@/state/api/projectTeamsApi';
 import { superAdminsApi } from '@/state/api/superAdminsApi';
 import { tasksApi } from '@/state/api/tasksApi';
+import { teamMembersApi } from '@/state/api/teamMembersApi';
 import { teamsApi } from '@/state/api/teamsApi';
 import { usersApi } from '@/state/api/usersApi';
 import signupReducer from '@/state/signupSlice';
@@ -55,6 +57,8 @@ const rootReducer = combineReducers({
   [superAdminsApi.reducerPath]: superAdminsApi.reducer,
   [projectsApi.reducerPath]: projectsApi.reducer,
   [teamsApi.reducerPath]: teamsApi.reducer,
+  [teamMembersApi.reducerPath]: teamMembersApi.reducer,
+  [projectTeamsApi.reducerPath]: projectTeamsApi.reducer,
   [tasksApi.reducerPath]: tasksApi.reducer,
 });
 
@@ -112,6 +116,14 @@ export const makeStore = () => {
             teamsApi.reducerPath + '/executeQuery/pending',
             teamsApi.reducerPath + '/executeQuery/fulfilled',
             teamsApi.reducerPath + '/executeQuery/rejected',
+            // team members api reducer path
+            teamMembersApi.reducerPath + '/executeQuery/pending',
+            teamMembersApi.reducerPath + '/executeQuery/fulfilled',
+            teamMembersApi.reducerPath + '/executeQuery/rejected',
+            // project teams api reducer path
+            projectTeamsApi.reducerPath + '/executeQuery/pending',
+            projectTeamsApi.reducerPath + '/executeQuery/fulfilled',
+            projectTeamsApi.reducerPath + '/executeQuery/rejected',
             // task api reducer path
             tasksApi.reducerPath + '/executeQuery/pending',
             tasksApi.reducerPath + '/executeQuery/fulfilled',
@@ -127,6 +139,8 @@ export const makeStore = () => {
         superAdminsApi.middleware,
         projectsApi.middleware,
         teamsApi.middleware,
+        teamMembersApi.middleware,
+        projectTeamsApi.middleware,
         tasksApi.middleware
       ),
   });

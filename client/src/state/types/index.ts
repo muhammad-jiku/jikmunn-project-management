@@ -120,6 +120,19 @@ export interface TeamMember {
   userId: string;
 }
 
+export type NewTeamMember = Omit<TeamMember, 'id' | 'createdAt' | 'updatedAt'>;
+
+export interface ProjectTeam {
+  id?: number;
+  projectId: number;
+  teamId: number;
+}
+
+export type NewProjectTeam = Omit<
+  ProjectTeam,
+  'id' | 'createdAt' | 'updatedAt'
+>;
+
 export interface Attachment {
   id?: number;
   fileName: string;

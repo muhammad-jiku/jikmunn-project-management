@@ -52,13 +52,6 @@ export const projectsApi = createApi({
       }),
       invalidatesTags: ['Project'],
     }),
-    deleteProject: build.mutation<{ message: string }, number>({
-      query: (id) => ({
-        url: `/projects/${id}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: ['Project'],
-    }),
     updateProjectTeams: build.mutation<
       Project,
       { projectId: number; teamIds: number[] }
@@ -70,6 +63,13 @@ export const projectsApi = createApi({
       }),
       invalidatesTags: ['Project'],
     }),
+    deleteProject: build.mutation<{ message: string }, number>({
+      query: (id) => ({
+        url: `/projects/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Project'],
+    }),
   }),
 });
 
@@ -78,6 +78,6 @@ export const {
   useGetProjectsQuery,
   useGetProjectQuery,
   useUpdateProjectMutation,
-  useDeleteProjectMutation,
   useUpdateProjectTeamsMutation,
+  useDeleteProjectMutation,
 } = projectsApi;
