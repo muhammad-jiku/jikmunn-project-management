@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   IGenericResponse,
@@ -53,7 +54,8 @@ export const projectTeamsApi = createApi({
       }),
       providesTags: ['ProjectTeam'],
     }),
-    getProjectTeam: build.query<ProjectTeam, number>({
+    getProjectTeam: build.query<any, number>({
+      // getProjectTeam: build.query<ProjectTeam, number>({
       query: (id) => `/project-teams/${id}`,
       providesTags: ['ProjectTeam'],
     }),
