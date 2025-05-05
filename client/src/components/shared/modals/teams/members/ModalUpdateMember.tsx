@@ -11,7 +11,7 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   // teamId: number;
-  id: number;
+  id: number | null;
 };
 
 const ModalUpdateMember = ({ isOpen, onClose, id }: Props) => {

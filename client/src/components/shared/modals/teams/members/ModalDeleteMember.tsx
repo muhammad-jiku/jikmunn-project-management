@@ -8,7 +8,7 @@ import {
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  id: number;
+  id: number | null;
 };
 
 const ModalDeleteMember = ({ isOpen, onClose, id }: Props) => {

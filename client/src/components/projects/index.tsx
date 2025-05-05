@@ -155,12 +155,14 @@ const ProjectsComp = () => {
             isOpen={isModalNewProjectOpen}
             onClose={() => setIsModalNewProjectOpen(false)}
           />
-          <button
-            className='mb-4 flex justify-center items-center rounded-md bg-blue-primary p-3 text-white hover:bg-blue-600'
-            onClick={() => setIsModalNewProjectOpen(true)}
-          >
-            <PlusSquare className='mr-2 h-5 w-5' /> Add Project
-          </button>
+          {isManager && (
+            <button
+              className='mb-4 flex justify-center items-center rounded-md bg-blue-primary p-3 text-white hover:bg-blue-600'
+              onClick={() => setIsModalNewProjectOpen(true)}
+            >
+              <PlusSquare className='mr-2 h-5 w-5' /> Add Project
+            </button>
+          )}
         </div>
       </div>
 

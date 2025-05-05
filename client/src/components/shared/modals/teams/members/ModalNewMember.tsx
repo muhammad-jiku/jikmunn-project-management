@@ -8,7 +8,7 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   // teamId: number;
-  id?: string | null;
+  id?: number | null;
 };
 
 const ModalNewMember = ({ isOpen, onClose, id = null }: Props) => {

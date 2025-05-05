@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  teamId: number;
+  teamId: number | null;
 };
 
 const ModalUpdateTeam = ({ isOpen, onClose, teamId }: Props) => {
