@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useDeleteTaskMutation, useGetTaskQuery } from '@/state/api/tasksApi';
+import toast from 'react-hot-toast';
 import Modal from '../Modal';
 
 type Props = {
@@ -28,7 +29,11 @@ const ModalDeleteTask = ({ isOpen, onClose, taskId }: Props) => {
       const result: any = await deleteTask(taskId).unwrap();
       console.log('Task deleted successfully:', result);
       if (result.success) {
+        // Close the modal if deletion was successful
+        toast.success(result?.message || 'Task data deleted successfully!');
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to delete task:', error);

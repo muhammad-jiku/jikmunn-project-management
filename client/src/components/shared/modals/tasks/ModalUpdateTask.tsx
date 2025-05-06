@@ -4,6 +4,7 @@ import { useGetTaskQuery, useUpdateTaskMutation } from '@/state/api/tasksApi';
 import { Priority, Status, Task } from '@/state/types';
 import { formatISO, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import Modal from '../Modal';
 
 type Props = {
@@ -95,7 +96,11 @@ const ModalUpdateTask = ({ isOpen, onClose, taskId }: Props) => {
 
       console.log('Task updated successfully:', result);
       if (result.success) {
+        // Close the modal if updation was successful
+        toast.success(result?.message || 'Task data updated successfully!');
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to update project:', error);

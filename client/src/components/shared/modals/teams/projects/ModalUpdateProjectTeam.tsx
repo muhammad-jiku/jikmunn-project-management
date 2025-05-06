@@ -6,6 +6,7 @@ import {
 } from '@/state/api/projectTeamsApi';
 import { ProjectTeam } from '@/state/types';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -52,7 +53,13 @@ const ModalUpdateProjectTeam = ({ isOpen, onClose, id }: Props) => {
 
       console.log('Project team updated successfully:', result);
       if (result.success) {
+        // Close the modal if updation was successful
+        toast.success(
+          result?.message || 'Project team data updated successfully!'
+        );
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to update project:', error);

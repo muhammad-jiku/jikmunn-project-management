@@ -42,6 +42,14 @@ const insertIntoDB = async (payload: ProjectTeam) => {
       );
     }
 
+    // Ensure the auto-increment sequence for tblprojectteam is set correctly
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tblprojectteam', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
+      )
+    `;
+
     // Create project team assignment
     const projectTeam = await tx.projectTeam.create({
       data: payload,

@@ -1,19 +1,17 @@
 'use client';
 
+import { getLayoutConfig } from '@/config';
 import StoreProvider, { useAppSelector } from '@/store';
-import {
-  Container,
-  CssBaseline,
-  ThemeProvider,
-  createTheme,
-} from '@mui/material';
+import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { Inter } from 'next/font/google';
 import React, { useEffect } from 'react';
+import SharedLayout from './SharedLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
+  const layoutConfig = getLayoutConfig('auth');
 
   // Create theme based on dark mode
   const theme = React.useMemo(
@@ -63,9 +61,14 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container component='main' maxWidth='lg' className={inter.className}>
-        {children}
-      </Container>
+      <div className={inter.className}>
+        <SharedLayout
+          showSidebar={layoutConfig.showSidebar}
+          showNavbar={layoutConfig.showNavbar}
+        >
+          {children}
+        </SharedLayout>
+      </div>
     </ThemeProvider>
   );
 };

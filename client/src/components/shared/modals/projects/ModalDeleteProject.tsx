@@ -3,6 +3,7 @@ import {
   useDeleteProjectMutation,
   useGetProjectQuery,
 } from '@/state/api/projectsApi';
+import toast from 'react-hot-toast';
 import Modal from '../Modal';
 
 type Props = {
@@ -32,7 +33,11 @@ const ModalDeleteProject = ({ isOpen, onClose, projectId }: Props) => {
       const result: any = await deleteProject(projectId).unwrap();
       console.log('Project deleted successfully:', result);
       if (result.success) {
+        // Close the modal if deletion was successful
+        toast.success(result?.message || 'Project data deleted successfully!');
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to delete project:', error);

@@ -4,6 +4,7 @@ import { NewProject } from '@/state/types'; // Import the new type
 import { useAppSelector } from '@/store';
 import { formatISO } from 'date-fns';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Modal from '../Modal';
 
 type Props = {
@@ -44,11 +45,16 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
     console.log('Project creation response check:', newProjectData);
     if (newProjectData?.data?.success) {
       // Close the modal if creation was successful
+      toast.success(
+        newProjectData?.data?.message || 'New project added successfully!'
+      );
       resetForm();
       onClose();
     } else {
-      // Keep modal open and possibly show an error message
-      // setError(newProjectData?.error?.message || 'Failed to create project');
+      toast.error(
+        newProjectData?.error?.message ||
+          'Something went wrong, Please try again!'
+      );
     }
   };
 

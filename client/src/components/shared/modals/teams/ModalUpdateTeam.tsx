@@ -3,6 +3,7 @@ import Modal from '@/components/shared/modals/Modal';
 import { useGetTeamQuery, useUpdateTeamMutation } from '@/state/api/teamsApi';
 import { Team } from '@/state/types';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -49,7 +50,11 @@ const ModalUpdateTeam = ({ isOpen, onClose, teamId }: Props) => {
 
       console.log('Team updated successfully:', result);
       if (result.success) {
+        // Close the modal if updation was successful
+        toast.success(result?.message || 'Team data updated successfully!');
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to update project:', error);

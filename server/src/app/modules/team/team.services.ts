@@ -33,6 +33,14 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
       );
     }
 
+    // Ensure the auto-increment sequence for tblteam is set correctly
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tblteam', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
+      )
+    `;
+
     // Create the team
     const team = await tx.team.create({
       data: teamData,
@@ -54,6 +62,14 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
         }
       }
 
+      // Ensure the auto-increment sequence for tblteammember is set correctly
+      await tx.$executeRaw`
+        SELECT setval(
+          pg_get_serial_sequence('tblteammember', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+        )
+      `;
+
       // Create team members
       await Promise.all(
         members.map((member) =>
@@ -71,7 +87,16 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
     const ownerAlreadyMember = members?.some(
       (m) => m.userId === teamData.teamOwnerId
     );
+
     if (!ownerAlreadyMember) {
+      // Ensure the auto-increment sequence for tblteammember is set correctly
+      await tx.$executeRaw`
+        SELECT setval(
+          pg_get_serial_sequence('tblteammember', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+        )
+      `;
+
       await tx.teamMember.create({
         data: {
           teamId: team.id,
@@ -95,6 +120,14 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
           );
         }
       }
+
+      // Ensure the auto-increment sequence for tblprojectteam is set correctly
+      await tx.$executeRaw`
+        SELECT setval(
+          pg_get_serial_sequence('tblprojectteam', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
+        )
+      `;
 
       // Create project teams
       await Promise.all(

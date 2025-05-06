@@ -3,6 +3,7 @@ import Modal from '@/components/shared/modals/Modal';
 import { useCreateProjectTeamMutation } from '@/state/api/projectTeamsApi';
 import { NewProjectTeam } from '@/state/types';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -28,7 +29,6 @@ const ModalNewProjectTeam = ({ isOpen, onClose, id = null }: Props) => {
 
     // Remove any accidental keys (like id) from the payload.
     // This ensures we send only the expected fields.
-
     console.log('Creating project team with payload:', newProjectTeamPayload);
     const newProjectTeamData: any = await createProjectTeam(
       newProjectTeamPayload
@@ -36,11 +36,17 @@ const ModalNewProjectTeam = ({ isOpen, onClose, id = null }: Props) => {
     console.log('Project team creation response check:', newProjectTeamData);
     if (newProjectTeamData?.data?.success) {
       // Close the modal if creation was successful
+      toast.success(
+        newProjectTeamData?.data?.message ||
+          'New project team added successfully!'
+      );
       resetForm();
       onClose();
     } else {
-      // Keep modal open and possibly show an error message
-      // setError(newProjectData?.error?.message || 'Failed to create project');
+      toast.error(
+        newProjectTeamData?.error?.message ||
+          'Something went wrong, Please try again!'
+      );
     }
   };
 
@@ -52,7 +58,6 @@ const ModalNewProjectTeam = ({ isOpen, onClose, id = null }: Props) => {
 
   // Updated validation logic:
   // If id is provided, only projectId and teamId are required.
-  // Otherwise, teamId is also required.
   const isFormValid = () => {
     return Boolean(projectId && teamId);
   };

@@ -3,6 +3,7 @@ import Modal from '@/components/shared/modals/Modal';
 import { useCreateTeamMemberMutation } from '@/state/api/teamMembersApi';
 import { NewTeamMember } from '@/state/types';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -34,11 +35,17 @@ const ModalNewMember = ({ isOpen, onClose, id = null }: Props) => {
     console.log('Team member creation response check:', newTeamMemberData);
     if (newTeamMemberData?.data?.success) {
       // Close the modal if creation was successful
+      toast.success(
+        newTeamMemberData?.data?.message ||
+          'New team member added successfully!'
+      );
       resetForm();
       onClose();
     } else {
-      // Keep modal open and possibly show an error message
-      // setError(newProjectData?.error?.message || 'Failed to create project');
+      toast.error(
+        newTeamMemberData?.error?.message ||
+          'Something went wrong, Please try again!'
+      );
     }
   };
 
@@ -50,7 +57,6 @@ const ModalNewMember = ({ isOpen, onClose, id = null }: Props) => {
 
   // Updated validation logic:
   // If id is provided, only userId and teamId are required.
-  // Otherwise, teamId is also required.
   const isFormValid = () => {
     return Boolean(userId && teamId);
   };

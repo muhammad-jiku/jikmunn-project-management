@@ -4,6 +4,7 @@ import {
   useDeleteTeamMemberMutation,
   useGetTeamMemberQuery,
 } from '@/state/api/teamMembersApi';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -32,7 +33,13 @@ const ModalDeleteMember = ({ isOpen, onClose, id }: Props) => {
 
       console.log('Team member deleted successfully:', result);
       if (result.success) {
+        // Close the modal if deletion was successful
+        toast.success(
+          result?.message || 'Team member data deleted successfully!'
+        );
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to delete team:', error);

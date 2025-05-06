@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Modal from '@/components/shared/modals/Modal';
 import { useDeleteTeamMutation, useGetTeamQuery } from '@/state/api/teamsApi';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -27,7 +28,11 @@ const ModalDeleteTeam = ({ isOpen, onClose, teamId }: Props) => {
       const result: any = await deleteTeam(teamId).unwrap();
       console.log('Team deleted successfully:', result);
       if (result.success) {
+        // Close the modal if deletion was successful
+        toast.success(result?.message || 'Team data deleted successfully!');
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to delete team:', error);

@@ -4,6 +4,7 @@ import { NewTask, Priority, Status } from '@/state/types';
 import { useAppSelector } from '@/store';
 import { formatISO } from 'date-fns';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Modal from '../Modal';
 
 type Props = {
@@ -62,11 +63,15 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
     console.log('Task creation response check:', newTaskData);
     if (newTaskData?.data?.success) {
       // Close the modal if creation was successful
+      toast.success(
+        newTaskData?.data?.message || 'New task added successfully!'
+      );
       resetForm();
       onClose();
     } else {
-      // Keep modal open and possibly show an error message
-      // setError(newProjectData?.error?.message || 'Failed to create project');
+      toast.error(
+        newTaskData?.error?.message || 'Something went wrong, Please try again!'
+      );
     }
   };
 
@@ -84,9 +89,7 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
     // setError(null);
   };
 
-  // Updated validation logic:
-  // If id is provided, only title and author are required.
-  // Otherwise, projectId is also required.
+  // Form validation logic:
   const isFormValid = () => {
     return Boolean(
       title &&

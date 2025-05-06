@@ -1,6 +1,6 @@
 import ProtectedLayoutWrapper from '@/components/layout/ProtectedLayout';
 
-export default function DashboardLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;

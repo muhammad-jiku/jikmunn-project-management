@@ -6,6 +6,7 @@ import {
 import { Project } from '@/state/types';
 import { formatISO, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import Modal from '../Modal';
 
 type Props = {
@@ -76,7 +77,11 @@ const ModalUpdateProject = ({ isOpen, onClose, projectId }: Props) => {
 
       console.log('Project updated successfully:', result);
       if (result.success) {
+        // Close the modal if updation was successful
+        toast.success(result?.message || 'Project data updated successfully!');
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to update project:', error);

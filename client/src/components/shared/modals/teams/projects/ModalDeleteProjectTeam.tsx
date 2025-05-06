@@ -4,6 +4,7 @@ import {
   useDeleteProjectTeamMutation,
   useGetProjectTeamQuery,
 } from '@/state/api/projectTeamsApi';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -30,7 +31,13 @@ const ModalDeleteProjectTeam = ({ isOpen, onClose, id }: Props) => {
 
       console.log('Project team deleted successfully:', result);
       if (result.success) {
+        // Close the modal if deletion was successful
+        toast.success(
+          result?.message || 'Project team data deleted successfully!'
+        );
         onClose();
+      } else {
+        toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
       console.error('Failed to delete team:', error);

@@ -305,6 +305,18 @@ const TeamComp = ({ params }: Props) => {
     );
   }
 
+  // Custom tab styling
+  const tabStyles = {
+    color: isDarkMode ? '#94a3b8' : '#64748b', // Default text color (slate-400 for dark, slate-500 for light)
+    '&.Mui-selected': {
+      color: isDarkMode ? '#3b82f6' : '#2563eb', // Selected tab text color (blue-500 for dark, blue-600 for light)
+      fontWeight: 'bold',
+    },
+    '&:hover': {
+      color: isDarkMode ? '#60a5fa' : '#3b82f6', // Hover text color (blue-400 for dark, blue-500 for light)
+    },
+  };
+
   return (
     <div className='flex w-full flex-col p-8'>
       <Header name={`Team: ${team?.data?.name}`} />
@@ -314,9 +326,26 @@ const TeamComp = ({ params }: Props) => {
           value={tabValue}
           onChange={handleTabChange}
           aria-label='team tabs'
+          textColor='primary'
+          indicatorColor='primary'
+          sx={{
+            '& .MuiTabs-indicator': {
+              backgroundColor: isDarkMode ? '#3b82f6' : '#2563eb', // Custom indicator color (blue-500 for dark, blue-600 for light)
+            },
+          }}
         >
-          <Tab label='Team Members' id='tab-0' aria-controls='tabpanel-0' />
-          <Tab label='Project Teams' id='tab-1' aria-controls='tabpanel-1' />
+          <Tab
+            label='Team Members'
+            id='tab-0'
+            aria-controls='tabpanel-0'
+            sx={tabStyles}
+          />
+          <Tab
+            label='Project Teams'
+            id='tab-1'
+            aria-controls='tabpanel-1'
+            sx={tabStyles}
+          />
         </Tabs>
       </Box>
 

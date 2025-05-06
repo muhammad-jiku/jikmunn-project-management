@@ -4,6 +4,7 @@ import { useCreateTeamMutation } from '@/state/api/teamsApi';
 import { NewTeam } from '@/state/types';
 import { useAppSelector } from '@/store';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 type Props = {
   isOpen: boolean;
@@ -11,13 +12,14 @@ type Props = {
 };
 
 const ModalNewTeam = ({ isOpen, onClose }: Props) => {
+  const globalUser = useAppSelector((state) => state?.global?.user?.data);
+
   const [name, setName] = useState<string>('');
-  const [ownerId, setOwnerId] = useState<string>('');
+  const [teamOwnerId, setTeamOwnerId] = useState<string>(
+    (globalUser?.data?.userId as string) || ''
+  );
 
   const [createTeam, { isLoading }] = useCreateTeamMutation();
-
-  const globalUser = useAppSelector((state) => state?.global?.user?.data);
-  const teamOwnerId = globalUser?.data?.userId as string;
 
   const handleSubmit = async () => {
     if (!name || !teamOwnerId) return;
@@ -36,24 +38,28 @@ const ModalNewTeam = ({ isOpen, onClose }: Props) => {
     console.log('Team creation response check:', newTeamData);
     if (newTeamData?.data?.success) {
       // Close the modal if creation was successful
+      toast.success(
+        newTeamData?.data?.message || 'New team created successfully!'
+      );
       resetForm();
       onClose();
     } else {
-      // Keep modal open and possibly show an error message
-      // setError(newProjectData?.error?.message || 'Failed to create project');
+      toast.error(
+        newTeamData?.error?.message || 'Something went wrong, Please try again!'
+      );
     }
   };
 
   const resetForm = () => {
     setName('');
-    setOwnerId('');
+    setTeamOwnerId('');
     // setError(null);
   };
 
   // Updated validation logic:
   // If id is provided, only name and ownerId are required.
   const isFormValid = () => {
-    return Boolean(name && ownerId);
+    return Boolean(name && teamOwnerId);
   };
 
   const inputStyles =
@@ -81,7 +87,7 @@ const ModalNewTeam = ({ isOpen, onClose }: Props) => {
           placeholder='Owner ID'
           value={teamOwnerId}
           disabled={true}
-          onChange={(e) => setOwnerId(e.target.value)}
+          onChange={(e) => setTeamOwnerId(e.target.value)}
         />
         <button
           type='submit'
