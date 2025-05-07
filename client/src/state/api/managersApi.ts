@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
-import { Manager } from '../types';
+import { IGenericResponse, Manager, Pagination, SearchFilter } from '../types';
 
 export const managersApi = createApi({
   reducerPath: 'managersApi',
@@ -11,7 +11,14 @@ export const managersApi = createApi({
   }),
   tagTypes: ['Manager'],
   endpoints: (build) => ({
-    getManagers: build.query<Manager[], void>({
+    getManagers: build.query<
+      IGenericResponse<Manager[]>,
+      Pagination & SearchFilter
+    >({
+      // getManagers: build.query<
+      //   IGenericResponse<any[]>,
+      //   Pagination & SearchFilter
+      // >({
       query: () => '/managers',
       providesTags: ['Manager'],
     }),

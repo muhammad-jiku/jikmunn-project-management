@@ -93,11 +93,12 @@ const Confirmation: React.FC = () => {
     profileData = formData.developer;
   } else if (formData.role === 'MANAGER' && formData.manager) {
     profileData = formData.manager;
-  } else if (formData.role === 'ADMIN' && formData.admin) {
-    profileData = formData.admin;
-  } else if (formData.role === 'SUPER_ADMIN' && formData.superAdmin) {
-    profileData = formData.superAdmin;
   }
+  // else if (formData.role === 'ADMIN' && formData.admin) {
+  //   profileData = formData.admin;
+  // } else if (formData.role === 'SUPER_ADMIN' && formData.superAdmin) {
+  //   profileData = formData.superAdmin;
+  // }
 
   const payload = { userData, profileData };
   console.log('payload..', payload);
@@ -320,7 +321,7 @@ const Confirmation: React.FC = () => {
                   </>
                 )}
 
-                {formData.role === 'ADMIN' && personalInfo && (
+                {/* {formData.role === 'ADMIN' && personalInfo && (
                   <>
                     <Grid item xs={12} md={6}>
                       <TextInput
@@ -408,7 +409,7 @@ const Confirmation: React.FC = () => {
                       />
                     </Grid>
                   </>
-                )}
+                )} */}
 
                 <Grid item xs={12}>
                   <TextInput

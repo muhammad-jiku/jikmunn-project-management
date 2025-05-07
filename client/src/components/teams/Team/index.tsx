@@ -200,7 +200,17 @@ const TeamComp = ({ params }: Props) => {
         : // ? `${ownerManager.firstName} ${ownerManager.middleName ? ownerManager.middleName + ' ' : ''}${ownerManager.lastName}`
           'N/A',
       email: user ? `${user.email}` : 'N/A',
-      role: user ? `${user.role}` : 'N/A',
+      role: user
+        ? `${
+            user.role === 'DEVELOPER'
+              ? 'Developer'
+              : user.role === 'MANAGER'
+                ? 'Manager'
+                : user.role === 'ADMIN'
+                  ? 'Admin'
+                  : 'Super Admin'
+          }`
+        : 'N/A',
     };
   });
 

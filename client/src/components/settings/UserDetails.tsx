@@ -325,7 +325,15 @@ const UserDetails: React.FC = () => {
                       <TextInput
                         label='Role'
                         name='role'
-                        defaultValue={globalUser?.data?.role}
+                        defaultValue={
+                          globalUser?.data?.role === 'DEVELOPER'
+                            ? 'Developer'
+                            : globalUser?.data?.role === 'MANAGER'
+                              ? 'Manager'
+                              : globalUser?.data?.role === 'ADMIN'
+                                ? 'Admin'
+                                : 'Super Admin'
+                        }
                         register={register}
                         errors={errors}
                         InputProps={{ readOnly: true }}

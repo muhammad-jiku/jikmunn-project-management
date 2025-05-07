@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
-import { SuperAdmin } from '../types';
+import {
+  IGenericResponse,
+  Pagination,
+  SearchFilter,
+  SuperAdmin,
+} from '../types';
 
 export const superAdminsApi = createApi({
   reducerPath: 'superAdminsApi',
@@ -11,7 +16,14 @@ export const superAdminsApi = createApi({
   }),
   tagTypes: ['SuperAdmin'],
   endpoints: (build) => ({
-    getSuperAdmins: build.query<SuperAdmin[], void>({
+    getSuperAdmins: build.query<
+      IGenericResponse<SuperAdmin[]>,
+      Pagination & SearchFilter
+    >({
+      // getSuperAdmins: build.query<
+      //   IGenericResponse<any[]>,
+      //   Pagination & SearchFilter
+      // >({
       query: () => '/super-admins',
       providesTags: ['SuperAdmin'],
     }),

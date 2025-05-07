@@ -82,16 +82,16 @@ const UserRoleSelection: React.FC = () => {
       label: 'Manager',
       description: 'Manage team members and project resources',
     },
-    {
-      value: 'ADMIN',
-      label: 'Admin',
-      description: 'Full system administration capabilities',
-    },
-    {
-      value: 'SUPER_ADMIN',
-      label: 'Super Admin',
-      description: 'Complete control over all system aspects',
-    },
+    // {
+    //   value: 'ADMIN',
+    //   label: 'Admin',
+    //   description: 'Full system administration capabilities',
+    // },
+    // {
+    //   value: 'SUPER_ADMIN',
+    //   label: 'Super Admin',
+    //   description: 'Complete control over all system aspects',
+    // },
   ] as const;
 
   const theme = createTheme({

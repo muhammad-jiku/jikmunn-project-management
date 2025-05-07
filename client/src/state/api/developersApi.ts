@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
-import { Developer } from '../types';
+import {
+  Developer,
+  IGenericResponse,
+  Pagination,
+  SearchFilter,
+} from '../types';
 
 export const developersApi = createApi({
   reducerPath: 'developersApi',
@@ -11,7 +16,14 @@ export const developersApi = createApi({
   }),
   tagTypes: ['Developer'],
   endpoints: (build) => ({
-    getDevelopers: build.query<Developer[], void>({
+    // getDevelopers: build.query<
+    //   IGenericResponse<any[]>,
+    //   Pagination & SearchFilter
+    // >({
+    getDevelopers: build.query<
+      IGenericResponse<Developer[]>,
+      Pagination & SearchFilter
+    >({
       query: () => '/developers',
       providesTags: ['Developer'],
     }),
