@@ -24,17 +24,23 @@ const ModalUpdateProjectTeam = ({ isOpen, onClose, id }: Props) => {
       skip: !isOpen || id === null,
     });
 
-  console.log('project team update modal...', projectTeam);
+  console.log('project team update modal...', projectTeam.data);
 
   const [updateProjectTeam, { isLoading: isUpdating }] =
     useUpdateProjectTeamMutation();
 
   useEffect(() => {
     if (projectTeam) {
-      setProjectId(projectTeam?.data?.ProjectId);
+      setProjectId(projectTeam?.data?.projectId);
       setTeamId(projectTeam?.data?.teamId);
     }
   }, [projectTeam]);
+  console.log(
+    'ids of the field',
+    projectTeam?.data?.projectId,
+    projectId,
+    teamId
+  );
 
   const handleSubmit = async () => {
     if (!projectId || !teamId) return;
@@ -74,7 +80,7 @@ const ModalUpdateProjectTeam = ({ isOpen, onClose, id }: Props) => {
     'w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary dark:text-white dark:focus:outline-none';
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} name='Update Team'>
+    <Modal isOpen={isOpen} onClose={onClose} name='Update Project Team'>
       {isLoadingProjectTeam ? (
         <div className='flex justify-center py-8'>
           <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-primary'></div>

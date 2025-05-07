@@ -18,6 +18,7 @@ const ModalNewProjectTeam = ({ isOpen, onClose, id = null }: Props) => {
 
   const [createProjectTeam, { isLoading }] = useCreateProjectTeamMutation();
 
+  console.log('project team ids', teamId, projectId, id);
   const handleSubmit = async () => {
     if (!projectId || !(id !== null || teamId)) return;
 
@@ -59,14 +60,14 @@ const ModalNewProjectTeam = ({ isOpen, onClose, id = null }: Props) => {
   // Updated validation logic:
   // If id is provided, only projectId and teamId are required.
   const isFormValid = () => {
-    return Boolean(projectId && teamId);
+    return Boolean(projectId && (id || teamId));
   };
 
   const inputStyles =
     'w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary dark:text-white dark:focus:outline-none';
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} name='Create New Task'>
+    <Modal isOpen={isOpen} onClose={onClose} name='Add Project Team'>
       <form
         className='mt-4 space-y-6'
         onSubmit={(e) => {

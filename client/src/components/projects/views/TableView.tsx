@@ -36,8 +36,8 @@ const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
   const globalUser = useAppSelector((state) => state?.global?.user?.data);
 
   // Check user roles
-  const isManager = globalUser?.data?.manager !== undefined;
-  const isDeveloper = globalUser?.data?.developer !== undefined;
+  const isManager = globalUser?.data?.manager !== null;
+  const isDeveloper = globalUser?.data?.developer !== null;
   const hasActionPermission = isManager || isDeveloper;
 
   const {

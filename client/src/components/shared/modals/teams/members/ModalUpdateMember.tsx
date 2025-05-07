@@ -74,7 +74,7 @@ const ModalUpdateMember = ({ isOpen, onClose, id }: Props) => {
     'w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary dark:text-white dark:focus:outline-none';
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} name='Update Team'>
+    <Modal isOpen={isOpen} onClose={onClose} name='Update Team Member'>
       {isLoadingMember ? (
         <div className='flex justify-center py-8'>
           <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-primary'></div>

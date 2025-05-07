@@ -47,7 +47,7 @@ const ModalDeleteMember = ({ isOpen, onClose, id }: Props) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} name='Delete Team'>
+    <Modal isOpen={isOpen} onClose={onClose} name='Delete Team Member'>
       {isLoadingMember ? (
         <div className='flex justify-center py-8'>
           <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-primary'></div>
@@ -55,8 +55,13 @@ const ModalDeleteMember = ({ isOpen, onClose, id }: Props) => {
       ) : (
         <div className='mt-4 space-y-6'>
           <p className='text-center dark:text-white'>
-            Are you sure you want to delete team member with the id of
-            <span className='font-bold ml-1'>{member?.data?.id}</span>?
+            Are you sure you want to delete
+            <span className='font-bold ml-1'>{member?.data?.team?.name}</span>
+            &apos;s member:
+            <span className='font-bold ml-1'>
+              {member?.data?.user?.username}
+            </span>
+            ?
           </p>
           <p className='text-center text-sm text-gray-500 dark:text-gray-400'>
             This action cannot be undone.

@@ -16,10 +16,10 @@ import {
   Layers3,
   LockIcon,
   LucideIcon,
-  Search,
+  // Search,
   ShieldAlert,
-  User,
   Users,
+  UsersRound,
   X,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -38,6 +38,16 @@ const Sidebar = () => {
   const globalUser = useAppSelector(
     (state: RootState) => state?.global?.user?.data
   );
+
+  // Check user roles
+  const isManager = globalUser?.data?.manager !== null;
+  const isDeveloper = globalUser?.data?.developer !== null;
+  const hasActionUserPermission = isManager || isDeveloper;
+
+  // Check authority roles
+  const isAdmin = globalUser?.data?.admin !== null;
+  const isSuperAdmin = globalUser?.data?.superAdmin !== null;
+  const hasActionAuthorityPermission = isAdmin || isSuperAdmin;
 
   const [showPriority, setShowPriority] = useState<boolean>(true);
   const [avatar, setAvatar] = useState<string | undefined>('');
@@ -123,26 +133,46 @@ const Sidebar = () => {
         {/* NAVBAR LINKS */}
         <nav className='z-10 w-full'>
           <SidebarLink icon={Home} label='Home' href='/' />
-          <SidebarLink icon={Briefcase} label='Timeline' href='/timeline' />
-          <SidebarLink icon={Search} label='Search' href='/search' />
-          <SidebarLink icon={FolderCog} label='Projects' href='/projects' />
-          <SidebarLink icon={User} label='Users' href='/users' />
-          <SidebarLink icon={Users} label='Teams' href='/teams' />
+          {/* <SidebarLink icon={Search} label='Search' href='/search' /> */}
+          {hasActionUserPermission && (
+            <>
+              <SidebarLink icon={Briefcase} label='Timeline' href='/timeline' />
+              <SidebarLink icon={FolderCog} label='Projects' href='/projects' />
+              <SidebarLink icon={UsersRound} label='Teams' href='/teams' />
+            </>
+          )}
+          {hasActionAuthorityPermission && (
+            <>
+              <SidebarLink icon={Users} label='Developers' href='/developers' />
+              <SidebarLink icon={Users} label='Managers' href='/managers' />
+              <SidebarLink icon={Users} label='Admins' href='/admins' />
+              {isSuperAdmin && (
+                <SidebarLink
+                  icon={Users}
+                  label='Super Admins'
+                  href='/super-admins'
+                />
+              )}
+            </>
+          )}
         </nav>
 
         {/* PRIORITIES LINKS */}
-        <button
-          onClick={() => setShowPriority((prev) => !prev)}
-          className='flex w-full items-center justify-between px-8 py-3 text-gray-500'
-        >
-          <span className=''>Priority</span>
-          {showPriority ? (
-            <ChevronUp className='h-5 w-5' />
-          ) : (
-            <ChevronDown className='h-5 w-5' />
-          )}
-        </button>
-        {showPriority && (
+        {hasActionUserPermission && (
+          <button
+            onClick={() => setShowPriority((prev) => !prev)}
+            className='flex w-full items-center justify-between px-8 py-3 text-gray-500'
+          >
+            <span className=''>Priority</span>
+            {showPriority ? (
+              <ChevronUp className='h-5 w-5' />
+            ) : (
+              <ChevronDown className='h-5 w-5' />
+            )}
+          </button>
+        )}
+
+        {hasActionUserPermission && showPriority && (
           <>
             <SidebarLink
               icon={AlertCircle}

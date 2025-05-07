@@ -53,8 +53,15 @@ const ModalDeleteProjectTeam = ({ isOpen, onClose, id }: Props) => {
       ) : (
         <div className='mt-4 space-y-6'>
           <p className='text-center dark:text-white'>
-            Are you sure you want to delete team member with the id of
-            <span className='font-bold ml-1'>{projectTeam?.data?.id}</span>?
+            Are you sure you want to delete
+            <span className='font-bold ml-1'>
+              {projectTeam?.data?.team?.name}
+            </span>
+            &apos;s project
+            <span className='font-bold ml-1'>
+              {projectTeam?.data?.project?.title}
+            </span>
+            &apos;s team?
           </p>
           <p className='text-center text-sm text-gray-500 dark:text-gray-400'>
             This action cannot be undone.

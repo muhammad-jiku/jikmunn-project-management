@@ -18,6 +18,8 @@ const ModalNewMember = ({ isOpen, onClose, id = null }: Props) => {
 
   const [createTeamMember, { isLoading }] = useCreateTeamMemberMutation();
 
+  console.log('ids...', userId, id, teamId);
+
   const handleSubmit = async () => {
     if (!userId || !(id !== null || teamId)) return;
 
@@ -58,14 +60,14 @@ const ModalNewMember = ({ isOpen, onClose, id = null }: Props) => {
   // Updated validation logic:
   // If id is provided, only userId and teamId are required.
   const isFormValid = () => {
-    return Boolean(userId && teamId);
+    return Boolean(userId && (id || teamId));
   };
 
   const inputStyles =
     'w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary dark:text-white dark:focus:outline-none';
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} name='Create New Task'>
+    <Modal isOpen={isOpen} onClose={onClose} name='Add New Member'>
       <form
         className='mt-4 space-y-6'
         onSubmit={(e) => {

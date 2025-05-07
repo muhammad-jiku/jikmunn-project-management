@@ -19,7 +19,10 @@ router.use(developerLimiter);
 
 router
   .route('/')
-  .get(auth(USER_ROLES.DEVELOPER), DeveloperControllers.getAllFromDB);
+  .get(
+    auth(USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.DEVELOPER),
+    DeveloperControllers.getAllFromDB
+  );
 
 router
   .route('/:id')
