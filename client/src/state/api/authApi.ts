@@ -93,12 +93,12 @@ export const authApi = createApi({
         try {
           const { data } = await queryFulfilled;
           // If the response indicates that email verification is needed, skip fetching /auth/me.
-          if (data.needsEmailVerification) {
+          if (data.data.needsEmailVerification) {
             dispatch(
               setAuthCredentials({
                 user: null,
                 needsEmailVerification: true,
-                needsPasswordChange: data.needsPasswordChange || false,
+                needsPasswordChange: data.data.needsPasswordChange || false,
               })
             );
             return;
@@ -115,7 +115,7 @@ export const authApi = createApi({
             dispatch(
               setAuthCredentials({
                 user: { data: userData }, // Ensure consistent format
-                needsPasswordChange: data.needsPasswordChange || false,
+                needsPasswordChange: data.data.needsPasswordChange || false,
               })
             );
           } else {
@@ -142,28 +142,35 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['User'],
     }),
-    forgotPassword: build.mutation<void, { email: string }>({
+    forgotPassword: build.mutation<
+      any,
+      // void,
+      { email: string }
+    >({
       query: (data) => ({
         url: '/auth/forgot-password',
         method: 'POST',
         body: data,
       }),
     }),
-    resetPassword: build.mutation<void, { token: string; newPassword: string }>(
-      {
-        query: (data) => ({
-          url: '/auth/reset-password',
-          method: 'POST',
-          body: data,
-        }),
-      }
-    ),
+    resetPassword: build.mutation<
+      any,
+      // void,
+      { token: string; newPassword: string }
+    >({
+      query: (data) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body: data,
+      }),
+    }),
     getCurrentUser: build.query<User, void>({
       query: () => '/auth/me',
       providesTags: ['User'],
     }),
     changePassword: build.mutation<
-      void,
+      any,
+      // void,
       { oldPassword: string; newPassword: string }
     >({
       query: (data) => ({
@@ -172,7 +179,8 @@ export const authApi = createApi({
         body: data,
       }),
     }),
-    logout: build.mutation<void, void>({
+    logout: build.mutation<any, void>({
+      // logout: build.mutation<void, void>({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',

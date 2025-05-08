@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
@@ -32,8 +33,11 @@ export const superAdminsApi = createApi({
       providesTags: ['SuperAdmin'],
     }),
     updateSuperAdmin: build.mutation<
-      SuperAdmin,
-      { id: string; data: Partial<SuperAdmin> }
+      any,
+      { id: string; data: Partial<any> }
+      // updateSuperAdmin: build.mutation<
+      // SuperAdmin,
+      // { id: string; data: Partial<SuperAdmin> }
     >({
       query: ({ id, data }) => ({
         url: `/super-admins/${id}`,

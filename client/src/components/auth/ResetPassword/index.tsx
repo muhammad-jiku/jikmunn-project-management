@@ -20,6 +20,7 @@ import { Eye, EyeClosed } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import CountdownTimer from '../FormInputs/CountdownTimer';
 import TextInput from '../FormInputs/TextInput';
 
@@ -32,7 +33,9 @@ const ResetPassword: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
+
   const [message, setMessage] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -104,8 +107,18 @@ const ResetPassword: React.FC = () => {
       return;
     }
     try {
-      await resetPassword({ token, newPassword: data.newPassword }).unwrap();
-      setMessage('Password has been reset successfully');
+      const result = await resetPassword({
+        token,
+        newPassword: data.newPassword,
+      }).unwrap();
+      if (result.success) {
+        toast.success(
+          result.message || 'Password has been reset successfully.'
+        );
+        setMessage('Password has been reset successfully');
+      } else {
+        toast.error('Something went wrong, Please try again!');
+      }
       setTimeout(() => router.push('/sign-in'), 1000);
     } catch (err: any) {
       setMessage(err.data?.message || 'Failed to reset password');

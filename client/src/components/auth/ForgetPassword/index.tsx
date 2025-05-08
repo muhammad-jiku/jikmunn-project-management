@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import TextInput from '../FormInputs/TextInput';
 
 interface ForgotPasswordFormInputs {
@@ -24,6 +25,7 @@ interface ForgotPasswordFormInputs {
 
 const ForgetPassword: React.FC = () => {
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
+
   // Replace with your selector if you have dark mode state
   const theme = React.useMemo(
     () =>
@@ -71,7 +73,14 @@ const ForgetPassword: React.FC = () => {
 
   const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
     try {
-      await forgotPassword(data).unwrap();
+      const result = await forgotPassword(data).unwrap();
+      if (result.success) {
+        toast.success(
+          result.message || 'Reset link sent to the email successfully!'
+        );
+      } else {
+        toast.error('Something went wrong, Please try again!');
+      }
       setMessage('Password reset email sent. Please check your inbox.');
     } catch (err: any) {
       setMessage(err.data?.message || 'Failed to send password reset email.');

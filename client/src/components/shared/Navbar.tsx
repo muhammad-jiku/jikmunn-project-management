@@ -11,10 +11,12 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import profileDefault from '../../../public/images/p7.jpeg';
 
 const Navbar = () => {
   const router = useRouter();
+
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
     (state: RootState) => state?.global?.isSidebarCollapsed
@@ -25,6 +27,7 @@ const Navbar = () => {
   const globalUser = useAppSelector(
     (state: RootState) => state?.global?.user?.data
   );
+
   const [avatar, setAvatar] = useState<string | undefined>('');
 
   useEffect(() => {
@@ -56,13 +59,18 @@ const Navbar = () => {
   const handleSignOut = async () => {
     try {
       // Call backend logout to clear cookies
-      await logout().unwrap();
-      // Clear Redux state
-      dispatch(logoutUser());
-      // Purge persisted data from storage
-      await persistor.purge();
-      // Navigate to sign in page (or any appropriate route)
-      router.push('/sign-in');
+      const result = await logout().unwrap();
+      console.log('result of logout', result);
+      if (result.message) {
+        toast.success(result.message || 'Signing out successful.'); // Clear Redux state
+        dispatch(logoutUser());
+        // Purge persisted data from storage
+        await persistor.purge();
+        // Navigate to sign in page (or any appropriate route)
+        router.push('/sign-in');
+      } else {
+        toast.error('Something went wrong, Please try again.');
+      }
     } catch (error) {
       console.error('Error signing out:', error);
     }

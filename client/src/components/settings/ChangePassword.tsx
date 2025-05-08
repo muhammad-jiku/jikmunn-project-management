@@ -18,6 +18,7 @@ import {
 import { Eye, EyeClosed } from 'lucide-react';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import TextInput from '../auth/FormInputs/TextInput';
 
 interface ChangePassowordFormInputs {
@@ -90,6 +91,11 @@ const ChangePassword: React.FC = () => {
         newPassword: data.newPassword,
       }).unwrap();
       console.log('Change password result:', result);
+      if (result.success) {
+        toast.success(result.message || 'Password data changed successfully!');
+      } else {
+        toast.error('Something went wrong, Please try again later!');
+      }
     } catch (err: any) {
       console.error('Change password error:', err);
     }

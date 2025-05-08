@@ -26,7 +26,7 @@ const loginUserHandler = catchAsync(
       sendResponse<ILoginUserResponse>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User logged in successfully',
+        message: 'User signed in successfully!',
         data: othersData,
       });
     } catch (error) {
@@ -53,7 +53,7 @@ const refreshTokenHandler = catchAsync(
       sendResponse<IRefreshTokenResponse>(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Access token refreshed successfully',
+        message: 'Access token refreshed successfully!',
         data: result,
       });
     } catch (error) {
@@ -70,7 +70,7 @@ const forgotPasswordHandler = catchAsync(
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Password reset email sent successfully',
+        message: 'Password reset link sent to the email successfully!',
       });
     } catch (error) {
       next(error);
@@ -86,7 +86,7 @@ const resetPasswordHandler = catchAsync(
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Password reset successfully',
+        message: 'Password has been reset successfully!',
       });
     } catch (error) {
       next(error);
@@ -110,7 +110,7 @@ const verifyEmailHandler = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'Email verified and account activated successfully',
+      message: 'Email verified and account activated successfully!',
     });
   }
 );
@@ -124,7 +124,7 @@ const getCurrentUserHandler = catchAsync(
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User retrieved successfully',
+        message: 'User retrieved successfully!',
         data: result,
       });
     } catch (error) {
@@ -144,7 +144,7 @@ const changePasswordHandler = catchAsync(
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Password changed successfully',
+        message: 'Password updated successfully!',
       });
     } catch (error) {
       next(error);
@@ -160,7 +160,7 @@ const logoutHandler = catchAsync(
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User logged out successfully',
+        message: 'User signed out successfully!',
       });
     } catch (error) {
       next(error);

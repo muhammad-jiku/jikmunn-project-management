@@ -13,11 +13,13 @@ import {
 } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const EmailVerifyComp: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+
   const isDarkMode = useAppSelector(
     (state: RootState) => state?.global?.isDarkMode
   );
@@ -63,11 +65,16 @@ const EmailVerifyComp: React.FC = () => {
         );
 
         console.log('response', response);
-        if (!response.ok) {
+        if (response.ok) {
+          toast.success('Your email verification successful!');
+          setSuccess(true);
+        } else {
           const errorData = await response.json();
+          toast.error(
+            errorData.message || 'Something went wrong, Please try again!'
+          );
           throw new Error(errorData.message || 'Failed to verify email');
         }
-        setSuccess(true);
       } catch (err: any) {
         setError(err.message);
       } finally {

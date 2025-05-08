@@ -60,10 +60,10 @@ const SuperAdminsComp = () => {
         renderCell: (params) => (
           <Image
             src={params.value}
-            alt={params.value}
-            height={12}
-            width={12}
-            className='h-12 w-12 rounded-full border-2 border-blue-500'
+            alt='Profile picture'
+            width={48}
+            height={48}
+            className='mt-2 h-12 w-12 rounded-full border-2 border-blue-500 object-cover'
           />
         ),
       },

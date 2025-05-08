@@ -20,11 +20,12 @@ import {
   ThemeProvider,
   Typography,
 } from '@mui/material';
-import { Eye, EyeClosed } from 'lucide-react';
+import { Eye, EyeClosed, MailWarning } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import NavButtons from '../../../FormInputs/NavButtons';
 import TextInput from '../../../FormInputs/TextInput';
@@ -141,9 +142,10 @@ const Confirmation: React.FC = () => {
     setSignupError(null);
     try {
       console.log('Final signup data:', JSON.stringify(formData, null, 2));
-      let result;
+      let result: any;
       const transformedPayload = transformSignupPayload(payload);
       console.log('transformed payload..', transformedPayload);
+
       if (formData.role === 'DEVELOPER') {
         result = await signupDeveloper(transformedPayload).unwrap();
       } else if (formData.role === 'MANAGER') {
@@ -158,13 +160,28 @@ const Confirmation: React.FC = () => {
       console.log('Signup successful:', result);
 
       // If email verification is required, remain on this page
-      if (result.needsEmailVerification) {
+      if (result.data.needsEmailVerification) {
         setIsVerificationPending(true);
+        toast.custom(
+          <div className='bg-white px-6 py-4 shadow-md rounded-md flex items-start'>
+            <MailWarning
+              className='text-orange-500 flex-shrink-0 mr-3 mt-0.5'
+              size={20}
+            />
+            <p className='text-gray-800'>
+              Your email is not verified. A verification email has been sent.
+              Please check your inbox (and spam folder) and verify your email
+              before signing up.
+            </p>
+          </div>
+        );
       } else {
+        toast.success(result.message || 'Signing up successful.');
         router.push('/');
       }
     } catch (error: any) {
       console.error('Error processing form data:', error);
+      toast.error(error && 'Something went wrong, Please try again!');
       setSignupError(
         error.message || 'Something went wrong, Please try again!'
       );
@@ -179,8 +196,17 @@ const Confirmation: React.FC = () => {
       // Navigate to the home route once verified.
       router.push('/');
     } else {
-      alert(
-        'Your email is still not verified. You will be redirected to start over.'
+      toast.custom(
+        <div className='bg-white px-6 py-4 shadow-md rounded-md flex items-start'>
+          <MailWarning
+            className='text-orange-500 flex-shrink-0 mr-3 mt-0.5'
+            size={20}
+          />
+          <p className='text-gray-800'>
+            Your email is still not verified. You will be redirected to start
+            over.
+          </p>
+        </div>
       );
       // Reset the signup slice (to clear the form data)
       dispatch(resetSignup());
@@ -554,7 +580,7 @@ const Confirmation: React.FC = () => {
           <Typography variant='body2' color='text.secondary'>
             Already have an account?{' '}
             <Link href='/sign-in' color='text.primary'>
-              Sign In
+              Sign in
             </Link>
           </Typography>
         </Box>

@@ -22,6 +22,7 @@ import {
 import { Pencil } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import profileDefault from '../../../public/images/p7.jpeg';
 import TextInput from '../auth/FormInputs/TextInput';
@@ -160,6 +161,7 @@ const UserDetails: React.FC = () => {
 
     try {
       let result;
+
       if (globalUser?.data?.role === 'DEVELOPER') {
         result = await updateDeveloper({
           id: globalUser?.data?.userId,
@@ -183,7 +185,12 @@ const UserDetails: React.FC = () => {
       } else {
         throw new Error('Invalid user role');
       }
-      console.log('Update successful:', result);
+
+      if (result.success) {
+        toast.success(result.message || 'Data updated successfully!');
+      } else {
+        toast.error('Something went wrong, Please try again!');
+      }
     } catch (error: any) {
       console.error('Error processing form data:', error);
       console.error('Error processing form data message:', error?.message);

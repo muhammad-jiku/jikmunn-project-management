@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
@@ -32,8 +33,11 @@ export const developersApi = createApi({
       providesTags: ['Developer'],
     }),
     updateDeveloper: build.mutation<
-      Developer,
-      { id: string; data: Partial<Developer> }
+      any,
+      { id: string; data: Partial<any> }
+      // updateDeveloper: build.mutation<
+      //   Developer,
+      //   { id: string; data: Partial<Developer> }
     >({
       query: ({ id, data }) => ({
         url: `/developers/${id}`,

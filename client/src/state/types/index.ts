@@ -52,10 +52,12 @@ export interface User {
 }
 
 export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  needsEmailVerification?: boolean;
-  needsPasswordChange?: boolean;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    needsEmailVerification?: boolean;
+    needsPasswordChange?: boolean;
+  };
 }
 
 export interface SignupPayload {

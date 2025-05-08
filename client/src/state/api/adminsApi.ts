@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
@@ -26,7 +27,8 @@ export const adminsApi = createApi({
       query: (id) => `/admins/${id}`,
       providesTags: ['Admin'],
     }),
-    updateAdmin: build.mutation<Admin, { id: string; data: Partial<Admin> }>({
+    updateAdmin: build.mutation<any, { id: string; data: Partial<any> }>({
+      // updateAdmin: build.mutation<Admin, { id: string; data: Partial<Admin> }>({
       query: ({ id, data }) => ({
         url: `/admins/${id}`,
         method: 'PATCH',

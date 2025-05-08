@@ -24,7 +24,15 @@ export default function RootLayout({
           <InitializeAuth>{children}</InitializeAuth>
         </StoreProvider>
 
-        <Toaster position='top-right' reverseOrder={true} />
+        <Toaster
+          position='top-right'
+          reverseOrder={true}
+          toastOptions={{
+            // Define default options
+            duration: 10000,
+            removeDelay: 1000,
+          }}
+        />
       </body>
     </html>
   );

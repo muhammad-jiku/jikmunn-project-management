@@ -26,12 +26,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import logo from '../../../public/images/logo.png';
 import profileDefault from '../../../public/images/p7.jpeg';
 
 const Sidebar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+
   const isSidebarCollapsed = useAppSelector(
     (state) => state?.global?.isSidebarCollapsed
   );
@@ -79,13 +81,17 @@ const Sidebar = () => {
   const handleSignOut = async () => {
     try {
       // Call backend logout to clear cookies
-      await logout().unwrap();
-      // Clear Redux state
-      dispatch(logoutUser());
-      // Purge persisted data from storage
-      await persistor.purge();
-      // Navigate to sign in page (or any appropriate route)
-      router.push('/sign-in');
+      const result = await logout().unwrap();
+      if (result.message) {
+        toast.success(result.message || 'Signing out successful.'); // Clear Redux state
+        dispatch(logoutUser());
+        // Purge persisted data from storage
+        await persistor.purge();
+        // Navigate to sign in page (or any appropriate route)
+        router.push('/sign-in');
+      } else {
+        toast.error('Something went wrong, Please try again.');
+      }
     } catch (error) {
       console.error('Error signing out:', error);
     }

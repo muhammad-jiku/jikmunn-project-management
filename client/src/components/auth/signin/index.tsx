@@ -16,11 +16,12 @@ import {
   ThemeProvider,
   Typography,
 } from '@mui/material';
-import { Eye, EyeClosed } from 'lucide-react';
+import { Eye, EyeClosed, MailWarning } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import TextInput from '../FormInputs/TextInput';
 
 interface SignInFormInputs {
@@ -87,21 +88,34 @@ const SignInForm: React.FC = () => {
         alert('Passwords do not match');
         return;
       }
-      const result = await login({
+      const result: any = await login({
         email: data.email,
         password: data.password,
       }).unwrap();
       console.log('Login result:', result);
       // If email is not verified, inform the user and do not navigate.
-      if (result.needsEmailVerification) {
-        alert(
-          'Your email is not verified. A verification email has been sent. Please check your inbox (and spam folder) and verify your email before signing in.'
+      if (result.data.needsEmailVerification) {
+        toast.custom(
+          <div className='bg-white px-6 py-4 shadow-md rounded-md flex items-start'>
+            <MailWarning
+              className='text-orange-500 flex-shrink-0 mr-3 mt-0.5'
+              size={20}
+            />
+            <p className='text-gray-800'>
+              Your email is not verified. A verification email has been sent.
+              Please check your inbox (and spam folder) and verify your email
+              before signing in.
+            </p>
+          </div>
         );
         // Optionally, you could disable further navigation or provide a button for manual verification check.
         return;
+      } else {
+        toast.success(result.message || 'Signing in successful.');
+        router.push('/');
       }
-      router.push('/');
     } catch (err: any) {
+      toast.error(err && 'Something went wrong, Please try again.');
       console.error('Login error:', err);
     }
   };
@@ -277,7 +291,7 @@ const SignInForm: React.FC = () => {
                 href='/sign-up'
                 style={{ color: theme.palette.text.primary }}
               >
-                Sign Up
+                Sign up
               </Link>
             </Typography>
           </Box>

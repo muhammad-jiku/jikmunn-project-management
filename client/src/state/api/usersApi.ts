@@ -21,12 +21,12 @@ export const usersApi = createApi({
         try {
           const { data } = await queryFulfilled;
           // If the response indicates that email verification is needed, skip fetching /auth/me.
-          if (data.needsEmailVerification) {
+          if (data.data.needsEmailVerification) {
             dispatch(
               setAuthCredentials({
                 user: null, // No fully authenticated user yet
                 needsEmailVerification: true,
-                needsPasswordChange: data.needsPasswordChange,
+                needsPasswordChange: data.data.needsPasswordChange,
               })
             );
 
@@ -44,7 +44,7 @@ export const usersApi = createApi({
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsPasswordChange: data.needsPasswordChange,
+              needsPasswordChange: data.data.needsPasswordChange,
             })
           );
         } catch {
@@ -63,12 +63,12 @@ export const usersApi = createApi({
         try {
           const { data } = await queryFulfilled;
           // If the response indicates that email verification is needed, skip fetching /auth/me.
-          if (data.needsEmailVerification) {
+          if (data.data.needsEmailVerification) {
             dispatch(
               setAuthCredentials({
                 user: null, // No fully authenticated user yet
                 needsEmailVerification: true,
-                needsPasswordChange: data.needsPasswordChange,
+                needsPasswordChange: data.data.needsPasswordChange,
               })
             );
 
@@ -86,7 +86,7 @@ export const usersApi = createApi({
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsPasswordChange: data.needsPasswordChange,
+              needsPasswordChange: data.data.needsPasswordChange,
             })
           );
         } catch {
@@ -105,12 +105,12 @@ export const usersApi = createApi({
         try {
           const { data } = await queryFulfilled;
           // If the response indicates that email verification is needed, skip fetching /auth/me.
-          if (data.needsEmailVerification) {
+          if (data.data.needsEmailVerification) {
             dispatch(
               setAuthCredentials({
                 user: null, // No fully authenticated user yet
                 needsEmailVerification: true,
-                needsPasswordChange: data.needsPasswordChange,
+                needsPasswordChange: data.data.needsPasswordChange,
               })
             );
 
@@ -128,7 +128,7 @@ export const usersApi = createApi({
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsPasswordChange: data.needsPasswordChange,
+              needsPasswordChange: data.data.needsPasswordChange,
             })
           );
         } catch {
@@ -147,12 +147,12 @@ export const usersApi = createApi({
         try {
           const { data } = await queryFulfilled;
           // If the response indicates that email verification is needed, skip fetching /auth/me.
-          if (data.needsEmailVerification) {
+          if (data.data.needsEmailVerification) {
             dispatch(
               setAuthCredentials({
                 user: null, // No fully authenticated user yet
                 needsEmailVerification: true,
-                needsPasswordChange: data.needsPasswordChange,
+                needsPasswordChange: data.data.needsPasswordChange,
               })
             );
 
@@ -170,7 +170,7 @@ export const usersApi = createApi({
           dispatch(
             setAuthCredentials({
               user: userData,
-              needsPasswordChange: data.needsPasswordChange,
+              needsPasswordChange: data.data.needsPasswordChange,
             })
           );
         } catch {

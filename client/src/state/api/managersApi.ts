@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { updateUserInfo } from '..';
@@ -27,8 +28,11 @@ export const managersApi = createApi({
       providesTags: ['Manager'],
     }),
     updateManager: build.mutation<
-      Manager,
-      { id: string; data: Partial<Manager> }
+      any,
+      { id: string; data: Partial<any> }
+      // updateManager: build.mutation<
+      //   Manager,
+      //   { id: string; data: Partial<Manager> }
     >({
       query: ({ id, data }) => ({
         url: `/managers/${id}`,
