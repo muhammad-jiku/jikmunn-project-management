@@ -18,8 +18,6 @@ const ModalDeleteTask = ({ isOpen, onClose, taskId }: Props) => {
     }
   );
 
-  console.log('task delete modal...', task);
-
   const [deleteTask, { isLoading: isDeleteLoading }] = useDeleteTaskMutation();
 
   const handleDelete = async () => {
@@ -27,7 +25,7 @@ const ModalDeleteTask = ({ isOpen, onClose, taskId }: Props) => {
 
     try {
       const result: any = await deleteTask(taskId).unwrap();
-      console.log('Task deleted successfully:', result);
+
       if (result.success) {
         // Close the modal if deletion was successful
         toast.success(result?.message || 'Task data deleted successfully!');
@@ -36,7 +34,7 @@ const ModalDeleteTask = ({ isOpen, onClose, taskId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to delete task:', error);
+      console.error('Failed to delete task:', error); // debugging log
     }
   };
 

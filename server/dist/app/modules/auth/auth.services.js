@@ -27,9 +27,7 @@ const loginUserHandler = (payload, res) => __awaiter(void 0, void 0, void 0, fun
     if (!user) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist!');
     }
-    console.log('user information available ', user.password, password);
     const isPasswordValid = yield (0, auth_utils_1.isPasswordMatch)(password, user.password);
-    console.log(isPasswordValid);
     if (!isPasswordValid) {
         throw new handleApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Password mismatch!');
     }
@@ -50,8 +48,6 @@ const loginUserHandler = (payload, res) => __awaiter(void 0, void 0, void 0, fun
                 emailVerificationExpires: verificationExpires,
             },
         });
-        console.log('Sending verification email to:', userEmail);
-        console.log('Plain verification token:', verificationToken);
         yield sendVerificationEmail(userEmail, verificationToken);
     }
     return {
@@ -138,7 +134,7 @@ const resetPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, func
         },
     });
     if (!user) {
-        throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid or expired password reset token');
+        throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid or expired password reset token!');
     }
     // Validate password complexity
     if (newPassword.length < 8) {
@@ -167,7 +163,6 @@ const resetPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, func
 });
 const setAuthCookies = (res, accessToken, refreshToken) => {
     const isProduction = process.env.NODE_ENV === 'production';
-    console.log('is production', isProduction);
     res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: isProduction, // secure only in production (HTTPS)
@@ -185,9 +180,7 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
 };
 const verifyEmail = (token) => __awaiter(void 0, void 0, void 0, function* () {
     // Hash the incoming token so you can compare with what is stored in the database
-    console.log('(5) token received', token);
     const hashedToken = crypto_1.default.createHash('sha256').update(token).digest('hex');
-    console.log('(5.1) verified hash token', hashedToken);
     // Find the user with a matching emailVerificationToken that hasn't expired
     const user = yield prisma_1.prisma.user.findFirst({
         where: {
@@ -209,8 +202,6 @@ const verifyEmail = (token) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 const sendVerificationEmail = (email, token) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('(3) send verification email', email);
-    console.log('(3.1) send verification token', token);
     const verificationUrl = `${config_1.default.frontend_url}/verify-email?token=${token}`;
     yield emailSender_1.EmailHelper.sendEmail({
         email,

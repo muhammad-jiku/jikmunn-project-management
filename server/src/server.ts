@@ -5,8 +5,8 @@ import config from './config';
 // import { logger, errorlogger } from './shared/logger';
 
 process.on('uncaughtException', (error) => {
-  // errorlogger.error(error);
-  console.error(error);
+  // errorlogger.error(error); // debugging log
+  console.error(error); // debugging log
   process.exit(1);
 });
 
@@ -19,23 +19,23 @@ async function bootstrap() {
   });
 
   const server: Server = app.listen(config.port, () => {
-    // logger.info(`Server running on http://localhost:${config.port}`);
-    console.log(`Server running on http://localhost:${config.port}`);
+    // logger.info(`Server running on http://localhost:${config.port}`); // debugging log
+    console.log(`Server running on http://localhost:${config.port}`); // debugging log
   });
 
   const exitHandler = () => {
     if (server) {
       server.close(() => {
-        // logger.info('Server closed');
-        console.log('Server closed');
+        // logger.info('Server closed'); // debugging log
+        console.log('Server closed'); // debugging log
       });
     }
     process.exit(1);
   };
 
   const unexpectedErrorHandler = (error: unknown) => {
-    // errorlogger.error(error);
-    console.error(error);
+    // errorlogger.error(error); // debugging log
+    console.error(error); // debugging log
     exitHandler();
   };
 
@@ -43,8 +43,8 @@ async function bootstrap() {
   process.on('unhandledRejection', unexpectedErrorHandler);
 
   process.on('SIGTERM', () => {
-    // logger.info('SIGTERM received');
-    console.log('SIGTERM received');
+    // logger.info('SIGTERM received'); // debugging log
+    console.log('SIGTERM received'); // debugging log
     if (server) {
       server.close();
     }

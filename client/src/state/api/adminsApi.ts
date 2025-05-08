@@ -36,17 +36,6 @@ export const adminsApi = createApi({
       }),
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
-          // const { data: adminData } = await queryFulfilled;
-          // // Format the update to match the User structure
-          // const userData = {
-          //   data: {
-          //     // Only update the admin property
-          //     admin: {
-          //       data: adminData.data,
-          //     },
-          //   },
-          // };
-          // dispatch(updateUserInfo(userData));
           const { data: adminData } = await queryFulfilled;
           // With our modified updateUserInfo reducer, we can simply pass the admin data
           dispatch(updateUserInfo({ admin: adminData }));

@@ -18,23 +18,20 @@ const TimelineComp = () => {
   });
 
   const { data: projects, isLoading, isError } = useGetProjectsQuery({});
-  console.log('timeline page projects data', projects);
 
   const ganttTasks = useMemo(() => {
     return (
       projects?.data?.map((project) => ({
-        start: new Date(project.startDate as string),
-        end: new Date(project.endDate as string),
-        name: project.title,
-        id: `Project-${project.id}`,
+        start: new Date(project?.startDate as string),
+        end: new Date(project?.endDate as string),
+        name: project?.title,
+        id: `Project-${project?.id}`,
         type: 'project' as TaskTypeItems,
         progress: 50,
         isDisabled: false,
       })) || []
     );
   }, [projects]);
-
-  console.log('timeline page ganttasks', ganttTasks);
 
   const handleViewModeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -51,7 +48,7 @@ const TimelineComp = () => {
         <CircularProgress />
       </div>
     );
-  if (isError || !projects)
+  if (isError || !projects || projects.data.length === 0)
     return (
       <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
         No project information added yet!

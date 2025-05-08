@@ -44,7 +44,7 @@ const PersonalInfo: React.FC = () => {
       formData.superAdmin?.profileImage ||
       profileDefault.src
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const theme = createTheme({
@@ -105,7 +105,7 @@ const PersonalInfo: React.FC = () => {
       dispatch(updateFormData({ ...data, profileImage: avatar }));
       dispatch(setCurrentStep(currentStep + 1));
     } catch (error) {
-      console.error('Error processing form data:', error);
+      console.error('Error processing form data:', error); // debugging log
     } finally {
       setLoading(false);
     }

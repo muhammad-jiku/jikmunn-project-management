@@ -52,6 +52,37 @@ const getAllFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
         return next(error);
     }
 }));
+const getByIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const result = yield task_services_1.TaskServices.getByIdFromDB(Number(id));
+        (0, sendResponse_1.sendResponse)(res, {
+            statusCode: http_status_1.default.OK,
+            success: true,
+            message: 'Task data fetched successfully!!',
+            data: result,
+        });
+    }
+    catch (error) {
+        return next(error);
+    }
+}));
+const getProjectTasksFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const user = req.user;
+        const result = yield task_services_1.TaskServices.getProjectTasksFromDB(Number(id), user.userId);
+        (0, sendResponse_1.sendResponse)(res, {
+            statusCode: http_status_1.default.OK,
+            success: true,
+            message: "User's project tasks retrieved successfully",
+            data: result,
+        });
+    }
+    catch (error) {
+        return next(error);
+    }
+}));
 const getUserTasksFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
@@ -60,6 +91,22 @@ const getUserTasksFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __aw
             statusCode: http_status_1.default.OK,
             success: true,
             message: 'User tasks retrieved successfully',
+            data: result,
+        });
+    }
+    catch (error) {
+        return next(error);
+    }
+}));
+const updateInDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const payload = yield req.body;
+        const result = yield task_services_1.TaskServices.updateOneInDB(Number(id), payload);
+        (0, sendResponse_1.sendResponse)(res, {
+            statusCode: http_status_1.default.OK,
+            success: true,
+            message: 'Task data updated successfully!!',
             data: result,
         });
     }
@@ -101,7 +148,10 @@ const deleteByIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
 exports.TaskControllers = {
     insertIntoDB,
     getAllFromDB,
+    getByIdFromDB,
+    getProjectTasksFromDB,
     getUserTasksFromDB,
+    updateInDB,
     updateTaskStatusInDB,
     deleteByIdFromDB,
 };

@@ -46,17 +46,6 @@ export const superAdminsApi = createApi({
       }),
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
-          // const { data: superAdminData } = await queryFulfilled;
-          // // Format the update to match the User structure
-          // const userData = {
-          //   data: {
-          //     // Only update the super admin property
-          //     superAdmin: {
-          //       data: superAdminData.data,
-          //     },
-          //   },
-          // };
-          // dispatch(updateUserInfo(userData));
           const { data: superAdminData } = await queryFulfilled;
           // With our modified updateUserInfo reducer, we can simply pass the super admin data
           dispatch(updateUserInfo({ superAdmin: superAdminData }));

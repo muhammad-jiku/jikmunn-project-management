@@ -112,8 +112,9 @@ const columns: GridColDef[] = [
 ];
 
 const ReusablePriority = ({ priority }: Props) => {
-  const [view, setView] = useState('list');
-  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
+  const [view, setView] = useState<string>('list');
+  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState<boolean>(false);
+
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const globalUser = useAppSelector((state) => state?.global?.user?.data);
 
@@ -123,7 +124,6 @@ const ReusablePriority = ({ priority }: Props) => {
     isLoading,
     isError: isTasksError,
   } = useGetTasksByUserQuery(userId, {});
-  console.log('priority page tasks data', tasks);
 
   // Transform the data to include a flat author and assignee property
   const filteredTasks = tasks?.data
@@ -143,7 +143,6 @@ const ReusablePriority = ({ priority }: Props) => {
           : task.assignee.username,
       };
     });
-  console.log('priority page filtered tasks data', filteredTasks);
 
   if (isLoading)
     return (
@@ -175,7 +174,7 @@ const ReusablePriority = ({ priority }: Props) => {
           </button>
         </div>
       </div>
-      {isTasksError || !tasks ? (
+      {isTasksError || !tasks || tasks.data.length === 0 ? (
         <div className='flex items-center justify-center h-full text-center text-black dark:text-white'>
           No task information added yet!{' '}
         </div>

@@ -32,7 +32,7 @@ export async function generateMetadata({
   const resolvedParams = await params;
   try {
     const project = await getProject(resolvedParams.id);
-    console.log('project', project);
+
     return {
       title: `${project?.data?.title} - Project Management Dashboard`,
       description: project?.data?.description || 'Project details',
@@ -49,7 +49,7 @@ export async function generateMetadata({
       },
     };
   } catch (error: any) {
-    console.error('metadata error', error);
+    console.error('metadata error', error); // debugging log
     notFound();
     // return {
     //   title: 'Project Management Dashboard',

@@ -18,7 +18,6 @@ const ModalNewProjectTeam = ({ isOpen, onClose, id = null }: Props) => {
 
   const [createProjectTeam, { isLoading }] = useCreateProjectTeamMutation();
 
-  console.log('project team ids', teamId, projectId, id);
   const handleSubmit = async () => {
     if (!projectId || !(id !== null || teamId)) return;
 
@@ -30,11 +29,11 @@ const ModalNewProjectTeam = ({ isOpen, onClose, id = null }: Props) => {
 
     // Remove any accidental keys (like id) from the payload.
     // This ensures we send only the expected fields.
-    console.log('Creating project team with payload:', newProjectTeamPayload);
+
     const newProjectTeamData: any = await createProjectTeam(
       newProjectTeamPayload
     );
-    console.log('Project team creation response check:', newProjectTeamData);
+
     if (newProjectTeamData?.data?.success) {
       // Close the modal if creation was successful
       toast.success(

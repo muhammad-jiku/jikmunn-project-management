@@ -21,7 +21,7 @@ const managerLimiter = (0, express_rate_limit_1.default)({
 router.use(managerLimiter);
 router
     .route('/')
-    .get((0, auth_1.auth)(user_1.USER_ROLES.MANAGER), manager_controllers_1.ManagerControllers.getAllFromDB);
+    .get((0, auth_1.auth)(user_1.USER_ROLES.SUPER_ADMIN, user_1.USER_ROLES.ADMIN, user_1.USER_ROLES.MANAGER), manager_controllers_1.ManagerControllers.getAllFromDB);
 router
     .route('/:id')
     .get((0, auth_1.auth)(user_1.USER_ROLES.MANAGER), manager_controllers_1.ManagerControllers.getByIdFromDB)

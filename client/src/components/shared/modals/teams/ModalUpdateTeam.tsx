@@ -22,8 +22,6 @@ const ModalUpdateTeam = ({ isOpen, onClose, teamId }: Props) => {
     }
   );
 
-  console.log('team update modal...', team);
-
   const [updateTeam, { isLoading: isUpdating }] = useUpdateTeamMutation();
 
   useEffect(() => {
@@ -48,7 +46,6 @@ const ModalUpdateTeam = ({ isOpen, onClose, teamId }: Props) => {
         data: updatedTeamPayload,
       }).unwrap();
 
-      console.log('Team updated successfully:', result);
       if (result.success) {
         // Close the modal if updation was successful
         toast.success(result?.message || 'Team data updated successfully!');
@@ -57,7 +54,7 @@ const ModalUpdateTeam = ({ isOpen, onClose, teamId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to update project:', error);
+      console.error('Failed to update project:', error); // debugging log
     }
   };
 

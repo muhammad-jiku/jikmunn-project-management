@@ -40,9 +40,8 @@ const ModalNewProject = ({ isOpen, onClose }: Props) => {
       projectOwnerId: globalUser?.data?.userId as string,
     };
 
-    console.log('Creating project with payload:', newProjectPayload);
     const newProjectData: any = await createProject(newProjectPayload);
-    console.log('Project creation response check:', newProjectData);
+
     if (newProjectData?.data?.success) {
       // Close the modal if creation was successful
       toast.success(

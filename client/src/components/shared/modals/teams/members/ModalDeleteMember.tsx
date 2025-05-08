@@ -20,8 +20,6 @@ const ModalDeleteMember = ({ isOpen, onClose, id }: Props) => {
     }
   );
 
-  console.log('team member delete modal...', member);
-
   const [deleteTeamMember, { isLoading: isDeleting }] =
     useDeleteTeamMemberMutation();
 
@@ -31,7 +29,6 @@ const ModalDeleteMember = ({ isOpen, onClose, id }: Props) => {
     try {
       const result: any = await deleteTeamMember(id).unwrap();
 
-      console.log('Team member deleted successfully:', result);
       if (result.success) {
         // Close the modal if deletion was successful
         toast.success(
@@ -42,7 +39,7 @@ const ModalDeleteMember = ({ isOpen, onClose, id }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to delete team:', error);
+      console.error('Failed to delete team:', error); // debugging log
     }
   };
 

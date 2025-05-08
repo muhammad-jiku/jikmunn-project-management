@@ -9,8 +9,6 @@ import { taskSearchableFields } from './task.constants';
 import { ITaskFilterRequest } from './task.interfaces';
 
 const insertIntoDB = async (payload: Task): Promise<Task | null> => {
-  console.log('Task payload', payload);
-
   return await prisma.$transaction(async (tx) => {
     // Check if task owner exists
     const ownerExists = await tx.user.findUnique({
@@ -68,7 +66,6 @@ const insertIntoDB = async (payload: Task): Promise<Task | null> => {
       },
     });
 
-    console.log('Result task', result);
     if (!result) {
       throw new ApiError(
         httpStatus.INTERNAL_SERVER_ERROR,
@@ -178,7 +175,6 @@ const getByIdFromDB = async (id: number): Promise<Task | null> => {
     },
   });
 
-  console.log('project result', result);
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Sorry, the task does not exist!');
   }
@@ -241,7 +237,7 @@ const getProjectTasksFromDB = async (
 
     return projectTasks;
   } catch (error) {
-    console.error('Error retrieving project tasks:', error);
+    console.error('Error retrieving project tasks:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to retrieve project tasks'
@@ -277,7 +273,7 @@ const getUserTasksFromDB = async (userId: string): Promise<Task[]> => {
       },
     });
   } catch (error) {
-    console.error('Error retrieving user tasks:', error);
+    console.error('Error retrieving user tasks:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to retrieve user tasks'
@@ -383,7 +379,7 @@ const updateTaskStatusInDB = async (
 
     return task;
   } catch (error) {
-    console.error('Error updating task status:', error);
+    console.error('Error updating task status:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to update task status'
@@ -418,7 +414,7 @@ const deleteByIdFromDB = async (taskId: number): Promise<Task> => {
       },
     });
   } catch (error) {
-    console.error('Error deleting task:', error);
+    console.error('Error deleting task:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to delete task'

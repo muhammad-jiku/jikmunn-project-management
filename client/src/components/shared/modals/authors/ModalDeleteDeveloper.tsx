@@ -18,7 +18,7 @@ const ModalDeleteDeveloper = ({ isOpen, onClose, developerId }: Props) => {
 
     try {
       const result: any = await deleteDeveloper(developerId).unwrap();
-      console.log('Developer deleted successfully:', result);
+
       if (result.success) {
         // Close the modal if deletion was successful
         toast.success(
@@ -29,7 +29,7 @@ const ModalDeleteDeveloper = ({ isOpen, onClose, developerId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to delete developer:', error);
+      console.error('Failed to delete developer:', error); // debugging log
     }
   };
 

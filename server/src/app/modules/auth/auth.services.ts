@@ -35,9 +35,8 @@ const loginUserHandler = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
   }
 
-  console.log('user information available ', user.password, password);
   const isPasswordValid = await isPasswordMatch(password, user.password);
-  console.log(isPasswordValid);
+
   if (!isPasswordValid) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Password mismatch!');
   }
@@ -77,8 +76,7 @@ const loginUserHandler = async (
         emailVerificationExpires: verificationExpires,
       },
     });
-    console.log('Sending verification email to:', userEmail);
-    console.log('Plain verification token:', verificationToken);
+
     await sendVerificationEmail(userEmail, verificationToken);
   }
 
@@ -182,12 +180,9 @@ const resetPasswordHandler = async (
   payload: IResetPasswordPayload
 ): Promise<void> => {
   const { token, newPassword } = payload;
-  console.log('reset password token received:', token);
-  console.log('reset password:', newPassword);
 
   // Hash the token for comparison
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-  console.log('hashed token:', hashedToken);
 
   const user = await prisma.user.findFirst({
     where: {
@@ -197,7 +192,6 @@ const resetPasswordHandler = async (
       },
     },
   });
-  console.log('user found for password reset:', user);
 
   if (!user) {
     throw new ApiError(
@@ -215,7 +209,6 @@ const resetPasswordHandler = async (
   }
 
   const hashedPassword = await hashPassword(newPassword);
-  console.log('hashed password:', hashedPassword);
 
   await prisma.user.update({
     where: { userId: user.userId },
@@ -245,7 +238,6 @@ const setAuthCookies = (
   refreshToken: string
 ): void => {
   const isProduction = process.env.NODE_ENV === 'production';
-  console.log('is production', isProduction);
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
@@ -266,9 +258,7 @@ const setAuthCookies = (
 
 const verifyEmail = async (token: string): Promise<void> => {
   // Hash the incoming token so you can compare with what is stored in the database
-  console.log('verify email token received', token);
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-  console.log('verified hash token', hashedToken);
 
   // Find the user with a matching emailVerificationToken that hasn't expired
   const user = await prisma.user.findFirst({
@@ -277,7 +267,6 @@ const verifyEmail = async (token: string): Promise<void> => {
       emailVerificationExpires: { gt: new Date() },
     },
   });
-  console.log('verified user found', user);
 
   if (!user) {
     throw new ApiError(
@@ -301,11 +290,8 @@ const sendVerificationEmail = async (
   email: string,
   token: string
 ): Promise<void> => {
-  console.log('send verification email:', email);
-  console.log('send verification token:', token);
-
   const verificationUrl = `${config.frontend_url}/verify-email?token=${token}`;
-  console.log('verification URL:', verificationUrl);
+
   await EmailHelper.sendEmail({
     email,
     subject: 'Verify your email',

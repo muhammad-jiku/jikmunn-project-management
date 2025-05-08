@@ -58,9 +58,8 @@ const ModalNewTask = ({ isOpen, onClose, id = null }: Props) => {
     // Remove any accidental keys (like id) from the payload.
     // This ensures we send only the expected fields.
 
-    console.log('Creating task with payload:', newTaskPayload);
     const newTaskData: any = await createTask(newTaskPayload);
-    console.log('Task creation response check:', newTaskData);
+
     if (newTaskData?.data?.success) {
       // Close the modal if creation was successful
       toast.success(

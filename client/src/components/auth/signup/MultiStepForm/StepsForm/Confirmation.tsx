@@ -102,7 +102,7 @@ const Confirmation: React.FC = () => {
   // }
 
   const payload = { userData, profileData };
-  console.log('payload..', payload);
+
   // Helper to convert underscore_separated string to camelCase
   const toCamelCase = (str: string): string => {
     return str
@@ -141,10 +141,8 @@ const Confirmation: React.FC = () => {
     event.preventDefault();
     setSignupError(null);
     try {
-      console.log('Final signup data:', JSON.stringify(formData, null, 2));
       let result: any;
       const transformedPayload = transformSignupPayload(payload);
-      console.log('transformed payload..', transformedPayload);
 
       if (formData.role === 'DEVELOPER') {
         result = await signupDeveloper(transformedPayload).unwrap();
@@ -157,7 +155,6 @@ const Confirmation: React.FC = () => {
       } else {
         throw new Error('Invalid user role');
       }
-      console.log('Signup successful:', result);
 
       // If email verification is required, remain on this page
       if (result.data.needsEmailVerification) {
@@ -180,8 +177,8 @@ const Confirmation: React.FC = () => {
         router.push('/');
       }
     } catch (error: any) {
-      console.error('Error processing form data:', error);
       toast.error(error && 'Something went wrong, Please try again!');
+      // console.error('Error processing form data:', error); // debugging log
       setSignupError(
         error.message || 'Something went wrong, Please try again!'
       );
@@ -191,7 +188,6 @@ const Confirmation: React.FC = () => {
   // Handler for checking email verification status.
   // If email is not verified, reset the signup state and redirect back to signup (step 1).
   const handleCheckVerification = async () => {
-    console.log('Checking verification, global user:', globalUser);
     if (globalUser && globalUser?.data?.emailVerified) {
       // Navigate to the home route once verified.
       router.push('/');

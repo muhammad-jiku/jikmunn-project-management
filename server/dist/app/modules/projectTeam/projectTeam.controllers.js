@@ -12,21 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TeamControllers = void 0;
+exports.ProjectTeamControllers = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const pagination_1 = require("../../../constants/pagination");
 const catchAsync_1 = require("../../../shared/catchAsync");
 const pick_1 = require("../../../shared/pick");
 const sendResponse_1 = require("../../../shared/sendResponse");
-const team_services_1 = require("./team.services");
+const projectTeam_services_1 = require("./projectTeam.services");
 const insertIntoDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const payload = yield req.body;
-        const result = yield team_services_1.TeamServices.insertIntoDB(payload);
+        const result = yield projectTeam_services_1.ProjectTeamServices.insertIntoDB(payload);
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.CREATED,
             success: true,
-            message: 'Team created successfully!',
+            message: 'Project team association created successfully!',
             data: result,
         });
     }
@@ -36,12 +36,12 @@ const insertIntoDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
 }));
 const getAllFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const options = (0, pick_1.pick)(req.query, pagination_1.paginationFields);
-        const result = yield team_services_1.TeamServices.getAllFromDB(options);
+        const paginationOptions = (0, pick_1.pick)(req.query, pagination_1.paginationFields);
+        const result = yield projectTeam_services_1.ProjectTeamServices.getAllFromDB(paginationOptions);
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Teams data retrieved successfully!',
+            message: 'Project team associations data retrieved successfully.',
             meta: result.meta,
             data: result.data,
         });
@@ -53,11 +53,41 @@ const getAllFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
 const getByIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const result = yield team_services_1.TeamServices.getByIdFromDB(Number(id));
+        const result = yield projectTeam_services_1.ProjectTeamServices.getByIdFromDB(Number(id));
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Team data retrieved successfully!',
+            message: 'Project team association data retrieved successfully!',
+            data: result,
+        });
+    }
+    catch (error) {
+        return next(error);
+    }
+}));
+const getByProjectIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { projectId } = req.query;
+        const result = yield projectTeam_services_1.ProjectTeamServices.getByProjectIdFromDB(Number(projectId));
+        (0, sendResponse_1.sendResponse)(res, {
+            statusCode: http_status_1.default.OK,
+            success: true,
+            message: 'Project team associations data retrieved successfully',
+            data: result,
+        });
+    }
+    catch (error) {
+        return next(error);
+    }
+}));
+const getByTeamIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { teamId } = req.query;
+        const result = yield projectTeam_services_1.ProjectTeamServices.getByTeamIdFromDB(Number(teamId));
+        (0, sendResponse_1.sendResponse)(res, {
+            statusCode: http_status_1.default.OK,
+            success: true,
+            message: 'Project team associations data retrieved successfully!',
             data: result,
         });
     }
@@ -68,11 +98,12 @@ const getByIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
 const updateOneInDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const result = yield team_services_1.TeamServices.updateOneInDB(Number(id), req.body);
+        const payload = yield req.body;
+        const result = yield projectTeam_services_1.ProjectTeamServices.updateOneInDB(Number(id), payload);
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Team data updated successfully!',
+            message: 'Project team association data updated successfully!',
             data: result,
         });
     }
@@ -83,11 +114,11 @@ const updateOneInDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
 const deleteByIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const result = yield team_services_1.TeamServices.deleteByIdFromDB(Number(id));
+        const result = yield projectTeam_services_1.ProjectTeamServices.deleteByIdFromDB(Number(id));
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Team data deleted successfully!',
+            message: 'Project team association data deleted successfully!',
             data: result,
         });
     }
@@ -95,10 +126,12 @@ const deleteByIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
         return next(error);
     }
 }));
-exports.TeamControllers = {
+exports.ProjectTeamControllers = {
     insertIntoDB,
     getAllFromDB,
     getByIdFromDB,
+    getByProjectIdFromDB,
+    getByTeamIdFromDB,
     updateOneInDB,
     deleteByIdFromDB,
 };

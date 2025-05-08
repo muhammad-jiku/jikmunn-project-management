@@ -49,7 +49,7 @@ const insertDeveloperIntoDB = async (
     // Step 1: Generate a unique developer ID
     const developerId = await generateDeveloperId();
     developerData.developerId = developerId;
-    console.log('developerId: ', developerId);
+
     // Step 2: Create Developer first to ensure the developerId exists
     // Validate and upload profile image
     // Validate the new base64 image (throws error if invalid)
@@ -57,7 +57,7 @@ const insertDeveloperIntoDB = async (
       const isValidImage = await validateBase64Image(
         developerData.profileImage as string
       );
-      console.log('validate base image result:', isValidImage);
+
       if (!isValidImage) {
         throw new ApiError(
           httpStatus.BAD_REQUEST,
@@ -105,9 +105,6 @@ const insertDeveloperIntoDB = async (
       },
     });
 
-    console.log('Developer created', newDeveloper);
-    console.log('User created:', newUser);
-
     // Generate tokens using jwt helpers
     const accessToken = jwtHelpers.createToken(
       {
@@ -137,14 +134,13 @@ const insertDeveloperIntoDB = async (
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
 
-    console.log('developer tokens...', { accessToken, refreshToken });
     return {
       accessToken,
       refreshToken,
       needsEmailVerification: true,
     };
   } catch (error) {
-    console.error('Error during user creation:', error);
+    console.error('Error during user creation:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to create user profile'
@@ -176,7 +172,7 @@ const insertManagerIntoDB = async (
     // Step 1: Generate a unique manager ID
     const managerId = await generateManagerId();
     managerData.managerId = managerId;
-    console.log('managerId: ', managerId);
+
     // Step 2: Create Manager first to ensure the managerId exists
     // Validate and upload profile image
     // Validate the new base64 image (throws error if invalid)
@@ -184,7 +180,7 @@ const insertManagerIntoDB = async (
       const isValidImage = await validateBase64Image(
         managerData.profileImage as string
       );
-      console.log('validate base image result:', isValidImage);
+
       if (!isValidImage) {
         throw new ApiError(
           httpStatus.BAD_REQUEST,
@@ -232,9 +228,6 @@ const insertManagerIntoDB = async (
       },
     });
 
-    console.log('Manager created', newManager);
-    console.log('User created:', newUser);
-
     // Generate tokens using jwt helpers
     const accessToken = jwtHelpers.createToken(
       {
@@ -264,14 +257,13 @@ const insertManagerIntoDB = async (
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
 
-    console.log('manager tokens...', { accessToken, refreshToken });
     return {
       accessToken,
       refreshToken,
       needsEmailVerification: true,
     };
   } catch (error) {
-    console.error('Error during user creation:', error);
+    console.error('Error during user creation:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to create user profile'
@@ -303,7 +295,7 @@ const insertAdminIntoDB = async (
     // Step 1: Generate a unique admin ID
     const adminId = await generateAdminId();
     adminData.adminId = adminId;
-    console.log('adminId: ', adminId);
+
     // Step 2: Create Admin first to ensure the adminId exists
     // Validate and upload profile image
     // Validate the new base64 image (throws error if invalid)
@@ -311,7 +303,7 @@ const insertAdminIntoDB = async (
       const isValidImage = await validateBase64Image(
         adminData.profileImage as string
       );
-      console.log('validate base image result:', isValidImage);
+
       if (!isValidImage) {
         throw new ApiError(
           httpStatus.BAD_REQUEST,
@@ -359,9 +351,6 @@ const insertAdminIntoDB = async (
       },
     });
 
-    console.log('Admin created', newAdmin);
-    console.log('User created:', newUser);
-
     // Generate tokens using jwt helpers
     const accessToken = jwtHelpers.createToken(
       {
@@ -391,14 +380,13 @@ const insertAdminIntoDB = async (
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
 
-    console.log('admin tokens...', { accessToken, refreshToken });
     return {
       accessToken,
       refreshToken,
       needsEmailVerification: true,
     };
   } catch (error) {
-    console.error('Error during user creation:', error);
+    console.error('Error during user creation:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to create user profile'
@@ -427,13 +415,10 @@ const insertSuperAdminIntoDB = async (
     const { verificationToken, hashedToken } = createEmailVerificationToken();
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    console.log('(2) verification token', verificationToken);
-    console.log('(2.1) verification token expires', verificationExpires);
-
     // Step 1: Generate a unique super admin ID
     const superAdminId = await generateSuperAdminId();
     superAdminData.superAdminId = superAdminId;
-    console.log('superAdminId: ', superAdminId);
+
     // Step 2: Create Super Admin first to ensure the superAdminId exists
     // Validate and upload profile image
     // Validate the new base64 image (throws error if invalid)
@@ -441,7 +426,7 @@ const insertSuperAdminIntoDB = async (
       const isValidImage = await validateBase64Image(
         superAdminData.profileImage as string
       );
-      console.log('validate base image result:', isValidImage);
+
       if (!isValidImage) {
         throw new ApiError(
           httpStatus.BAD_REQUEST,
@@ -489,9 +474,6 @@ const insertSuperAdminIntoDB = async (
       },
     });
 
-    console.log('Super Admin created', newSuperAdmin);
-    console.log('User created:', newUser);
-
     // Generate tokens using jwt helpers
     const accessToken = jwtHelpers.createToken(
       {
@@ -521,14 +503,13 @@ const insertSuperAdminIntoDB = async (
     // Send verification email
     await AuthServices.sendVerificationEmail(newUser.email, verificationToken);
 
-    console.log('super admin tokens...', { accessToken, refreshToken });
     return {
       accessToken,
       refreshToken,
       needsEmailVerification: true,
     };
   } catch (error) {
-    console.error('Error during user creation:', error);
+    console.error('Error during user creation:', error); // debugging log
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Failed to create user profile'

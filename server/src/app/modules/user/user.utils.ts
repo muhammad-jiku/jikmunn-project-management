@@ -10,8 +10,7 @@ export const validateBase64Image = async (
   // Remove any data URL prefix if present.
   const parts = await base64String.split(',');
   const base64Data = parts.length > 1 ? parts[1] : parts[0];
-  console.log('base64Data length', base64Data.length);
-  console.log('MAX_BASE64 length', MAX_BASE64_LENGTH);
+
   if (base64String.length > MAX_BASE64_LENGTH) {
     // Instead of throwing an error, return false.
     return false;

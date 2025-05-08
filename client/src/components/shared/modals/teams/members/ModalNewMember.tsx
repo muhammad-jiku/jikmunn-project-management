@@ -18,8 +18,6 @@ const ModalNewMember = ({ isOpen, onClose, id = null }: Props) => {
 
   const [createTeamMember, { isLoading }] = useCreateTeamMemberMutation();
 
-  console.log('ids...', userId, id, teamId);
-
   const handleSubmit = async () => {
     if (!userId || !(id !== null || teamId)) return;
 
@@ -32,9 +30,8 @@ const ModalNewMember = ({ isOpen, onClose, id = null }: Props) => {
     // Remove any accidental keys (like id) from the payload.
     // This ensures we send only the expected fields.
 
-    console.log('Creating team member with payload:', newTeamMemberPayload);
     const newTeamMemberData: any = await createTeamMember(newTeamMemberPayload);
-    console.log('Team member creation response check:', newTeamMemberData);
+
     if (newTeamMemberData?.data?.success) {
       // Close the modal if creation was successful
       toast.success(

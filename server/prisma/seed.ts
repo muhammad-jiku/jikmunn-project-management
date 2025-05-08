@@ -15,9 +15,9 @@ async function deleteAllData(orderedFileNames: string[]) {
     const model: any = prisma[modelName as keyof typeof prisma];
     try {
       await model.deleteMany({});
-      console.log(`Cleared data from ${modelName}`);
+      // console.log(`Cleared data from ${modelName}`); // debugging log
     } catch (error) {
-      console.error(`Error clearing data from ${modelName}:`, error);
+      console.error(`Error clearing data from ${modelName}:`, error); // debugging log
     }
   }
 }
@@ -52,13 +52,15 @@ async function main() {
       for (const data of jsonData) {
         await model.create({ data }); // Ensure you're using the correct method for your Prisma version
       }
-      console.log(`Seeded ${modelName} with data from ${fileName}`);
+      // console.log(`Seeded ${modelName} with data from ${fileName}`); // debugging log
     } catch (error) {
-      console.error(`Error seeding data for ${modelName}:`, error);
+      console.error(`Error seeding data for ${modelName}:`, error); // debugging log
     }
   }
 }
 
 main()
-  .catch((e) => console.error(e))
+  .catch(
+    (e) => console.error(e) // debugging log
+  )
   .finally(async () => await prisma.$disconnect());

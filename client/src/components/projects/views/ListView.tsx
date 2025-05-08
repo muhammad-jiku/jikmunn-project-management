@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useGetTasksByUserProjectQuery } from '@/state/api/tasksApi';
 import { Task } from '@/state/types';
-// import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
-// import Header from '../../shared/Header';
 import TaskCard from '../../tasks/TaskCard';
 
 type Props = {
@@ -28,10 +27,6 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
     isError: isTasksError,
   } = useGetTasksByUserProjectQuery(id, {});
 
-  console.log('list view param id', id);
-  console.log('list view modal check', setIsModalNewTaskOpen);
-  console.log('list view tasks data', tasks);
-
   // Transform the tasks data to include flattened author and assignee strings.
   const transformedTasks: TransformedTask[] = (tasks?.data ?? []).map(
     (task: any) => {
@@ -52,8 +47,6 @@ const ListView = ({ id, setIsModalNewTaskOpen }: Props) => {
       };
     }
   );
-
-  console.log('transformed tasks data', transformedTasks);
 
   if (isLoading)
     return (

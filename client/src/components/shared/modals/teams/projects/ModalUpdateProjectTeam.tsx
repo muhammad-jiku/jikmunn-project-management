@@ -24,8 +24,6 @@ const ModalUpdateProjectTeam = ({ isOpen, onClose, id }: Props) => {
       skip: !isOpen || id === null,
     });
 
-  console.log('project team update modal...', projectTeam.data);
-
   const [updateProjectTeam, { isLoading: isUpdating }] =
     useUpdateProjectTeamMutation();
 
@@ -35,12 +33,6 @@ const ModalUpdateProjectTeam = ({ isOpen, onClose, id }: Props) => {
       setTeamId(projectTeam?.data?.teamId);
     }
   }, [projectTeam]);
-  console.log(
-    'ids of the field',
-    projectTeam?.data?.projectId,
-    projectId,
-    teamId
-  );
 
   const handleSubmit = async () => {
     if (!projectId || !teamId) return;
@@ -57,7 +49,6 @@ const ModalUpdateProjectTeam = ({ isOpen, onClose, id }: Props) => {
         data: updatedProjectTeamPayload,
       }).unwrap();
 
-      console.log('Project team updated successfully:', result);
       if (result.success) {
         // Close the modal if updation was successful
         toast.success(
@@ -68,7 +59,7 @@ const ModalUpdateProjectTeam = ({ isOpen, onClose, id }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to update project:', error);
+      console.error('Failed to update project:', error); // debugging log
     }
   };
 

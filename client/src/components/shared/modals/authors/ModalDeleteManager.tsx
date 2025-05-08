@@ -17,7 +17,7 @@ const ModalDeleteManager = ({ isOpen, onClose, managerId }: Props) => {
 
     try {
       const result: any = await deleteManager(managerId).unwrap();
-      console.log('Manager deleted successfully:', result);
+
       if (result.success) {
         // Close the modal if deletion was successful
         toast.success(result?.message || 'Manager data deleted successfully!');
@@ -26,7 +26,7 @@ const ModalDeleteManager = ({ isOpen, onClose, managerId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to delete Manager:', error);
+      console.error('Failed to delete Manager:', error); // debugging log
     }
   };
 

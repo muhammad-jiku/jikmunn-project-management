@@ -17,7 +17,7 @@ const ModalDeleteAdmin = ({ isOpen, onClose, adminId }: Props) => {
 
     try {
       const result: any = await deleteAdmin(adminId).unwrap();
-      console.log('Admin deleted successfully:', result);
+
       if (result.success) {
         // Close the modal if deletion was successful
         toast.success(result?.message || 'Admin data deleted successfully!');
@@ -26,7 +26,7 @@ const ModalDeleteAdmin = ({ isOpen, onClose, adminId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to delete Admin:', error);
+      console.error('Failed to delete Admin:', error); // debugging log
     }
   };
 

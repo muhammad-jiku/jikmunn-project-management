@@ -43,7 +43,6 @@ const TeamsComp = () => {
   const hasActionPermission = isManager || isDeveloper;
 
   const { data: teams, isLoading, isError } = useGetTeamsQuery({});
-  console.log('teams page data', teams);
 
   // State for modals
   const [isModalNewTeamOpen, setIsModalNewTeamOpen] = useState<boolean>(false);
@@ -177,7 +176,7 @@ const TeamsComp = () => {
         teamId={selectedTeamId}
       />
 
-      {isError || !teams ? (
+      {isError || !teams || teams.data.length === 0 ? (
         <div className='flex items-center justify-center h-[600px] text-center text-black dark:text-white'>
           No team information added yet!{' '}
         </div>

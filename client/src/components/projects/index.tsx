@@ -180,7 +180,7 @@ const ProjectsComp = () => {
         projectId={selectedProjectId}
       />
 
-      {isProjectsError || !projects ? (
+      {isProjectsError || !projects || projects.data.length === 0 ? (
         <div className='flex items-center justify-center h-[600px] text-center text-black dark:text-white'>
           No project information added yet!{' '}
         </div>

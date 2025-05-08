@@ -9,9 +9,11 @@ const auth_routes_1 = require("../modules/auth/auth.routes");
 const developer_routes_1 = require("../modules/developer/developer.routes");
 const manager_routes_1 = require("../modules/manager/manager.routes");
 const project_routes_1 = require("../modules/project/project.routes");
+const projectTeam_routes_1 = require("../modules/projectTeam/projectTeam.routes");
 const superAdmin_routes_1 = require("../modules/superAdmin/superAdmin.routes");
 const task_routes_1 = require("../modules/task/task.routes");
 const team_routes_1 = require("../modules/team/team.routes");
+const teamMember_routes_1 = require("../modules/teamMember/teamMember.routes");
 const user_routes_1 = require("../modules/user/user.routes");
 const routes = express_1.default.Router();
 const moduleRoutes = [
@@ -51,6 +53,14 @@ const moduleRoutes = [
     {
         path: '/teams',
         route: team_routes_1.TeamRoutes,
+    },
+    {
+        path: '/team-members',
+        route: teamMember_routes_1.TeamMemberRoutes,
+    },
+    {
+        path: '/project-teams',
+        route: projectTeam_routes_1.ProjectTeamRoutes,
     },
 ];
 moduleRoutes.forEach((r) => routes.use(r.path, r.route));

@@ -90,14 +90,14 @@ const ChangePassword: React.FC = () => {
         oldPassword: data.oldPassword,
         newPassword: data.newPassword,
       }).unwrap();
-      console.log('Change password result:', result);
+
       if (result.success) {
         toast.success(result.message || 'Password data changed successfully!');
       } else {
         toast.error('Something went wrong, Please try again later!');
       }
     } catch (err: any) {
-      console.error('Change password error:', err);
+      console.error('Change password error:', err); // debugging log
     }
   };
 

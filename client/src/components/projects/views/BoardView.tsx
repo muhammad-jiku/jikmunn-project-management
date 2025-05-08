@@ -32,15 +32,9 @@ const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
     isError: isTasksError,
   } = useGetTasksByUserProjectQuery(id, {});
 
-  console.log('board view param id', id);
-  console.log('board view modal check', setIsModalNewTaskOpen);
-  console.log('board view tasks', tasks);
-  console.log('board view tasks data', tasks?.data);
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
   const moveTask = (taskId: number, toStatus: string) => {
-    console.log('board view task id', taskId);
-    console.log('board view task status', toStatus);
     updateTaskStatus({ taskId, status: toStatus });
   };
 

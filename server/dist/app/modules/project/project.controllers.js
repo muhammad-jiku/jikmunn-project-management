@@ -55,7 +55,6 @@ const getAllFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
 const getByIdFromDB = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        console.log('id of project', id);
         const result = yield project_services_1.ProjectServices.getByIdFromDB(Number(id));
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,

@@ -64,7 +64,6 @@ const EmailVerifyComp: React.FC = () => {
           }
         );
 
-        console.log('response', response);
         if (response.ok) {
           toast.success('Your email verification successful!');
           setSuccess(true);

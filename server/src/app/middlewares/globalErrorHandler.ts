@@ -16,9 +16,9 @@ const globalErrorHandler: ErrorRequestHandler = (
   next: NextFunction
 ) => {
   config?.env === 'development'
-    ? console.log('Global development error handler:', { err })
-    : console.error('Global production error handler:', err);
-  // : errorlogger.error('Global production error handler:', err);
+    ? console.log('Global development error handler:', { err }) // debugging log
+    : console.error('Global production error handler:', err); // debugging log
+  // : errorlogger.error('Global production error handler:', err); // debugging log
 
   let statusCode = 500;
   let message = 'Something went wrong!';

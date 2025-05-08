@@ -75,7 +75,6 @@ const ModalUpdateProject = ({ isOpen, onClose, projectId }: Props) => {
         data: updatedProjectPayload,
       }).unwrap();
 
-      console.log('Project updated successfully:', result);
       if (result.success) {
         // Close the modal if updation was successful
         toast.success(result?.message || 'Project data updated successfully!');
@@ -84,7 +83,7 @@ const ModalUpdateProject = ({ isOpen, onClose, projectId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to update project:', error);
+      console.error('Failed to update project:', error); // debugging log
     }
   };
 

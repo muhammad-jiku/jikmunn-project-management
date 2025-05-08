@@ -12,7 +12,7 @@ export default function InitializeAuth({
   children: React.ReactNode;
 }) {
   const dispatch = useAppDispatch();
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
 
   // Check for persisted state
   const persistState = useAppSelector((state: any) => state._persist);

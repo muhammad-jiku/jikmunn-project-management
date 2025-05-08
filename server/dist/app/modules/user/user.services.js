@@ -40,13 +40,11 @@ const insertDeveloperIntoDB = (developerData, userData, res) => __awaiter(void 0
         // Step 1: Generate a unique developer ID
         const developerId = yield (0, user_utils_1.generateDeveloperId)();
         developerData.developerId = developerId;
-        console.log('developerId: ', developerId);
         // Step 2: Create Developer first to ensure the developerId exists
         // Validate and upload profile image
         // Validate the new base64 image (throws error if invalid)
         if (developerData.profileImage) {
             const isValidImage = yield (0, user_utils_1.validateBase64Image)(developerData.profileImage);
-            console.log('validate base image result:', isValidImage);
             if (!isValidImage) {
                 throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Image file is too large. Maximum allowed size is 2 MB.');
             }
@@ -75,8 +73,6 @@ const insertDeveloperIntoDB = (developerData, userData, res) => __awaiter(void 0
         const newUser = yield prisma_1.prisma.user.create({
             data: Object.assign(Object.assign({}, userData), { userId: newDeveloper.developerId, developerId: newDeveloper.developerId, emailVerificationToken: hashedToken, emailVerificationExpires: verificationExpires }),
         });
-        console.log('Developer created', newDeveloper);
-        console.log('User created:', newUser);
         // Generate tokens using jwt helpers
         const accessToken = jwt_1.jwtHelpers.createToken({
             userId: newUser.userId,
@@ -94,7 +90,6 @@ const insertDeveloperIntoDB = (developerData, userData, res) => __awaiter(void 0
         auth_services_1.AuthServices.setAuthCookies(res, accessToken, refreshToken);
         // Send verification email
         yield auth_services_1.AuthServices.sendVerificationEmail(newUser.email, verificationToken);
-        console.log('developer tokens...', { accessToken, refreshToken });
         return {
             accessToken,
             refreshToken,
@@ -102,7 +97,7 @@ const insertDeveloperIntoDB = (developerData, userData, res) => __awaiter(void 0
         };
     }
     catch (error) {
-        console.error('Error during user creation:', error);
+        console.error('Error during user creation:', error); // debugging log
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create user profile');
     }
 });
@@ -123,13 +118,11 @@ const insertManagerIntoDB = (managerData, userData, res) => __awaiter(void 0, vo
         // Step 1: Generate a unique manager ID
         const managerId = yield (0, user_utils_1.generateManagerId)();
         managerData.managerId = managerId;
-        console.log('managerId: ', managerId);
         // Step 2: Create Manager first to ensure the managerId exists
         // Validate and upload profile image
         // Validate the new base64 image (throws error if invalid)
         if (managerData.profileImage) {
             const isValidImage = yield (0, user_utils_1.validateBase64Image)(managerData.profileImage);
-            console.log('validate base image result:', isValidImage);
             if (!isValidImage) {
                 throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Image file is too large. Maximum allowed size is 2 MB.');
             }
@@ -158,8 +151,6 @@ const insertManagerIntoDB = (managerData, userData, res) => __awaiter(void 0, vo
         const newUser = yield prisma_1.prisma.user.create({
             data: Object.assign(Object.assign({}, userData), { userId: newManager.managerId, managerId: newManager.managerId, emailVerificationToken: hashedToken, emailVerificationExpires: verificationExpires }),
         });
-        console.log('Manager created', newManager);
-        console.log('User created:', newUser);
         // Generate tokens using jwt helpers
         const accessToken = jwt_1.jwtHelpers.createToken({
             userId: newUser.userId,
@@ -177,7 +168,6 @@ const insertManagerIntoDB = (managerData, userData, res) => __awaiter(void 0, vo
         auth_services_1.AuthServices.setAuthCookies(res, accessToken, refreshToken);
         // Send verification email
         yield auth_services_1.AuthServices.sendVerificationEmail(newUser.email, verificationToken);
-        console.log('manager tokens...', { accessToken, refreshToken });
         return {
             accessToken,
             refreshToken,
@@ -185,7 +175,7 @@ const insertManagerIntoDB = (managerData, userData, res) => __awaiter(void 0, vo
         };
     }
     catch (error) {
-        console.error('Error during user creation:', error);
+        console.error('Error during user creation:', error); // debugging log
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create user profile');
     }
 });
@@ -206,13 +196,11 @@ const insertAdminIntoDB = (adminData, userData, res) => __awaiter(void 0, void 0
         // Step 1: Generate a unique admin ID
         const adminId = yield (0, user_utils_1.generateAdminId)();
         adminData.adminId = adminId;
-        console.log('adminId: ', adminId);
         // Step 2: Create Admin first to ensure the adminId exists
         // Validate and upload profile image
         // Validate the new base64 image (throws error if invalid)
         if (adminData.profileImage) {
             const isValidImage = yield (0, user_utils_1.validateBase64Image)(adminData.profileImage);
-            console.log('validate base image result:', isValidImage);
             if (!isValidImage) {
                 throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Image file is too large. Maximum allowed size is 2 MB.');
             }
@@ -241,8 +229,6 @@ const insertAdminIntoDB = (adminData, userData, res) => __awaiter(void 0, void 0
         const newUser = yield prisma_1.prisma.user.create({
             data: Object.assign(Object.assign({}, userData), { userId: newAdmin.adminId, adminId: newAdmin.adminId, emailVerificationToken: hashedToken, emailVerificationExpires: verificationExpires }),
         });
-        console.log('Admin created', newAdmin);
-        console.log('User created:', newUser);
         // Generate tokens using jwt helpers
         const accessToken = jwt_1.jwtHelpers.createToken({
             userId: newUser.userId,
@@ -260,7 +246,6 @@ const insertAdminIntoDB = (adminData, userData, res) => __awaiter(void 0, void 0
         auth_services_1.AuthServices.setAuthCookies(res, accessToken, refreshToken);
         // Send verification email
         yield auth_services_1.AuthServices.sendVerificationEmail(newUser.email, verificationToken);
-        console.log('admin tokens...', { accessToken, refreshToken });
         return {
             accessToken,
             refreshToken,
@@ -268,7 +253,7 @@ const insertAdminIntoDB = (adminData, userData, res) => __awaiter(void 0, void 0
         };
     }
     catch (error) {
-        console.error('Error during user creation:', error);
+        console.error('Error during user creation:', error); // debugging log
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create user profile');
     }
 });
@@ -286,18 +271,14 @@ const insertSuperAdminIntoDB = (superAdminData, userData, res) => __awaiter(void
         // Generate verification token using existing utility pattern
         const { verificationToken, hashedToken } = (0, auth_utils_1.createEmailVerificationToken)();
         const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        console.log('(2) verification token', verificationToken);
-        console.log('(2.1) verification token expires', verificationExpires);
         // Step 1: Generate a unique super admin ID
         const superAdminId = yield (0, user_utils_1.generateSuperAdminId)();
         superAdminData.superAdminId = superAdminId;
-        console.log('superAdminId: ', superAdminId);
         // Step 2: Create Super Admin first to ensure the superAdminId exists
         // Validate and upload profile image
         // Validate the new base64 image (throws error if invalid)
         if (superAdminData.profileImage) {
             const isValidImage = yield (0, user_utils_1.validateBase64Image)(superAdminData.profileImage);
-            console.log('validate base image result:', isValidImage);
             if (!isValidImage) {
                 throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Image file is too large. Maximum allowed size is 2 MB.');
             }
@@ -326,8 +307,6 @@ const insertSuperAdminIntoDB = (superAdminData, userData, res) => __awaiter(void
         const newUser = yield prisma_1.prisma.user.create({
             data: Object.assign(Object.assign({}, userData), { userId: newSuperAdmin.superAdminId, superAdminId: newSuperAdmin.superAdminId, emailVerificationToken: hashedToken, emailVerificationExpires: verificationExpires }),
         });
-        console.log('Super Admin created', newSuperAdmin);
-        console.log('User created:', newUser);
         // Generate tokens using jwt helpers
         const accessToken = jwt_1.jwtHelpers.createToken({
             userId: newUser.userId,
@@ -345,7 +324,6 @@ const insertSuperAdminIntoDB = (superAdminData, userData, res) => __awaiter(void
         auth_services_1.AuthServices.setAuthCookies(res, accessToken, refreshToken);
         // Send verification email
         yield auth_services_1.AuthServices.sendVerificationEmail(newUser.email, verificationToken);
-        console.log('super admin tokens...', { accessToken, refreshToken });
         return {
             accessToken,
             refreshToken,
@@ -353,7 +331,7 @@ const insertSuperAdminIntoDB = (superAdminData, userData, res) => __awaiter(void
         };
     }
     catch (error) {
-        console.error('Error during user creation:', error);
+        console.error('Error during user creation:', error); // debugging log
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create user profile');
     }
 });

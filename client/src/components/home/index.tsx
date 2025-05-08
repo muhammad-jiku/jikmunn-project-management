@@ -91,12 +91,10 @@ const Home = () => {
     isLoading: tasksLoading,
     isError: tasksError,
   } = useGetTasksQuery({});
-  console.log('tasks data', tasks);
 
   const { data: projects, isLoading: isProjectsLoading } = useGetProjectsQuery(
     {}
   );
-  console.log('projects data', projects);
 
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
@@ -170,7 +168,7 @@ const Home = () => {
           <h3 className='mb-4 text-lg font-semibold dark:text-white'>
             Task Priority Distribution
           </h3>
-          {tasksError || !tasks ? (
+          {tasksError || !tasks || tasks.data.length === 0 ? (
             <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
               No task information added yet!
             </div>
@@ -201,7 +199,7 @@ const Home = () => {
           <h3 className='mb-4 text-lg font-semibold dark:text-white'>
             Project Status
           </h3>
-          {!projects ? (
+          {!projects || projects.data.length === 0 ? (
             <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
               No project information added yet!
             </div>
@@ -229,7 +227,7 @@ const Home = () => {
             Your Tasks
           </h3>
           <div style={{ height: 400, width: '100%' }}>
-            {tasksError || !tasks ? (
+            {tasksError || !tasks || tasks.data.length === 0 ? (
               <div className='flex items-center justify-center h-[300px] text-center text-black dark:text-white'>
                 No task information added yet!
               </div>

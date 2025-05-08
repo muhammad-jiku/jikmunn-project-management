@@ -18,7 +18,7 @@ const ModalDeleteSuperAdmin = ({ isOpen, onClose, superAdminId }: Props) => {
 
     try {
       const result: any = await deleteSuperAdmin(superAdminId).unwrap();
-      console.log('Super admin deleted successfully:', result);
+
       if (result.success) {
         // Close the modal if deletion was successful
         toast.success(
@@ -29,7 +29,7 @@ const ModalDeleteSuperAdmin = ({ isOpen, onClose, superAdminId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to delete Super Admin:', error);
+      console.error('Failed to delete Super Admin:', error); // debugging log
     }
   };
 

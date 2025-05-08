@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useGetTasksByUserProjectQuery } from '@/state/api/tasksApi';
 import { useAppSelector } from '@/store';
 import { CircularProgress } from '@mui/material';
@@ -22,9 +23,6 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
     isLoading,
     isError: isTasksError,
   } = useGetTasksByUserProjectQuery(id, {});
-  console.log('timeline view param id', id);
-  console.log('timeline view modal check', setIsModalNewTaskOpen);
-  console.log('timeline view tasks data', tasks);
 
   const [displayOptions, setDisplayOptions] = useState<DisplayOption>({
     viewMode: ViewMode.Month,
@@ -44,8 +42,6 @@ const TimelineView = ({ id, setIsModalNewTaskOpen }: Props) => {
       })) || []
     );
   }, [tasks]);
-
-  console.log('timeline view tasks ganttTasks', ganttTasks);
 
   const handleViewModeChange = (
     event: React.ChangeEvent<HTMLSelectElement>

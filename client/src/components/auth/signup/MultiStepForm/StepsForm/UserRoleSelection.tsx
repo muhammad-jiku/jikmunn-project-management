@@ -69,7 +69,7 @@ const UserRoleSelection: React.FC = () => {
   const isDarkMode = useSelector(
     (state: RootState) => state?.global?.isDarkMode
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const roleOptions = [
     {
@@ -138,7 +138,7 @@ const UserRoleSelection: React.FC = () => {
       dispatch(updateFormData(data));
       dispatch(setCurrentStep(currentStep + 1));
     } catch (error) {
-      console.error('Error processing form data:', error);
+      console.error('Error processing form data:', error); // debugging log
     } finally {
       setLoading(false);
     }

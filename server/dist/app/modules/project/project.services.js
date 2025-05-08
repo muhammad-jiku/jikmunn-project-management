@@ -31,23 +31,21 @@ const prisma_1 = require("../../../shared/prisma");
 const project_constants_1 = require("./project.constants");
 // Create a new project
 const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('first project..', payload);
     return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if project owner exists
         const ownerExists = yield tx.user.findUnique({
             where: { userId: payload.projectOwnerId },
         });
-        console.log('existed owner', ownerExists);
         if (!ownerExists) {
             throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Project owner (manager) does not exist!');
         }
-        // Ensure the auto-increment sequence for tblproject is set correctly
-        yield tx.$executeRaw `
-      SELECT setval(
-        pg_get_serial_sequence('tblproject', 'id'),
-        (SELECT COALESCE(MAX(id), 0) FROM tblproject) + 1
-      )
-    `;
+        // // Ensure the auto-increment sequence for tblproject is set correctly
+        // await tx.$executeRaw`
+        //   SELECT setval(
+        //     pg_get_serial_sequence('tblproject', 'id'),
+        //     (SELECT COALESCE(MAX(id), 0) FROM tblproject) + 1
+        //   )
+        // `;
         const result = yield tx.project.create({
             data: payload,
             include: {
@@ -60,7 +58,6 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
                 projectTeams: true,
             },
         });
-        console.log('result project', result);
         if (!result) {
             throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create project!');
         }
@@ -69,7 +66,6 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
 });
 // Get all projects with filtering and pagination
 const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('user id ', userId);
     const { limit, page, skip } = pagination_1.paginationHelpers.calculatePagination(options);
     const { searchTerm } = filters, filterData = __rest(filters, ["searchTerm"]);
     const andConditions = [];
@@ -92,7 +88,13 @@ const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, voi
             })),
         });
     }
-    const whereConditions = Object.assign({ OR: [{ projectOwnerId: userId }] }, (andConditions.length > 0 && { AND: andConditions }));
+    const whereConditions = Object.assign({ AND: [{ projectOwnerId: userId }] }, (andConditions.length > 0 && { AND: andConditions }));
+    // const whereConditions: Prisma.ProjectWhereInput = {
+    //   AND: [
+    //     { projectOwnerId: userId },
+    //     ...(andConditions.length > 0 ? andConditions : []),
+    //   ],
+    // };
     const result = yield prisma_1.prisma.project.findMany({
         where: whereConditions,
         skip,
@@ -114,7 +116,6 @@ const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, voi
             },
         },
     });
-    console.log('result projects', result);
     const total = yield prisma_1.prisma.project.count({
         where: whereConditions,
     });
@@ -145,7 +146,6 @@ const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
             },
         },
     });
-    console.log('project result', result);
     if (!result) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Sorry, the project does not exist!');
     }

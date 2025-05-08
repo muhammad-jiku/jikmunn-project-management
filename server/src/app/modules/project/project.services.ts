@@ -10,14 +10,12 @@ import { IProjectFilterRequest } from './project.interfaces';
 
 // Create a new project
 const insertIntoDB = async (payload: Project): Promise<Project | null> => {
-  console.log('first project..', payload);
   return await prisma.$transaction(async (tx) => {
     // Check if project owner exists
     const ownerExists = await tx.user.findUnique({
       where: { userId: payload.projectOwnerId },
     });
 
-    console.log('existed owner', ownerExists);
     if (!ownerExists) {
       throw new ApiError(
         httpStatus.NOT_FOUND,
@@ -46,7 +44,6 @@ const insertIntoDB = async (payload: Project): Promise<Project | null> => {
       },
     });
 
-    console.log('result project', result);
     if (!result) {
       throw new ApiError(
         httpStatus.INTERNAL_SERVER_ERROR,
@@ -64,12 +61,8 @@ const getAllFromDB = async (
   filters: IProjectFilterRequest,
   options: IPaginationOptions
 ): Promise<IGenericResponse<Project[]>> => {
-  console.log('user id ', userId);
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
   const { searchTerm, ...filterData } = filters;
-  console.log('filters', filters);
-  console.log('options', options);
-  console.log('{ limit, page, skip }', { limit, page, skip });
 
   const andConditions = [];
 
@@ -95,11 +88,15 @@ const getAllFromDB = async (
   }
 
   const whereConditions: Prisma.ProjectWhereInput = {
-    OR: [{ projectOwnerId: userId }],
+    AND: [{ projectOwnerId: userId }],
     ...(andConditions.length > 0 && { AND: andConditions }),
   };
-  console.log('whereConditions', whereConditions);
-  console.log('andConditions', andConditions);
+  // const whereConditions: Prisma.ProjectWhereInput = {
+  //   AND: [
+  //     { projectOwnerId: userId },
+  //     ...(andConditions.length > 0 ? andConditions : []),
+  //   ],
+  // };
 
   const result = await prisma.project.findMany({
     where: whereConditions,
@@ -124,7 +121,6 @@ const getAllFromDB = async (
     },
   });
 
-  console.log('result projects', result);
   const total = await prisma.project.count({
     where: whereConditions,
   });
@@ -158,7 +154,6 @@ const getByIdFromDB = async (id: number): Promise<Project | null> => {
     },
   });
 
-  console.log('project result', result);
   if (!result) {
     throw new ApiError(
       httpStatus.NOT_FOUND,

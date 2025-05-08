@@ -28,7 +28,7 @@ export const checkAuthStatus = () => async (dispatch: any) => {
       return false;
     }
   } catch (error) {
-    console.error('Failed to check auth status:', error);
+    console.error('Failed to check auth status:', error); // debugging log
     dispatch(logoutUser());
     return false;
   }
@@ -42,47 +42,6 @@ export const authApi = createApi({
   }),
   tagTypes: ['Auth', 'User'],
   endpoints: (build) => ({
-    // login: build.mutation<AuthResponse, { email: string; password: string }>({
-    //   query: (credentials) => ({
-    //     url: '/auth/login',
-    //     method: 'POST',
-    //     body: credentials,
-    //   }),
-    //   async onQueryStarted(_, { dispatch, queryFulfilled }) {
-    //     try {
-    //       const { data } = await queryFulfilled;
-    //       // If the response indicates that email verification is needed, skip fetching /auth/me.
-    //       if (data.needsEmailVerification) {
-    //         dispatch(
-    //           setAuthCredentials({
-    //             user: null, // No fully authenticated user yet
-    //             needsEmailVerification: true,
-    //             needsPasswordChange: data.needsPasswordChange,
-    //           })
-    //         );
-
-    //         // Optionally, To clear persisted state:
-    //         await persistor.purge();
-    //         return;
-    //       }
-    //       // Otherwise, fetch the current user
-    //       const userResponse = await fetch(
-    //         `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/me`,
-    //         { credentials: 'include' }
-    //       );
-    //       const userData = await userResponse.json();
-    //       dispatch(
-    //         setAuthCredentials({
-    //           user: userData,
-    //           needsPasswordChange: data.needsPasswordChange,
-    //         })
-    //       );
-    //     } catch {
-    //       // Handle errors if needed.
-    //     }
-    //   },
-    //   invalidatesTags: ['Auth', 'User'],
-    // }),
     login: build.mutation<AuthResponse, { email: string; password: string }>({
       query: (credentials) => ({
         url: '/auth/login',
@@ -122,7 +81,7 @@ export const authApi = createApi({
             dispatch(setAuthError('Failed to fetch user data'));
           }
         } catch (error) {
-          console.error('Login error:', error);
+          console.error('Login error:', error); // debugging log
           dispatch(setAuthError('Authentication failed'));
         }
       },

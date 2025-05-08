@@ -30,7 +30,6 @@ const pagination_1 = require("../../../helpers/pagination");
 const prisma_1 = require("../../../shared/prisma");
 const task_constants_1 = require("./task.constants");
 const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('Task payload', payload);
     return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if task owner exists
         const ownerExists = yield tx.user.findUnique({
@@ -46,13 +45,20 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         if (!assigneeExists) {
             throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Task assignee does not exist!');
         }
-        // Ensure the auto-increment sequence for tbltask is set correctly
-        yield tx.$executeRaw `
-      SELECT setval(
-        pg_get_serial_sequence('tbltask', 'id'),
-        (SELECT COALESCE(MAX(id), 0) FROM tbltask) + 1
-      )
-    `;
+        // Check if project exists
+        const projectExists = yield tx.project.findUnique({
+            where: { id: payload.projectId },
+        });
+        if (!projectExists) {
+            throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Project does not exist!');
+        }
+        // // Ensure the auto-increment sequence for tbltask is set correctly
+        // await tx.$executeRaw`
+        //   SELECT setval(
+        //     pg_get_serial_sequence('tbltask', 'id'),
+        //     (SELECT COALESCE(MAX(id), 0) FROM tbltask) + 1
+        //   )
+        // `;
         const result = yield tx.task.create({
             data: payload,
             include: {
@@ -73,7 +79,6 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
                 TaskAssignment: true,
             },
         });
-        console.log('Result task', result);
         if (!result) {
             throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create task!');
         }
@@ -141,6 +146,86 @@ const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, voi
         data: tasks,
     };
 });
+const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.prisma.task.findUnique({
+        where: { id },
+        include: {
+            project: true,
+            author: {
+                include: {
+                    manager: true,
+                    developer: true,
+                },
+            },
+            assignee: {
+                include: {
+                    developer: true,
+                },
+            },
+            attachments: true,
+            comments: true,
+            TaskAssignment: true,
+        },
+    });
+    if (!result) {
+        throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Sorry, the task does not exist!');
+    }
+    return result;
+});
+const getProjectTasksFromDB = (projectId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // First check if any tasks exist for this user
+        const userTasks = yield prisma_1.prisma.task.findMany({
+            where: {
+                OR: [{ authorUserId: userId }, { assignedUserId: userId }],
+            },
+        });
+        // If no tasks found for this user, return empty array
+        if (userTasks.length === 0) {
+            return [];
+            // throw new ApiError(
+            //   httpStatus.NOT_FOUND,
+            //   'Task owner or assignee does not exist!'
+            // );
+        }
+        // Now check if tasks exist for the specific project and user
+        const projectTasks = yield prisma_1.prisma.task.findMany({
+            where: {
+                AND: [
+                    { projectId },
+                    {
+                        OR: [{ authorUserId: userId }, { assignedUserId: userId }],
+                    },
+                ],
+            },
+            include: {
+                project: true,
+                author: {
+                    include: {
+                        manager: true,
+                        developer: true,
+                    },
+                },
+                assignee: {
+                    include: {
+                        developer: true,
+                    },
+                },
+                attachments: true,
+                comments: true,
+                TaskAssignment: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+        return projectTasks;
+    }
+    catch (error) {
+        console.error('Error retrieving project tasks:', error); // debugging log
+        throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to retrieve project tasks');
+    }
+});
 const getUserTasksFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         return yield prisma_1.prisma.task.findMany({
@@ -170,9 +255,55 @@ const getUserTasksFromDB = (userId) => __awaiter(void 0, void 0, void 0, functio
         });
     }
     catch (error) {
-        console.error('Error retrieving user tasks:', error);
+        console.error('Error retrieving user tasks:', error); // debugging log
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to retrieve user tasks');
     }
+});
+const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        // Check if task exists
+        const existingTask = yield tx.task.findUnique({
+            where: { id },
+        });
+        if (!existingTask) {
+            throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Task not found!');
+        }
+        // If updating project author, verify the new author exists
+        if (payload.authorUserId) {
+            const authorExists = yield tx.user.findUnique({
+                where: {
+                    userId: payload.authorUserId,
+                },
+            });
+            if (!authorExists) {
+                throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'New task author does not exist!');
+            }
+        }
+        const result = yield tx.task.update({
+            where: { id },
+            data: payload,
+            include: {
+                author: {
+                    include: {
+                        manager: true,
+                        developer: true,
+                    },
+                },
+                assignee: {
+                    include: {
+                        developer: true,
+                    },
+                },
+                attachments: true,
+                comments: true,
+                TaskAssignment: true,
+            },
+        });
+        if (!result) {
+            throw new handleApiError_1.default(http_status_1.default.CONFLICT, 'Sorry, failed to update!');
+        }
+        return result;
+    }));
 });
 const updateTaskStatusInDB = (taskId, status) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -209,7 +340,7 @@ const updateTaskStatusInDB = (taskId, status) => __awaiter(void 0, void 0, void 
         return task;
     }
     catch (error) {
-        console.error('Error updating task status:', error);
+        console.error('Error updating task status:', error); // debugging log
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to update task status');
     }
 });
@@ -240,14 +371,17 @@ const deleteByIdFromDB = (taskId) => __awaiter(void 0, void 0, void 0, function*
         });
     }
     catch (error) {
-        console.error('Error deleting task:', error);
+        console.error('Error deleting task:', error); // debugging log
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to delete task');
     }
 });
 exports.TaskServices = {
     insertIntoDB,
     getAllFromDB,
+    getByIdFromDB,
+    getProjectTasksFromDB,
     getUserTasksFromDB,
+    updateOneInDB,
     updateTaskStatusInDB,
     deleteByIdFromDB,
 };

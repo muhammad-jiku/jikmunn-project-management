@@ -24,7 +24,7 @@ router
     .get((0, auth_1.auth)(user_1.USER_ROLES.SUPER_ADMIN, user_1.USER_ROLES.ADMIN), admin_controllers_1.AdminControllers.getAllFromDB);
 router
     .route('/:id')
-    .get((0, auth_1.auth)(user_1.USER_ROLES.SUPER_ADMIN, user_1.USER_ROLES.ADMIN), admin_controllers_1.AdminControllers.getByIdFromDB)
+    .get((0, auth_1.auth)(user_1.USER_ROLES.ADMIN), admin_controllers_1.AdminControllers.getByIdFromDB)
     .patch((0, validateRequest_1.validateRequest)(admin_validations_1.AdminValidations.updateAdmin), (0, auth_1.auth)(user_1.USER_ROLES.ADMIN), admin_controllers_1.AdminControllers.updateOneInDB)
-    .delete((0, auth_1.auth)(user_1.USER_ROLES.SUPER_ADMIN), admin_controllers_1.AdminControllers.deleteByIdFromDB);
+    .delete((0, auth_1.auth)(user_1.USER_ROLES.SUPER_ADMIN, user_1.USER_ROLES.ADMIN), admin_controllers_1.AdminControllers.deleteByIdFromDB);
 exports.AdminRoutes = router;

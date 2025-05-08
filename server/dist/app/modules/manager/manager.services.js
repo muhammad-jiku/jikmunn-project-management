@@ -102,7 +102,9 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Manager not found!');
     }
     // If a new profile image is provided (and not an empty string)
-    if (payload.profileImage && payload.profileImage !== '') {
+    if (payload.profileImage &&
+        typeof payload.profileImage === 'string' &&
+        payload.profileImage.startsWith('data:image')) {
         // If the existing manager has a profile image, destroy it on Cloudinary
         if (existingManager.profileImage &&
             typeof existingManager.profileImage === 'object') {
@@ -113,7 +115,6 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
         }
         // Validate the new base64 image (throws error if invalid)
         const isValidImage = yield (0, user_utils_1.validateBase64Image)(payload.profileImage);
-        console.log('validate base image result:', isValidImage);
         if (!isValidImage) {
             throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Image file is too large. Maximum allowed size is 2 MB.');
         }
@@ -144,6 +145,13 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
             throw new handleApiError_1.default(http_status_1.default.CONFLICT, 'Sorry, failed to update!');
         }
         return result;
+    }
+    else {
+        // If profileImage is in the payload but is not a base64 string,
+        // remove it to prevent unwanted updates to the existing image
+        if (payload.profileImage) {
+            delete payload.profileImage;
+        }
     }
     // If no new image is provided, update without changing the profile image
     const result = yield prisma_1.prisma.manager.update({

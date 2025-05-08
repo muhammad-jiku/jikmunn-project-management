@@ -92,7 +92,7 @@ const SignInForm: React.FC = () => {
         email: data.email,
         password: data.password,
       }).unwrap();
-      console.log('Login result:', result);
+
       // If email is not verified, inform the user and do not navigate.
       if (result.data.needsEmailVerification) {
         toast.custom(
@@ -116,7 +116,7 @@ const SignInForm: React.FC = () => {
       }
     } catch (err: any) {
       toast.error(err && 'Something went wrong, Please try again.');
-      console.error('Login error:', err);
+      // console.error('Login error:', err); // debugging log
     }
   };
 

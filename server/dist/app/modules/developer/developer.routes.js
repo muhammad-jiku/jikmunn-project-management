@@ -21,7 +21,7 @@ const developerLimiter = (0, express_rate_limit_1.default)({
 router.use(developerLimiter);
 router
     .route('/')
-    .get((0, auth_1.auth)(user_1.USER_ROLES.DEVELOPER), developer_controllers_1.DeveloperControllers.getAllFromDB);
+    .get((0, auth_1.auth)(user_1.USER_ROLES.SUPER_ADMIN, user_1.USER_ROLES.ADMIN, user_1.USER_ROLES.DEVELOPER), developer_controllers_1.DeveloperControllers.getAllFromDB);
 router
     .route('/:id')
     .get((0, auth_1.auth)(user_1.USER_ROLES.DEVELOPER), developer_controllers_1.DeveloperControllers.getByIdFromDB)

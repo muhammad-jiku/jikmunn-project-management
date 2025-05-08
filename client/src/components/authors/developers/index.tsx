@@ -35,7 +35,6 @@ const DevelopersComp = () => {
   const hasActionPermission = isAdmin || isSuperAdmin;
 
   const { data: developers, isLoading, isError } = useGetDevelopersQuery({});
-  console.log('developers page data', developers);
 
   // State for modals
   const [selectedDevId, setSelectedDevId] = useState<string>('');
@@ -108,8 +107,6 @@ const DevelopersComp = () => {
 
   // Transform the data to rows
   const rows = developers?.data?.map((dev: Developer) => {
-    console.log('dev', dev);
-
     return {
       ...dev,
       // developerId: dev ? dev?.developerId : 'N/A',
@@ -140,7 +137,7 @@ const DevelopersComp = () => {
         developerId={selectedDevId}
       />
 
-      {isError || !developers ? (
+      {isError || !developers || developers.data.length === 0 ? (
         <div className='flex items-center justify-center h-[600px] text-center text-black dark:text-white'>
           No developer added yet!{' '}
         </div>

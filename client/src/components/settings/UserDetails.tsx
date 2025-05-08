@@ -192,11 +192,11 @@ const UserDetails: React.FC = () => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error: any) {
-      console.error('Error processing form data:', error);
-      console.error('Error processing form data message:', error?.message);
       setUpdateError(
-        error.message || 'Something went wrong, Please try again!'
+        error ? error.message : 'Something went wrong, Please try again!'
       );
+      // console.error('Error processing form data:', error); // debugging log
+      // console.error('Error processing form data message:', error?.message); // debugging log
     }
   };
 

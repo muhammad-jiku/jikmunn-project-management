@@ -35,7 +35,6 @@ const AdminsComp = () => {
   const hasActionPermission = isAdmin || isSuperAdmin;
 
   const { data: admins, isLoading, isError } = useGetAdminsQuery({});
-  console.log('admins page data', admins);
 
   // State for modals
   const [selectedAdminId, setSelectedAdminId] = useState<string>('');
@@ -108,8 +107,6 @@ const AdminsComp = () => {
 
   // Transform the data to rows
   const rows = admins?.data?.map((admin: Admin) => {
-    console.log('admin', admin);
-
     return {
       ...admin,
       //   adminId: admin ? admin?.adminId : 'N/A',
@@ -140,7 +137,7 @@ const AdminsComp = () => {
         adminId={selectedAdminId}
       />
 
-      {isError || !admins ? (
+      {isError || !admins || admins.data.length === 0 ? (
         <div className='flex items-center justify-center h-[600px] text-center text-black dark:text-white'>
           No admin added yet!{' '}
         </div>

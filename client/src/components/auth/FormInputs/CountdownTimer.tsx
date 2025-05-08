@@ -19,7 +19,8 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   initialSeconds,
   onExpire,
 }) => {
-  const [seconds, setSeconds] = useState(initialSeconds);
+  const [seconds, setSeconds] = useState<number>(initialSeconds);
+
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
 
   const theme = React.useMemo(

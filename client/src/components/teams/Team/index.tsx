@@ -103,19 +103,13 @@ const TeamComp = ({ params }: Props) => {
   // Fetch team details
   const { data: team, isLoading: teamLoading } = useGetTeamQuery(teamId);
 
-  console.log('team data displaying', team);
-
   // Fetch team members
   const { data: teamMembers, isLoading: membersLoading } =
     useGetTeamMembersByTeamQuery({ teamId });
 
-  console.log('team members data displaying', teamMembers);
-
   // Fetch project teams
   const { data: projectTeams, isLoading: projectTeamsLoading } =
     useGetProjectTeamsByTeamQuery({ teamId });
-
-  console.log('project teams data displaying', projectTeams);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -285,8 +279,6 @@ const TeamComp = ({ params }: Props) => {
   // Transform the data to project team rows
   const projectTeamRows = projectTeams?.data.map((projectTeam: any) => {
     const project = projectTeam?.project;
-    console.log('project team=', projectTeam);
-    console.log('project===', project);
 
     return {
       ...projectTeam,

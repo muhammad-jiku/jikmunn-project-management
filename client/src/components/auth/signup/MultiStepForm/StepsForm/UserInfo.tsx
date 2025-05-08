@@ -75,14 +75,14 @@ const UserInfo: React.FC = () => {
     try {
       setLoading(true);
       if (data.password !== data.confirmPassword) {
-        console.error('Passwords do not match');
+        // console.error('Passwords do not match');
         return;
       }
       // Update base account details
       dispatch(updateFormData(data));
       dispatch(setCurrentStep(currentStep + 1));
     } catch (error) {
-      console.error('Error processing form data:', error);
+      console.error('Error processing form data:', error); // debugging log
     } finally {
       setLoading(false);
     }

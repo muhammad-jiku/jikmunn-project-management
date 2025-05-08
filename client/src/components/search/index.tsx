@@ -10,7 +10,7 @@ type Props = {
 };
 
 const SearchComp = ({ params }: Props) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const searchFilters = searchTerm.length >= 3 ? { searchTerm } : {};
 
   // const {

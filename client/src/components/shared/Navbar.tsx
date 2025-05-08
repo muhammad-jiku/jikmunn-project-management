@@ -54,13 +54,11 @@ const Navbar = () => {
 
   const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
 
-  console.log('global user...', globalUser);
-
   const handleSignOut = async () => {
     try {
       // Call backend logout to clear cookies
       const result = await logout().unwrap();
-      console.log('result of logout', result);
+
       if (result.message) {
         toast.success(result.message || 'Signing out successful.'); // Clear Redux state
         dispatch(logoutUser());
@@ -72,7 +70,7 @@ const Navbar = () => {
         toast.error('Something went wrong, Please try again.');
       }
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Error signing out:', error); // debugging log
     }
   };
 

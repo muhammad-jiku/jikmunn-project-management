@@ -33,9 +33,8 @@ const ModalNewTeam = ({ isOpen, onClose }: Props) => {
     // Remove any accidental keys (like id) from the payload.
     // This ensures we send only the expected fields.
 
-    console.log('Creating team with payload:', newTeamPayload);
     const newTeamData: any = await createTeam(newTeamPayload);
-    console.log('Team creation response check:', newTeamData);
+
     if (newTeamData?.data?.success) {
       // Close the modal if creation was successful
       toast.success(

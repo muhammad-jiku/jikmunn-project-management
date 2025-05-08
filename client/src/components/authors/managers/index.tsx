@@ -35,7 +35,6 @@ const ManagersComp = () => {
   const hasActionPermission = isAdmin || isSuperAdmin;
 
   const { data: managers, isLoading, isError } = useGetManagersQuery({});
-  console.log('Managers page data', managers);
 
   // State for modals
   const [selectedManagerId, setSelectedManagerId] = useState<string>('');
@@ -108,8 +107,6 @@ const ManagersComp = () => {
 
   // Transform the data to rows
   const rows = managers?.data?.map((manager: Manager) => {
-    console.log('manager', manager);
-
     return {
       ...manager,
       //   managerId: manager ? manager?.managerId : 'N/A',
@@ -140,7 +137,7 @@ const ManagersComp = () => {
         managerId={selectedManagerId}
       />
 
-      {isError || !managers ? (
+      {isError || !managers || managers.data.length === 0 ? (
         <div className='flex items-center justify-center h-[600px] text-center text-black dark:text-white'>
           No manager added yet!{' '}
         </div>

@@ -34,8 +34,6 @@ const ModalUpdateTask = ({ isOpen, onClose, taskId }: Props) => {
     }
   );
 
-  console.log('task update modal...', task);
-
   const [updateTask, { isLoading: isUpdateLoading }] = useUpdateTaskMutation();
 
   // Set form data when task data is loaded
@@ -94,7 +92,6 @@ const ModalUpdateTask = ({ isOpen, onClose, taskId }: Props) => {
         data: updatedTaskPayload,
       }).unwrap();
 
-      console.log('Task updated successfully:', result);
       if (result.success) {
         // Close the modal if updation was successful
         toast.success(result?.message || 'Task data updated successfully!');
@@ -103,7 +100,7 @@ const ModalUpdateTask = ({ isOpen, onClose, taskId }: Props) => {
         toast.error('Something went wrong, Please try again!');
       }
     } catch (error) {
-      console.error('Failed to update project:', error);
+      console.error('Failed to update project:', error); // debugging log
     }
   };
 

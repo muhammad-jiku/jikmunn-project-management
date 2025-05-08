@@ -11,8 +11,6 @@ const createToken = (payload, secret, expireTime) => {
     });
 };
 const verifyToken = (payload, secret) => {
-    console.log('payload', payload);
-    console.log('secret', secret);
     return jsonwebtoken_1.default.verify(payload, secret);
 };
 exports.jwtHelpers = {

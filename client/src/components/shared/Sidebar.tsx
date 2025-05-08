@@ -93,7 +93,7 @@ const Sidebar = () => {
         toast.error('Something went wrong, Please try again.');
       }
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Error signing out:', error); // debugging log
     }
   };
 

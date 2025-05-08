@@ -71,7 +71,6 @@ export async function isPasswordMatch(
   givenPassword: string,
   savedPassword: string
 ): Promise<boolean> {
-  console.log('Comparing passwords:', { givenPassword, savedPassword }); // Debugging logs
   return bcrypt.compare(givenPassword, savedPassword);
 }
 
@@ -80,16 +79,11 @@ export const createEmailVerificationToken = (): {
   hashedToken: string;
 } => {
   const verificationToken = crypto.randomBytes(32).toString('hex');
-  console.log('Creating email verification token:', verificationToken);
 
   const hashedToken = crypto
     .createHash('sha256')
     .update(verificationToken)
     .digest('hex');
-  console.log('Hashed token:', hashedToken);
-
-  // console.log('(1) created email verification token', verificationToken);
-  // console.log('(1.1) created email verification hashed token', hashedToken);
 
   return {
     verificationToken,
@@ -102,13 +96,11 @@ export const createPasswordResetToken = (): {
   hashedToken: string;
 } => {
   const resetToken = crypto.randomBytes(32).toString('hex');
-  console.log('Creating password reset token:', resetToken);
 
   const hashedToken = crypto
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-  console.log('Reste Hashed token:', hashedToken);
 
   return {
     resetToken,

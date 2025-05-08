@@ -10,7 +10,7 @@ import { AuthServices } from './auth.services';
 const loginUserHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const logInData = req.body;
+      const logInData = await req.body;
       const result = await AuthServices.loginUserHandler(logInData, res);
       const { refreshToken, ...othersData } = result;
 
@@ -96,8 +96,7 @@ const resetPasswordHandler = catchAsync(
 
 const verifyEmailHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { token } = req.body;
-    console.log('(4) verified email handler', token);
+    const { token } = await req.body;
 
     if (!token) {
       throw new ApiError(
@@ -137,7 +136,7 @@ const changePasswordHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user;
-      const passwordData = req.body;
+      const passwordData = await req.body;
 
       await AuthServices.changePasswordHandler(user, passwordData);
 

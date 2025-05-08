@@ -13,9 +13,9 @@ const handleZodError_1 = __importDefault(require("../../errors/handleZodError"))
 // import { errorlogger } from '../../shared/logger';
 const globalErrorHandler = (err, req, res, next) => {
     (config_1.default === null || config_1.default === void 0 ? void 0 : config_1.default.env) === 'development'
-        ? console.log('Global development error handler:', { err })
-        : console.error('Global production error handler:', err);
-    // : errorlogger.error('Global production error handler:', err);
+        ? console.log('Global development error handler:', { err }) // debugging log
+        : console.error('Global production error handler:', err); // debugging log
+    // : errorlogger.error('Global production error handler:', err); // debugging log
     let statusCode = 500;
     let message = 'Something went wrong!';
     let errorMessages = [];

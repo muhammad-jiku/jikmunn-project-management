@@ -35,7 +35,6 @@ const SuperAdminsComp = () => {
   const hasActionPermission = isAdmin || isSuperAdmin;
 
   const { data: superAdmins, isLoading, isError } = useGetSuperAdminsQuery({});
-  console.log('super admins page data', superAdmins);
 
   // State for modals
   const [selectedSuperAdminId, setSelectedSuperAdminId] = useState<string>('');
@@ -108,8 +107,6 @@ const SuperAdminsComp = () => {
 
   // Transform the data to rows
   const rows = superAdmins?.data?.map((superAdmin: SuperAdmin) => {
-    console.log('super admin', superAdmin);
-
     return {
       ...superAdmin,
       //   superAdminId: superAdmin ? superAdmin?.superAdminId : 'N/A',
@@ -140,7 +137,7 @@ const SuperAdminsComp = () => {
         superAdminId={selectedSuperAdminId}
       />
 
-      {isError || !superAdmins ? (
+      {isError || !superAdmins || superAdmins.data.length === 0 ? (
         <div className='flex items-center justify-center h-[600px] text-center text-black dark:text-white'>
           No super admin added yet!{' '}
         </div>

@@ -87,7 +87,6 @@ function isUserExist(email) {
 }
 function isPasswordMatch(givenPassword, savedPassword) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('Comparing passwords:', { givenPassword, savedPassword }); // Debugging logs
         return bcrypt_1.default.compare(givenPassword, savedPassword);
     });
 }
@@ -97,8 +96,6 @@ const createEmailVerificationToken = () => {
         .createHash('sha256')
         .update(verificationToken)
         .digest('hex');
-    console.log('(1) created email verification token', verificationToken);
-    console.log('(1.1) created email verification hashed token', hashedToken);
     return {
         verificationToken,
         hashedToken,

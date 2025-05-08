@@ -117,7 +117,7 @@ const updateOneInDB = async (
     const isValidImage = await validateBase64Image(
       payload.profileImage as string
     );
-    console.log('validate base image result:', isValidImage);
+
     if (!isValidImage) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ModalDeleteTask from '@/components/shared/modals/tasks/ModalDeleteTask';
 import ModalUpdateTask from '@/components/shared/modals/tasks/ModalUpdateTask';
@@ -45,9 +46,6 @@ const TableView = ({ id, setIsModalNewTaskOpen }: Props) => {
     isLoading,
     isError: isTasksError,
   } = useGetTasksByUserProjectQuery(id, {});
-  console.log('table view param id', id);
-  console.log('table view modal check', setIsModalNewTaskOpen);
-  console.log('table view tasks data', tasks);
 
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);

@@ -32,7 +32,7 @@ const sendResponse_1 = require("../../../shared/sendResponse");
 const auth_services_1 = require("./auth.services");
 const loginUserHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const logInData = req.body;
+        const logInData = yield req.body;
         const result = yield auth_services_1.AuthServices.loginUserHandler(logInData, res);
         const { refreshToken } = result, othersData = __rest(result, ["refreshToken"]);
         // Set refresh token into cookie
@@ -45,7 +45,7 @@ const loginUserHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'User logged in successfully',
+            message: 'User signed in successfully!',
             data: othersData,
         });
     }
@@ -67,7 +67,7 @@ const refreshTokenHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __a
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Access token refreshed successfully',
+            message: 'Access token refreshed successfully!',
             data: result,
         });
     }
@@ -81,7 +81,7 @@ const forgotPasswordHandler = (0, catchAsync_1.catchAsync)((req, res, next) => _
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Password reset email sent successfully',
+            message: 'Password reset link sent to the email successfully!',
         });
     }
     catch (error) {
@@ -94,7 +94,7 @@ const resetPasswordHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Password reset successfully',
+            message: 'Password has been reset successfully!',
         });
     }
     catch (error) {
@@ -102,8 +102,7 @@ const resetPasswordHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __
     }
 }));
 const verifyEmailHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { token } = req.body;
-    console.log('(4) verified email handler', token);
+    const { token } = yield req.body;
     if (!token) {
         throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Verification token is required');
     }
@@ -112,7 +111,7 @@ const verifyEmailHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __aw
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Email verified and account activated successfully',
+        message: 'Email verified and account activated successfully!',
     });
 }));
 const getCurrentUserHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -123,7 +122,7 @@ const getCurrentUserHandler = (0, catchAsync_1.catchAsync)((req, res, next) => _
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'User retrieved successfully',
+            message: 'User retrieved successfully!',
             data: result,
         });
     }
@@ -134,12 +133,12 @@ const getCurrentUserHandler = (0, catchAsync_1.catchAsync)((req, res, next) => _
 const changePasswordHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = req.user;
-        const passwordData = req.body;
+        const passwordData = yield req.body;
         yield auth_services_1.AuthServices.changePasswordHandler(user, passwordData);
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'Password changed successfully',
+            message: 'Password updated successfully!',
         });
     }
     catch (error) {
@@ -152,7 +151,7 @@ const logoutHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
-            message: 'User logged out successfully',
+            message: 'User signed out successfully!',
         });
     }
     catch (error) {

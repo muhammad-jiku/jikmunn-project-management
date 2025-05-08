@@ -12,8 +12,6 @@ interface TeamCreatePayload extends Team {
 }
 
 const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
-  console.log('creating team with payload:', payload);
-
   // Extract members and projects for later use
   const { members, projects, ...teamData } = payload;
 
