@@ -4,13 +4,17 @@ import ApiError from '../../../errors/handleApiError';
 import { paginationHelpers } from '../../../helpers/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import {
+  executeSafeQuery,
+  executeSafeTransaction,
+} from '../../../lib/transactionManager';
 import { projectSearchableFields } from './project.constants';
 import { IProjectFilterRequest } from './project.interfaces';
 
 // Create a new project
 const insertIntoDB = async (payload: Project): Promise<Project | null> => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if project owner exists
     const ownerExists = await tx.user.findUnique({
       where: { userId: payload.projectOwnerId },
@@ -87,43 +91,49 @@ const getAllFromDB = async (
     });
   }
 
-  const whereConditions: Prisma.ProjectWhereInput = {
-    AND: [{ projectOwnerId: userId }],
-    ...(andConditions.length > 0 && { AND: andConditions }),
-  };
   // const whereConditions: Prisma.ProjectWhereInput = {
-  //   AND: [
-  //     { projectOwnerId: userId },
-  //     ...(andConditions.length > 0 ? andConditions : []),
-  //   ],
+  //   AND: [{ projectOwnerId: userId }],
+  //   ...(andConditions.length > 0 && { AND: andConditions }),
   // };
+  const whereConditions: Prisma.ProjectWhereInput = {
+    OR: [
+      { projectOwnerId: userId },
+      ...(andConditions.length > 0 ? andConditions : []),
+    ],
+  };
 
-  const result = await prisma.project.findMany({
-    where: whereConditions,
-    skip,
-    take: limit,
-    orderBy:
-      options.sortBy && options.sortOrder
-        ? { [options.sortBy]: options.sortOrder }
-        : { createdAt: 'desc' },
-    include: {
-      owner: {
+  // Use safe query wrapper for both data fetch and count
+  const [result, total] = await Promise.all([
+    executeSafeQuery(() =>
+      prisma.project.findMany({
+        where: whereConditions,
+        skip,
+        take: limit,
+        orderBy:
+          options.sortBy && options.sortOrder
+            ? { [options.sortBy]: options.sortOrder }
+            : { createdAt: 'desc' },
         include: {
-          manager: true,
+          owner: {
+            include: {
+              manager: true,
+            },
+          },
+          tasks: true,
+          projectTeams: {
+            include: {
+              team: true,
+            },
+          },
         },
-      },
-      tasks: true,
-      projectTeams: {
-        include: {
-          team: true,
-        },
-      },
-    },
-  });
-
-  const total = await prisma.project.count({
-    where: whereConditions,
-  });
+      })
+    ),
+    executeSafeQuery(() =>
+      prisma.project.count({
+        where: whereConditions,
+      })
+    ),
+  ]);
 
   return {
     meta: {
@@ -137,22 +147,24 @@ const getAllFromDB = async (
 
 // Get a single project by ID
 const getByIdFromDB = async (id: number): Promise<Project | null> => {
-  const result = await prisma.project.findUnique({
-    where: { id },
-    include: {
-      owner: {
-        include: {
-          manager: true,
+  const result = await executeSafeQuery(() =>
+    prisma.project.findUnique({
+      where: { id },
+      include: {
+        owner: {
+          include: {
+            manager: true,
+          },
+        },
+        tasks: true,
+        projectTeams: {
+          include: {
+            team: true,
+          },
         },
       },
-      tasks: true,
-      projectTeams: {
-        include: {
-          team: true,
-        },
-      },
-    },
-  });
+    })
+  );
 
   if (!result) {
     throw new ApiError(
@@ -169,7 +181,7 @@ const updateOneInDB = async (
   id: number,
   payload: Prisma.ProjectUpdateInput
 ): Promise<Project> => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if project exists
     const existingProject = await tx.project.findUnique({
       where: { id },
@@ -227,7 +239,7 @@ const updateProjectTeamsById = async (
   projectId: number,
   teamIds: number[]
 ): Promise<Project> => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if project exists
     const existingProject = await tx.project.findUnique({
       where: { id: projectId },
@@ -280,7 +292,7 @@ const updateProjectTeamsById = async (
 
 // Delete a project by ID
 const deleteByIdFromDB = async (id: number): Promise<Project | null> => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     const project = await tx.project.findUnique({
       where: { id },
       include: {

@@ -27,10 +27,11 @@ exports.TaskServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const handleApiError_1 = __importDefault(require("../../../errors/handleApiError"));
 const pagination_1 = require("../../../helpers/pagination");
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 const task_constants_1 = require("./task.constants");
 const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if task owner exists
         const ownerExists = yield tx.user.findUnique({
             where: { userId: payload.authorUserId },
@@ -109,34 +110,37 @@ const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, voi
         });
     }
     const whereConditions = Object.assign({ OR: [{ authorUserId: userId }, { assignedUserId: userId }] }, (andConditions.length > 0 && { AND: andConditions }));
-    const tasks = yield prisma_1.prisma.task.findMany({
-        where: whereConditions,
-        skip,
-        take: limit,
-        include: {
-            project: true,
-            author: {
-                include: {
-                    manager: true,
-                    developer: true,
+    // Use safe query wrapper for both data fetch and count
+    const [tasks, total] = yield Promise.all([
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.task.findMany({
+            where: whereConditions,
+            skip,
+            take: limit,
+            include: {
+                project: true,
+                author: {
+                    include: {
+                        manager: true,
+                        developer: true,
+                    },
                 },
-            },
-            assignee: {
-                include: {
-                    developer: true,
+                assignee: {
+                    include: {
+                        developer: true,
+                    },
                 },
+                attachments: true,
+                comments: true,
+                TaskAssignment: true,
             },
-            attachments: true,
-            comments: true,
-            TaskAssignment: true,
-        },
-        orderBy: {
-            createdAt: 'desc',
-        },
-    });
-    const total = yield prisma_1.prisma.task.count({
-        where: whereConditions,
-    });
+            orderBy: {
+                createdAt: 'desc',
+            },
+        })),
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.task.count({
+            where: whereConditions,
+        })),
+    ]);
     return {
         meta: {
             total,
@@ -147,7 +151,7 @@ const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, voi
     };
 });
 const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.prisma.task.findUnique({
+    const result = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.task.findUnique({
         where: { id },
         include: {
             project: true,
@@ -166,7 +170,7 @@ const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
             comments: true,
             TaskAssignment: true,
         },
-    });
+    }));
     if (!result) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Sorry, the task does not exist!');
     }
@@ -175,11 +179,11 @@ const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
 const getProjectTasksFromDB = (projectId, userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // First check if any tasks exist for this user
-        const userTasks = yield prisma_1.prisma.task.findMany({
+        const userTasks = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.task.findMany({
             where: {
                 OR: [{ authorUserId: userId }, { assignedUserId: userId }],
             },
-        });
+        }));
         // If no tasks found for this user, return empty array
         if (userTasks.length === 0) {
             return [];
@@ -189,7 +193,7 @@ const getProjectTasksFromDB = (projectId, userId) => __awaiter(void 0, void 0, v
             // );
         }
         // Now check if tasks exist for the specific project and user
-        const projectTasks = yield prisma_1.prisma.task.findMany({
+        return yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.task.findMany({
             where: {
                 AND: [
                     { projectId },
@@ -218,8 +222,7 @@ const getProjectTasksFromDB = (projectId, userId) => __awaiter(void 0, void 0, v
             orderBy: {
                 createdAt: 'desc',
             },
-        });
-        return projectTasks;
+        }));
     }
     catch (error) {
         console.error('Error retrieving project tasks:', error); // debugging log
@@ -228,7 +231,7 @@ const getProjectTasksFromDB = (projectId, userId) => __awaiter(void 0, void 0, v
 });
 const getUserTasksFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield prisma_1.prisma.task.findMany({
+        return yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.task.findMany({
             where: {
                 OR: [{ authorUserId: userId }, { assignedUserId: userId }],
             },
@@ -252,7 +255,7 @@ const getUserTasksFromDB = (userId) => __awaiter(void 0, void 0, void 0, functio
             orderBy: {
                 createdAt: 'desc',
             },
-        });
+        }));
     }
     catch (error) {
         console.error('Error retrieving user tasks:', error); // debugging log
@@ -260,7 +263,7 @@ const getUserTasksFromDB = (userId) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if task exists
         const existingTask = yield tx.task.findUnique({
             where: { id },
@@ -307,37 +310,39 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
 });
 const updateTaskStatusInDB = (taskId, status) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const task = yield prisma_1.prisma.task.update({
-            where: { id: taskId },
-            data: { status },
-            include: {
-                project: true,
-                author: {
-                    include: {
-                        manager: true,
-                        developer: true,
+        return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            const task = yield tx.task.update({
+                where: { id: taskId },
+                data: { status },
+                include: {
+                    project: true,
+                    author: {
+                        include: {
+                            manager: true,
+                            developer: true,
+                        },
                     },
-                },
-                assignee: {
-                    include: {
-                        developer: true,
+                    assignee: {
+                        include: {
+                            developer: true,
+                        },
                     },
+                    attachments: true,
+                    comments: true,
+                    TaskAssignment: true,
                 },
-                attachments: true,
-                comments: true,
-                TaskAssignment: true,
-            },
-        });
-        // Create a task assignment record
-        yield prisma_1.prisma.taskAssignment.create({
-            data: {
-                taskId,
-                userId: task.assignedUserId || task.authorUserId,
-                status,
-                dueDate: task.dueDate,
-            },
-        });
-        return task;
+            });
+            // Create a task assignment record
+            yield tx.taskAssignment.create({
+                data: {
+                    taskId,
+                    userId: task.assignedUserId || task.authorUserId,
+                    status,
+                    dueDate: task.dueDate,
+                },
+            });
+            return task;
+        }));
     }
     catch (error) {
         console.error('Error updating task status:', error); // debugging log
@@ -346,29 +351,29 @@ const updateTaskStatusInDB = (taskId, status) => __awaiter(void 0, void 0, void 
 });
 const deleteByIdFromDB = (taskId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Delete related records first
-        yield prisma_1.prisma.$transaction([
-            prisma_1.prisma.taskAssignment.deleteMany({ where: { taskId } }),
-            prisma_1.prisma.comment.deleteMany({ where: { taskId } }),
-            prisma_1.prisma.attachment.deleteMany({ where: { taskId } }),
-        ]);
-        return yield prisma_1.prisma.task.delete({
-            where: { id: taskId },
-            include: {
-                project: true,
-                author: {
-                    include: {
-                        manager: true,
-                        developer: true,
+        return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            // Delete related records first
+            yield tx.taskAssignment.deleteMany({ where: { taskId } });
+            yield tx.comment.deleteMany({ where: { taskId } });
+            yield tx.attachment.deleteMany({ where: { taskId } });
+            return yield tx.task.delete({
+                where: { id: taskId },
+                include: {
+                    project: true,
+                    author: {
+                        include: {
+                            manager: true,
+                            developer: true,
+                        },
+                    },
+                    assignee: {
+                        include: {
+                            developer: true,
+                        },
                     },
                 },
-                assignee: {
-                    include: {
-                        developer: true,
-                    },
-                },
-            },
-        });
+            });
+        }));
     }
     catch (error) {
         console.error('Error deleting task:', error); // debugging log

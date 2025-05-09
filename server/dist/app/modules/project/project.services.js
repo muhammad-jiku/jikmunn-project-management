@@ -27,11 +27,12 @@ exports.ProjectServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const handleApiError_1 = __importDefault(require("../../../errors/handleApiError"));
 const pagination_1 = require("../../../helpers/pagination");
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 const project_constants_1 = require("./project.constants");
 // Create a new project
 const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if project owner exists
         const ownerExists = yield tx.user.findUnique({
             where: { userId: payload.projectOwnerId },
@@ -88,37 +89,43 @@ const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, voi
             })),
         });
     }
-    const whereConditions = Object.assign({ AND: [{ projectOwnerId: userId }] }, (andConditions.length > 0 && { AND: andConditions }));
     // const whereConditions: Prisma.ProjectWhereInput = {
-    //   AND: [
-    //     { projectOwnerId: userId },
-    //     ...(andConditions.length > 0 ? andConditions : []),
-    //   ],
+    //   AND: [{ projectOwnerId: userId }],
+    //   ...(andConditions.length > 0 && { AND: andConditions }),
     // };
-    const result = yield prisma_1.prisma.project.findMany({
-        where: whereConditions,
-        skip,
-        take: limit,
-        orderBy: options.sortBy && options.sortOrder
-            ? { [options.sortBy]: options.sortOrder }
-            : { createdAt: 'desc' },
-        include: {
-            owner: {
-                include: {
-                    manager: true,
+    const whereConditions = {
+        OR: [
+            { projectOwnerId: userId },
+            ...(andConditions.length > 0 ? andConditions : []),
+        ],
+    };
+    // Use safe query wrapper for both data fetch and count
+    const [result, total] = yield Promise.all([
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.project.findMany({
+            where: whereConditions,
+            skip,
+            take: limit,
+            orderBy: options.sortBy && options.sortOrder
+                ? { [options.sortBy]: options.sortOrder }
+                : { createdAt: 'desc' },
+            include: {
+                owner: {
+                    include: {
+                        manager: true,
+                    },
+                },
+                tasks: true,
+                projectTeams: {
+                    include: {
+                        team: true,
+                    },
                 },
             },
-            tasks: true,
-            projectTeams: {
-                include: {
-                    team: true,
-                },
-            },
-        },
-    });
-    const total = yield prisma_1.prisma.project.count({
-        where: whereConditions,
-    });
+        })),
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.project.count({
+            where: whereConditions,
+        })),
+    ]);
     return {
         meta: {
             total,
@@ -130,7 +137,7 @@ const getAllFromDB = (userId, filters, options) => __awaiter(void 0, void 0, voi
 });
 // Get a single project by ID
 const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.prisma.project.findUnique({
+    const result = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.project.findUnique({
         where: { id },
         include: {
             owner: {
@@ -145,7 +152,7 @@ const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             },
         },
-    });
+    }));
     if (!result) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Sorry, the project does not exist!');
     }
@@ -153,7 +160,7 @@ const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 // Update a project
 const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if project exists
         const existingProject = yield tx.project.findUnique({
             where: { id },
@@ -198,7 +205,7 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
 });
 // Update project teams by ID
 const updateProjectTeamsById = (projectId, teamIds) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if project exists
         const existingProject = yield tx.project.findUnique({
             where: { id: projectId },
@@ -246,7 +253,7 @@ const updateProjectTeamsById = (projectId, teamIds) => __awaiter(void 0, void 0,
 });
 // Delete a project by ID
 const deleteByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         const project = yield tx.project.findUnique({
             where: { id },
             include: {

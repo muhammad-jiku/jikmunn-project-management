@@ -4,12 +4,16 @@ import ApiError from '../../../errors/handleApiError';
 import { paginationHelpers } from '../../../helpers/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import {
+  executeSafeQuery,
+  executeSafeTransaction,
+} from '../../../lib/transactionManager';
 import { taskSearchableFields } from './task.constants';
 import { ITaskFilterRequest } from './task.interfaces';
 
 const insertIntoDB = async (payload: Task): Promise<Task | null> => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if task owner exists
     const ownerExists = await tx.user.findUnique({
       where: { userId: payload.authorUserId as string },
@@ -113,35 +117,41 @@ const getAllFromDB = async (
     ...(andConditions.length > 0 && { AND: andConditions }),
   };
 
-  const tasks = await prisma.task.findMany({
-    where: whereConditions,
-    skip,
-    take: limit,
-    include: {
-      project: true,
-      author: {
+  // Use safe query wrapper for both data fetch and count
+  const [tasks, total] = await Promise.all([
+    executeSafeQuery(() =>
+      prisma.task.findMany({
+        where: whereConditions,
+        skip,
+        take: limit,
         include: {
-          manager: true,
-          developer: true,
+          project: true,
+          author: {
+            include: {
+              manager: true,
+              developer: true,
+            },
+          },
+          assignee: {
+            include: {
+              developer: true,
+            },
+          },
+          attachments: true,
+          comments: true,
+          TaskAssignment: true,
         },
-      },
-      assignee: {
-        include: {
-          developer: true,
+        orderBy: {
+          createdAt: 'desc',
         },
-      },
-      attachments: true,
-      comments: true,
-      TaskAssignment: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-
-  const total = await prisma.task.count({
-    where: whereConditions,
-  });
+      })
+    ),
+    executeSafeQuery(() =>
+      prisma.task.count({
+        where: whereConditions,
+      })
+    ),
+  ]);
 
   return {
     meta: {
@@ -154,26 +164,28 @@ const getAllFromDB = async (
 };
 
 const getByIdFromDB = async (id: number): Promise<Task | null> => {
-  const result = await prisma.task.findUnique({
-    where: { id },
-    include: {
-      project: true,
-      author: {
-        include: {
-          manager: true,
-          developer: true,
+  const result = await executeSafeQuery(() =>
+    prisma.task.findUnique({
+      where: { id },
+      include: {
+        project: true,
+        author: {
+          include: {
+            manager: true,
+            developer: true,
+          },
         },
-      },
-      assignee: {
-        include: {
-          developer: true,
+        assignee: {
+          include: {
+            developer: true,
+          },
         },
+        attachments: true,
+        comments: true,
+        TaskAssignment: true,
       },
-      attachments: true,
-      comments: true,
-      TaskAssignment: true,
-    },
-  });
+    })
+  );
 
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Sorry, the task does not exist!');
@@ -188,11 +200,13 @@ const getProjectTasksFromDB = async (
 ): Promise<Task[]> => {
   try {
     // First check if any tasks exist for this user
-    const userTasks = await prisma.task.findMany({
-      where: {
-        OR: [{ authorUserId: userId }, { assignedUserId: userId }],
-      },
-    });
+    const userTasks = await executeSafeQuery(() =>
+      prisma.task.findMany({
+        where: {
+          OR: [{ authorUserId: userId }, { assignedUserId: userId }],
+        },
+      })
+    );
 
     // If no tasks found for this user, return empty array
     if (userTasks.length === 0) {
@@ -204,38 +218,38 @@ const getProjectTasksFromDB = async (
     }
 
     // Now check if tasks exist for the specific project and user
-    const projectTasks = await prisma.task.findMany({
-      where: {
-        AND: [
-          { projectId },
-          {
-            OR: [{ authorUserId: userId }, { assignedUserId: userId }],
-          },
-        ],
-      },
-      include: {
-        project: true,
-        author: {
-          include: {
-            manager: true,
-            developer: true,
-          },
+    return await executeSafeQuery(() =>
+      prisma.task.findMany({
+        where: {
+          AND: [
+            { projectId },
+            {
+              OR: [{ authorUserId: userId }, { assignedUserId: userId }],
+            },
+          ],
         },
-        assignee: {
-          include: {
-            developer: true,
+        include: {
+          project: true,
+          author: {
+            include: {
+              manager: true,
+              developer: true,
+            },
           },
+          assignee: {
+            include: {
+              developer: true,
+            },
+          },
+          attachments: true,
+          comments: true,
+          TaskAssignment: true,
         },
-        attachments: true,
-        comments: true,
-        TaskAssignment: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return projectTasks;
+        orderBy: {
+          createdAt: 'desc',
+        },
+      })
+    );
   } catch (error) {
     console.error('Error retrieving project tasks:', error); // debugging log
     throw new ApiError(
@@ -247,31 +261,33 @@ const getProjectTasksFromDB = async (
 
 const getUserTasksFromDB = async (userId: string): Promise<Task[]> => {
   try {
-    return await prisma.task.findMany({
-      where: {
-        OR: [{ authorUserId: userId }, { assignedUserId: userId }],
-      },
-      include: {
-        project: true,
-        author: {
-          include: {
-            manager: true,
-            developer: true,
-          },
+    return await executeSafeQuery(() =>
+      prisma.task.findMany({
+        where: {
+          OR: [{ authorUserId: userId }, { assignedUserId: userId }],
         },
-        assignee: {
-          include: {
-            developer: true,
+        include: {
+          project: true,
+          author: {
+            include: {
+              manager: true,
+              developer: true,
+            },
           },
+          assignee: {
+            include: {
+              developer: true,
+            },
+          },
+          attachments: true,
+          comments: true,
+          TaskAssignment: true,
         },
-        attachments: true,
-        comments: true,
-        TaskAssignment: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+        orderBy: {
+          createdAt: 'desc',
+        },
+      })
+    );
   } catch (error) {
     console.error('Error retrieving user tasks:', error); // debugging log
     throw new ApiError(
@@ -285,7 +301,7 @@ const updateOneInDB = async (
   id: number,
   payload: Partial<Task>
 ): Promise<Task> => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if task exists
     const existingTask = await tx.task.findUnique({
       where: { id },
@@ -345,39 +361,41 @@ const updateTaskStatusInDB = async (
   status: TaskStatus
 ): Promise<Task> => {
   try {
-    const task = await prisma.task.update({
-      where: { id: taskId },
-      data: { status },
-      include: {
-        project: true,
-        author: {
-          include: {
-            manager: true,
-            developer: true,
+    return await executeSafeTransaction(async (tx) => {
+      const task = await tx.task.update({
+        where: { id: taskId },
+        data: { status },
+        include: {
+          project: true,
+          author: {
+            include: {
+              manager: true,
+              developer: true,
+            },
           },
-        },
-        assignee: {
-          include: {
-            developer: true,
+          assignee: {
+            include: {
+              developer: true,
+            },
           },
+          attachments: true,
+          comments: true,
+          TaskAssignment: true,
         },
-        attachments: true,
-        comments: true,
-        TaskAssignment: true,
-      },
-    });
+      });
 
-    // Create a task assignment record
-    await prisma.taskAssignment.create({
-      data: {
-        taskId,
-        userId: task.assignedUserId || task.authorUserId,
-        status,
-        dueDate: task.dueDate,
-      },
-    });
+      // Create a task assignment record
+      await tx.taskAssignment.create({
+        data: {
+          taskId,
+          userId: task.assignedUserId || task.authorUserId,
+          status,
+          dueDate: task.dueDate,
+        },
+      });
 
-    return task;
+      return task;
+    });
   } catch (error) {
     console.error('Error updating task status:', error); // debugging log
     throw new ApiError(
@@ -389,29 +407,29 @@ const updateTaskStatusInDB = async (
 
 const deleteByIdFromDB = async (taskId: number): Promise<Task> => {
   try {
-    // Delete related records first
-    await prisma.$transaction([
-      prisma.taskAssignment.deleteMany({ where: { taskId } }),
-      prisma.comment.deleteMany({ where: { taskId } }),
-      prisma.attachment.deleteMany({ where: { taskId } }),
-    ]);
+    return await executeSafeTransaction(async (tx) => {
+      // Delete related records first
+      await tx.taskAssignment.deleteMany({ where: { taskId } });
+      await tx.comment.deleteMany({ where: { taskId } });
+      await tx.attachment.deleteMany({ where: { taskId } });
 
-    return await prisma.task.delete({
-      where: { id: taskId },
-      include: {
-        project: true,
-        author: {
-          include: {
-            manager: true,
-            developer: true,
+      return await tx.task.delete({
+        where: { id: taskId },
+        include: {
+          project: true,
+          author: {
+            include: {
+              manager: true,
+              developer: true,
+            },
+          },
+          assignee: {
+            include: {
+              developer: true,
+            },
           },
         },
-        assignee: {
-          include: {
-            developer: true,
-          },
-        },
-      },
+      });
     });
   } catch (error) {
     console.error('Error deleting task:', error); // debugging log

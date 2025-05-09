@@ -11,7 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSuperAdminId = exports.findLastSuperAdminId = exports.generateAdminId = exports.findLastAdminId = exports.generateManagerId = exports.findLastManagerId = exports.generateDeveloperId = exports.findLastDeveloperId = exports.validateBase64Image = void 0;
 const client_1 = require("@prisma/client");
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB in bytes
 const MAX_BASE64_LENGTH = Math.ceil((MAX_FILE_SIZE_BYTES * 4) / 3);
 const validateBase64Image = (base64String) => __awaiter(void 0, void 0, void 0, function* () {
@@ -26,7 +27,7 @@ const validateBase64Image = (base64String) => __awaiter(void 0, void 0, void 0, 
 });
 exports.validateBase64Image = validateBase64Image;
 const findLastDeveloperId = () => __awaiter(void 0, void 0, void 0, function* () {
-    const lastDeveloper = yield prisma_1.prisma.user.findFirst({
+    const lastDeveloper = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.findFirst({
         where: {
             role: client_1.UserRole.DEVELOPER, // Correct usage with enum
         },
@@ -36,7 +37,7 @@ const findLastDeveloperId = () => __awaiter(void 0, void 0, void 0, function* ()
         select: {
             developerId: true,
         },
-    });
+    }));
     return (lastDeveloper === null || lastDeveloper === void 0 ? void 0 : lastDeveloper.developerId)
         ? lastDeveloper === null || lastDeveloper === void 0 ? void 0 : lastDeveloper.developerId.substring(2)
         : undefined;
@@ -50,7 +51,7 @@ const generateDeveloperId = () => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.generateDeveloperId = generateDeveloperId;
 const findLastManagerId = () => __awaiter(void 0, void 0, void 0, function* () {
-    const lastManager = yield prisma_1.prisma.user.findFirst({
+    const lastManager = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.findFirst({
         where: {
             role: client_1.UserRole.MANAGER, // Correct usage with enum
         },
@@ -60,7 +61,7 @@ const findLastManagerId = () => __awaiter(void 0, void 0, void 0, function* () {
         select: {
             managerId: true,
         },
-    });
+    }));
     return (lastManager === null || lastManager === void 0 ? void 0 : lastManager.managerId)
         ? lastManager === null || lastManager === void 0 ? void 0 : lastManager.managerId.substring(2)
         : undefined;
@@ -74,7 +75,7 @@ const generateManagerId = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.generateManagerId = generateManagerId;
 const findLastAdminId = () => __awaiter(void 0, void 0, void 0, function* () {
-    const lastAdmin = yield prisma_1.prisma.user.findFirst({
+    const lastAdmin = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.findFirst({
         where: {
             role: client_1.UserRole.ADMIN, // Correct usage with enum
         },
@@ -84,7 +85,7 @@ const findLastAdminId = () => __awaiter(void 0, void 0, void 0, function* () {
         select: {
             adminId: true,
         },
-    });
+    }));
     return (lastAdmin === null || lastAdmin === void 0 ? void 0 : lastAdmin.adminId) ? lastAdmin === null || lastAdmin === void 0 ? void 0 : lastAdmin.adminId.substring(2) : undefined;
 });
 exports.findLastAdminId = findLastAdminId;
@@ -96,7 +97,7 @@ const generateAdminId = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.generateAdminId = generateAdminId;
 const findLastSuperAdminId = () => __awaiter(void 0, void 0, void 0, function* () {
-    const lastSuperAdmin = yield prisma_1.prisma.user.findFirst({
+    const lastSuperAdmin = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.findFirst({
         where: {
             role: client_1.UserRole.SUPER_ADMIN, // Correct usage with enum
         },
@@ -106,7 +107,7 @@ const findLastSuperAdminId = () => __awaiter(void 0, void 0, void 0, function* (
         select: {
             superAdminId: true,
         },
-    });
+    }));
     return (lastSuperAdmin === null || lastSuperAdmin === void 0 ? void 0 : lastSuperAdmin.superAdminId)
         ? lastSuperAdmin === null || lastSuperAdmin === void 0 ? void 0 : lastSuperAdmin.superAdminId.substring(3)
         : undefined;

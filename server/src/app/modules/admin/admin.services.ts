@@ -5,7 +5,11 @@ import ApiError from '../../../errors/handleApiError';
 import { paginationHelpers } from '../../../helpers/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import {
+  executeSafeQuery,
+  executeSafeTransaction,
+} from '../../../lib/transactionManager';
 import { validateBase64Image } from '../user/user.utils';
 import { adminSearchableFields } from './admin.constants';
 import { IAdminFilterRequest } from './admin.interfaces';
@@ -45,17 +49,21 @@ const getAllFromDB = async (
   const whereConditions: Prisma.AdminWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
-  const admins = await prisma.admin.findMany({
-    where: whereConditions,
-    skip,
-    take: limit,
-    orderBy:
-      paginationOptions.sortBy && paginationOptions.sortOrder
-        ? { [paginationOptions.sortBy]: paginationOptions.sortOrder }
-        : undefined,
-  });
-
-  const total = await prisma.admin.count({ where: whereConditions });
+  // Use safe query wrapper for both data fetch and count
+  const [admins, total] = await Promise.all([
+    executeSafeQuery(() =>
+      prisma.admin.findMany({
+        where: whereConditions,
+        skip,
+        take: limit,
+        orderBy:
+          paginationOptions.sortBy && paginationOptions.sortOrder
+            ? { [paginationOptions.sortBy]: paginationOptions.sortOrder }
+            : undefined,
+      })
+    ),
+    executeSafeQuery(() => prisma.admin.count({ where: whereConditions })),
+  ]);
 
   return {
     meta: {
@@ -69,9 +77,11 @@ const getAllFromDB = async (
 
 // Get a single admin by ID
 const getByIdFromDB = async (id: string): Promise<Admin | null> => {
-  const result = await prisma.admin.findUnique({
-    where: { adminId: id },
-  });
+  const result = await executeSafeQuery(() =>
+    prisma.admin.findUnique({
+      where: { adminId: id },
+    })
+  );
 
   if (!result) {
     throw new ApiError(
@@ -88,73 +98,93 @@ const updateOneInDB = async (
   id: string,
   payload: Prisma.AdminUpdateInput
 ): Promise<Admin | null> => {
-  // First check if the admin exists
-  const existingadmin = await prisma.admin.findUnique({
-    where: { adminId: id },
-  });
-
-  if (!existingadmin) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Admin not found!');
-  }
-
-  // If a new profile image is provided (and not an empty string)
-  if (
-    payload.profileImage &&
-    typeof payload.profileImage === 'string' &&
-    payload.profileImage.startsWith('data:image')
-  ) {
-    // If the existing admin has a profile image, destroy it on Cloudinary
-    if (
-      existingadmin.profileImage &&
-      typeof existingadmin.profileImage === 'object'
-    ) {
-      const imageId = (existingadmin.profileImage as any).public_id;
-      if (imageId) {
-        await cloudinary.v2.uploader.destroy(imageId);
-      }
-    }
-
-    // Validate the new base64 image (throws error if invalid)
-    const isValidImage = await validateBase64Image(
-      payload.profileImage as string
-    );
-
-    if (!isValidImage) {
-      throw new ApiError(
-        httpStatus.BAD_REQUEST,
-        'Image file is too large. Maximum allowed size is 2 MB.'
-      );
-    }
-
-    // Upload the new image
-    const myCloud: UploadApiResponse = await cloudinary.v2.uploader.upload(
-      payload.profileImage as string,
-      {
-        folder: 'jikmunn-project-management/avatars',
-        width: 150,
-        crop: 'scale',
-        resource_type: 'image',
-        allowed_formats: ['jpg', 'jpeg', 'png'],
-        transformation: [{ quality: 'auto' }],
-        use_filename: true,
-        unique_filename: false,
-        overwrite: true,
-        chunk_size: 6000000, // 6MB chunks for large uploads
-        timeout: 60000, // 60 seconds timeout
-        invalidate: true, // Ensure old cached versions are replaced
-      }
-    );
-
-    // Update the admin record with the new profile image details
-    const result = await prisma.admin.update({
+  return await executeSafeTransaction(async (tx) => {
+    // First check if the admin exists
+    const existingAdmin = await tx.admin.findUnique({
       where: { adminId: id },
-      data: {
-        ...payload,
-        profileImage: {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
+    });
+
+    if (!existingAdmin) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Admin not found!');
+    }
+
+    // If a new profile image is provided (and not an empty string)
+    if (
+      payload.profileImage &&
+      typeof payload.profileImage === 'string' &&
+      payload.profileImage.startsWith('data:image')
+    ) {
+      // If the existing admin has a profile image, destroy it on Cloudinary
+      if (
+        existingAdmin.profileImage &&
+        typeof existingAdmin.profileImage === 'object'
+      ) {
+        const imageId = (existingAdmin.profileImage as any).public_id;
+        if (imageId) {
+          await cloudinary.v2.uploader.destroy(imageId);
+        }
+      }
+
+      // Validate the new base64 image (throws error if invalid)
+      const isValidImage = await validateBase64Image(
+        payload.profileImage as string
+      );
+
+      if (!isValidImage) {
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          'Image file is too large. Maximum allowed size is 2 MB.'
+        );
+      }
+
+      // Upload the new image
+      const myCloud: UploadApiResponse = await cloudinary.v2.uploader.upload(
+        payload.profileImage as string,
+        {
+          folder: 'jikmunn-project-management/avatars',
+          width: 150,
+          crop: 'scale',
+          resource_type: 'image',
+          allowed_formats: ['jpg', 'jpeg', 'png'],
+          transformation: [{ quality: 'auto' }],
+          use_filename: true,
+          unique_filename: false,
+          overwrite: true,
+          chunk_size: 6000000, // 6MB chunks for large uploads
+          timeout: 60000, // 60 seconds timeout
+          invalidate: true, // Ensure old cached versions are replaced
+        }
+      );
+
+      // Update the admin record with the new profile image details
+      const result = await tx.admin.update({
+        where: { adminId: id },
+        data: {
+          ...payload,
+          profileImage: {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          },
         },
-      },
+      });
+
+      if (!result) {
+        throw new ApiError(httpStatus.CONFLICT, 'Sorry, failed to update!');
+      }
+
+      return result;
+    } else {
+      // If profileImage is in the payload but is not a base64 string,
+      // remove it to prevent unwanted updates to the existing image
+      if (payload.profileImage) {
+        delete payload.profileImage;
+      }
+    }
+
+    // If no new image is provided, update without changing the profile image
+    const result = await tx.admin.update({
+      where: { adminId: id },
+      data: payload,
     });
 
     if (!result) {
@@ -162,34 +192,20 @@ const updateOneInDB = async (
     }
 
     return result;
-  } else {
-    // If profileImage is in the payload but is not a base64 string,
-    // remove it to prevent unwanted updates to the existing image
-    if (payload.profileImage) {
-      delete payload.profileImage;
-    }
-  }
-
-  // If no new image is provided, update without changing the profile image
-  const result = await prisma.admin.update({
-    where: { adminId: id },
-    data: payload,
   });
-
-  if (!result) {
-    throw new ApiError(httpStatus.CONFLICT, 'Sorry, failed to update!');
-  }
-
-  return result;
 };
 
 // Delete a admin by ID
 const deleteByIdFromDB = async (id: string): Promise<Admin | null> => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Find the admin by adminId, including the related user
     const admin = await tx.admin.findUnique({
-      where: { adminId: id },
-      include: { user: true },
+      where: {
+        adminId: id,
+      },
+      include: {
+        user: true,
+      },
     });
 
     if (!admin) {

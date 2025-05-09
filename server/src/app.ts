@@ -5,6 +5,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import httpStatus from 'http-status';
 import morgan from 'morgan';
+import { ensureDatabaseConnection } from './app/middlewares/dbConnectionMiddleware';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import routes from './app/routes';
 
@@ -33,7 +34,7 @@ app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 
 // api initialization
-app.use('/api/v1', routes);
+app.use('/api/v1', ensureDatabaseConnection, routes);
 
 // global error handler
 app.use(globalErrorHandler);

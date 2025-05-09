@@ -4,10 +4,14 @@ import ApiError from '../../../errors/handleApiError';
 import { paginationHelpers } from '../../../helpers/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import {
+  executeSafeQuery,
+  executeSafeTransaction,
+} from '../../../lib/transactionManager';
 
 const insertIntoDB = async (payload: TeamMember) => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if user exists
     const user = await tx.user.findUnique({
       where: { userId: payload.userId },
@@ -67,16 +71,20 @@ const getAllFromDB = async (
 ): Promise<IGenericResponse<TeamMember[]>> => {
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
 
-  const teamMembers = await prisma.teamMember.findMany({
-    skip,
-    take: limit,
-    include: {
-      team: true,
-      user: true,
-    },
-  });
-
-  const total = await prisma.teamMember.count();
+  // Use safe query wrapper for both data fetch and count
+  const [teamMembers, total] = await Promise.all([
+    executeSafeQuery(() =>
+      prisma.teamMember.findMany({
+        skip,
+        take: limit,
+        include: {
+          team: true,
+          user: true,
+        },
+      })
+    ),
+    executeSafeQuery(() => prisma.teamMember.count()),
+  ]);
 
   return {
     meta: { total, page, limit },
@@ -85,13 +93,15 @@ const getAllFromDB = async (
 };
 
 const getByIdFromDB = async (id: number) => {
-  const teamMember = await prisma.teamMember.findUnique({
-    where: { id },
-    include: {
-      team: true,
-      user: true,
-    },
-  });
+  const teamMember = await executeSafeQuery(() =>
+    prisma.teamMember.findUnique({
+      where: { id },
+      include: {
+        team: true,
+        user: true,
+      },
+    })
+  );
 
   if (!teamMember) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Team member not found');
@@ -101,29 +111,33 @@ const getByIdFromDB = async (id: number) => {
 };
 
 const getByTeamIdFromDB = async (teamId: number) => {
-  const teamMembers = await prisma.teamMember.findMany({
-    where: { teamId },
-    include: {
-      user: true,
-    },
-  });
+  const teamMembers = await executeSafeQuery(() =>
+    prisma.teamMember.findMany({
+      where: { teamId },
+      include: {
+        user: true,
+      },
+    })
+  );
 
   return teamMembers;
 };
 
 const getByUserIdFromDB = async (userId: string) => {
-  const teamMembers = await prisma.teamMember.findMany({
-    where: { userId },
-    include: {
-      team: true,
-    },
-  });
+  const teamMembers = await executeSafeQuery(() =>
+    prisma.teamMember.findMany({
+      where: { userId },
+      include: {
+        team: true,
+      },
+    })
+  );
 
   return teamMembers;
 };
 
 const updateOneInDB = async (id: number, payload: Partial<TeamMember>) => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if team member exists
     const existingMember = await tx.teamMember.findUnique({
       where: { id },
@@ -213,7 +227,7 @@ const updateOneInDB = async (id: number, payload: Partial<TeamMember>) => {
 };
 
 const deleteByIdFromDB = async (id: number) => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if team member exists
     const teamMember = await tx.teamMember.findUnique({
       where: { id },

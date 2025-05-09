@@ -16,9 +16,10 @@ exports.ProjectTeamServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const handleApiError_1 = __importDefault(require("../../../errors/handleApiError"));
 const pagination_1 = require("../../../helpers/pagination");
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if project exists
         const project = yield tx.project.findUnique({
             where: { id: payload.projectId },
@@ -69,27 +70,29 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
 });
 const getAllFromDB = (options) => __awaiter(void 0, void 0, void 0, function* () {
     const { limit, page, skip } = pagination_1.paginationHelpers.calculatePagination(options);
-    const projectTeams = yield prisma_1.prisma.projectTeam.findMany({
-        skip,
-        take: limit,
-        include: {
-            project: true,
-            team: {
-                include: {
-                    members: true,
-                    owner: true,
+    const [projectTeams, total] = yield Promise.all([
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.projectTeam.findMany({
+            skip,
+            take: limit,
+            include: {
+                project: true,
+                team: {
+                    include: {
+                        members: true,
+                        owner: true,
+                    },
                 },
             },
-        },
-    });
-    const total = yield prisma_1.prisma.projectTeam.count();
+        })),
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.projectTeam.count()),
+    ]);
     return {
         meta: { total, page, limit },
         data: projectTeams,
     };
 });
 const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const projectTeam = yield prisma_1.prisma.projectTeam.findUnique({
+    const projectTeam = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.projectTeam.findUnique({
         where: { id },
         include: {
             project: true,
@@ -100,14 +103,14 @@ const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             },
         },
-    });
+    }));
     if (!projectTeam) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Project team assignment not found');
     }
     return projectTeam;
 });
 const getByProjectIdFromDB = (projectId) => __awaiter(void 0, void 0, void 0, function* () {
-    const projectTeams = yield prisma_1.prisma.projectTeam.findMany({
+    const projectTeams = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.projectTeam.findMany({
         where: { projectId },
         include: {
             team: {
@@ -117,20 +120,20 @@ const getByProjectIdFromDB = (projectId) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
         },
-    });
+    }));
     return projectTeams;
 });
 const getByTeamIdFromDB = (teamId) => __awaiter(void 0, void 0, void 0, function* () {
-    const projectTeams = yield prisma_1.prisma.projectTeam.findMany({
+    const projectTeams = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.projectTeam.findMany({
         where: { teamId },
         include: {
             project: true,
         },
-    });
+    }));
     return projectTeams;
 });
 const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if project team exists
         const existingProjectTeam = yield tx.projectTeam.findUnique({
             where: { id },
@@ -195,7 +198,7 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
     }));
 });
 const deleteByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if project team exists
         const projectTeam = yield tx.projectTeam.findUnique({
             where: { id },

@@ -19,7 +19,8 @@ const config_1 = __importDefault(require("../../../config"));
 const handleApiError_1 = __importDefault(require("../../../errors/handleApiError"));
 const emailSender_1 = require("../../../helpers/emailSender");
 const jwt_1 = require("../../../helpers/jwt");
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 const auth_utils_1 = require("./auth.utils");
 const loginUserHandler = (payload, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload;
@@ -41,13 +42,13 @@ const loginUserHandler = (payload, res) => __awaiter(void 0, void 0, void 0, fun
     if (!user.emailVerified) {
         const { verificationToken, hashedToken } = (0, auth_utils_1.createEmailVerificationToken)();
         const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        yield prisma_1.prisma.user.update({
+        yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.update({
             where: { userId: user.userId },
             data: {
                 emailVerificationToken: hashedToken,
                 emailVerificationExpires: verificationExpires,
             },
-        });
+        }));
         yield sendVerificationEmail(userEmail, verificationToken);
     }
     return {
@@ -77,22 +78,22 @@ const refreshTokenHandler = (payload) => __awaiter(void 0, void 0, void 0, funct
 });
 const forgotPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = payload;
-    const user = yield prisma_1.prisma.user.findFirst({
+    const user = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.findFirst({
         where: { email },
-    });
+    }));
     if (!user) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
     // Generate token
     const { resetToken, hashedToken } = (0, auth_utils_1.createPasswordResetToken)();
     const passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    yield prisma_1.prisma.user.update({
+    yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.update({
         where: { userId: user.userId },
         data: {
             passwordResetToken: hashedToken,
             passwordResetExpires,
         },
-    });
+    }));
     // Create reset URL
     const resetURL = `${config_1.default.frontend_url}/reset-password?token=${resetToken}`;
     // Create email content
@@ -111,55 +112,57 @@ const forgotPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, fun
     }
     catch (error) {
         // If email fails, reset the token fields
-        yield prisma_1.prisma.user.update({
+        yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.update({
             where: { userId: user.userId },
             data: {
                 passwordResetToken: null,
                 passwordResetExpires: null,
             },
-        });
+        }));
         throw new handleApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Error sending password reset email');
     }
 });
 const resetPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { token, newPassword } = payload;
-    // Hash the token for comparison
-    const hashedToken = crypto_1.default.createHash('sha256').update(token).digest('hex');
-    const user = yield prisma_1.prisma.user.findFirst({
-        where: {
-            passwordResetToken: hashedToken,
-            passwordResetExpires: {
-                gt: new Date(),
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const { token, newPassword } = payload;
+        // Hash the token for comparison
+        const hashedToken = crypto_1.default.createHash('sha256').update(token).digest('hex');
+        const user = yield tx.user.findFirst({
+            where: {
+                passwordResetToken: hashedToken,
+                passwordResetExpires: {
+                    gt: new Date(),
+                },
             },
-        },
-    });
-    if (!user) {
-        throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid or expired password reset token!');
-    }
-    // Validate password complexity
-    if (newPassword.length < 8) {
-        throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Password must be at least 8 characters long');
-    }
-    const hashedPassword = yield (0, auth_utils_1.hashPassword)(newPassword);
-    yield prisma_1.prisma.user.update({
-        where: { userId: user.userId },
-        data: {
-            password: hashedPassword,
-            passwordResetToken: null,
-            passwordResetExpires: null,
-            passwordChangedAt: new Date(),
-            needsPasswordChange: false,
-        },
-    });
-    // Send confirmation email
-    yield emailSender_1.EmailHelper.sendEmail({
-        email: user.email,
-        subject: 'Password Reset Successful',
-        html: `
-      <p>Your password has been successfully reset.</p>
-      <p>If you didn't perform this action, please contact support immediately.</p>
-    `,
-    });
+        });
+        if (!user) {
+            throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid or expired password reset token!');
+        }
+        // Validate password complexity
+        if (newPassword.length < 8) {
+            throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Password must be at least 8 characters long');
+        }
+        const hashedPassword = yield (0, auth_utils_1.hashPassword)(newPassword);
+        yield tx.user.update({
+            where: { userId: user.userId },
+            data: {
+                password: hashedPassword,
+                passwordResetToken: null,
+                passwordResetExpires: null,
+                passwordChangedAt: new Date(),
+                needsPasswordChange: false,
+            },
+        });
+        // Send confirmation email
+        yield emailSender_1.EmailHelper.sendEmail({
+            email: user.email,
+            subject: 'Password Reset Successful',
+            html: `
+        <p>Your password has been successfully reset.</p>
+        <p>If you didn't perform this action, please contact support immediately.</p>
+      `,
+        });
+    }));
 });
 const setAuthCookies = (res, accessToken, refreshToken) => {
     const isProduction = process.env.NODE_ENV === 'production';
@@ -179,27 +182,29 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
     });
 };
 const verifyEmail = (token) => __awaiter(void 0, void 0, void 0, function* () {
-    // Hash the incoming token so you can compare with what is stored in the database
-    const hashedToken = crypto_1.default.createHash('sha256').update(token).digest('hex');
-    // Find the user with a matching emailVerificationToken that hasn't expired
-    const user = yield prisma_1.prisma.user.findFirst({
-        where: {
-            emailVerificationToken: hashedToken,
-            emailVerificationExpires: { gt: new Date() },
-        },
-    });
-    if (!user) {
-        throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid or expired verification token');
-    }
-    // Update the user record to mark email as verified and clear the verification token
-    yield prisma_1.prisma.user.update({
-        where: { userId: user.userId },
-        data: {
-            emailVerified: true,
-            emailVerificationToken: null,
-            emailVerificationExpires: null,
-        },
-    });
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        // Hash the incoming token so you can compare with what is stored in the database
+        const hashedToken = crypto_1.default.createHash('sha256').update(token).digest('hex');
+        // Find the user with a matching emailVerificationToken that hasn't expired
+        const user = yield tx.user.findFirst({
+            where: {
+                emailVerificationToken: hashedToken,
+                emailVerificationExpires: { gt: new Date() },
+            },
+        });
+        if (!user) {
+            throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid or expired verification token');
+        }
+        // Update the user record to mark email as verified and clear the verification token
+        yield tx.user.update({
+            where: { userId: user.userId },
+            data: {
+                emailVerified: true,
+                emailVerificationToken: null,
+                emailVerificationExpires: null,
+            },
+        });
+    }));
 });
 const sendVerificationEmail = (email, token) => __awaiter(void 0, void 0, void 0, function* () {
     const verificationUrl = `${config_1.default.frontend_url}/verify-email?token=${token}`;
@@ -214,7 +219,7 @@ const sendVerificationEmail = (email, token) => __awaiter(void 0, void 0, void 0
     });
 });
 const getCurrentUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield prisma_1.prisma.user.findUnique({
+    return yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.findUnique({
         where: { userId },
         select: {
             userId: true,
@@ -307,33 +312,37 @@ const getCurrentUser = (userId) => __awaiter(void 0, void 0, void 0, function* (
                 },
             },
         },
-    });
-    return user;
+    }));
 });
 const changePasswordHandler = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { oldPassword, newPassword } = payload;
-    const existingUser = yield (0, auth_utils_1.isUserExist)(user === null || user === void 0 ? void 0 : user.email);
-    if (!existingUser) {
-        throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist!');
-    }
-    const isOldPasswordValid = yield (0, auth_utils_1.isPasswordMatch)(oldPassword, existingUser.password);
-    if (!isOldPasswordValid) {
-        throw new handleApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Old Password is incorrect');
-    }
-    const isNewPasswordSame = yield (0, auth_utils_1.isPasswordMatch)(newPassword, existingUser.password);
-    if (isNewPasswordSame) {
-        throw new handleApiError_1.default(http_status_1.default.CONFLICT, 'New password cannot be the same as the old password');
-    }
-    // Hash the new password and update the user record
-    const hashedNewPassword = yield (0, auth_utils_1.hashPassword)(newPassword);
-    yield prisma_1.prisma.user.update({
-        where: { userId: user === null || user === void 0 ? void 0 : user.userId },
-        data: {
-            password: hashedNewPassword,
-            needsPasswordChange: false,
-            passwordChangedAt: new Date(),
-        },
-    });
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const { oldPassword, newPassword } = payload;
+        if (!(user === null || user === void 0 ? void 0 : user.email)) {
+            throw new handleApiError_1.default(http_status_1.default.UNAUTHORIZED, 'User not authenticated');
+        }
+        const existingUser = yield (0, auth_utils_1.isUserExist)(user.email);
+        if (!existingUser) {
+            throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist!');
+        }
+        const isOldPasswordValid = yield (0, auth_utils_1.isPasswordMatch)(oldPassword, existingUser.password);
+        if (!isOldPasswordValid) {
+            throw new handleApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Old Password is incorrect');
+        }
+        const isNewPasswordSame = yield (0, auth_utils_1.isPasswordMatch)(newPassword, existingUser.password);
+        if (isNewPasswordSame) {
+            throw new handleApiError_1.default(http_status_1.default.CONFLICT, 'New password cannot be the same as the old password');
+        }
+        // Hash the new password and update the user record
+        const hashedNewPassword = yield (0, auth_utils_1.hashPassword)(newPassword);
+        yield tx.user.update({
+            where: { userId: user.userId },
+            data: {
+                password: hashedNewPassword,
+                needsPasswordChange: false,
+                passwordChangedAt: new Date(),
+            },
+        });
+    }));
 });
 const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
     // Clear cookies using res.clearCookie for convenience

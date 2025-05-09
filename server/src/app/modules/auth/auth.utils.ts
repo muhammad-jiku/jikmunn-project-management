@@ -1,68 +1,71 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import config from '../../../config';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import { executeSafeQuery } from '../../../lib/transactionManager';
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, Number(config.bcrypt_salt_rounds));
 }
 
 export async function isUserExist(email: string) {
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: {
-      id: true,
-      userId: true,
-      username: true,
-      email: true,
-      role: true,
-      password: true,
-      needsPasswordChange: true,
-      emailVerified: true,
-      emailVerificationToken: true,
-      emailVerificationExpires: true,
-      developerId: true,
-      managerId: true,
-      adminId: true,
-      superAdminId: true,
-      // developer: {
-      //   select: {
-      //     firstName: true,
-      //     lastName: true,
-      //     middleName: true,
-      //     profileImage: true,
-      //     contact: true,
-      //   },
-      // },
-      // manager: {
-      //   select: {
-      //     firstName: true,
-      //     lastName: true,
-      //     middleName: true,
-      //     profileImage: true,
-      //     contact: true,
-      //   },
-      // },
-      // admin: {
-      //   select: {
-      //     firstName: true,
-      //     lastName: true,
-      //     middleName: true,
-      //     profileImage: true,
-      //     contact: true,
-      //   },
-      // },
-      // superAdmin: {
-      //   select: {
-      //     firstName: true,
-      //     lastName: true,
-      //     middleName: true,
-      //     profileImage: true,
-      //     contact: true,
-      //   },
-      // },
-    },
-  });
+  const user = await executeSafeQuery(() =>
+    prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        userId: true,
+        username: true,
+        email: true,
+        role: true,
+        password: true,
+        needsPasswordChange: true,
+        emailVerified: true,
+        emailVerificationToken: true,
+        emailVerificationExpires: true,
+        developerId: true,
+        managerId: true,
+        adminId: true,
+        superAdminId: true,
+        // developer: {
+        //   select: {
+        //     firstName: true,
+        //     lastName: true,
+        //     middleName: true,
+        //     profileImage: true,
+        //     contact: true,
+        //   },
+        // },
+        // manager: {
+        //   select: {
+        //     firstName: true,
+        //     lastName: true,
+        //     middleName: true,
+        //     profileImage: true,
+        //     contact: true,
+        //   },
+        // },
+        // admin: {
+        //   select: {
+        //     firstName: true,
+        //     lastName: true,
+        //     middleName: true,
+        //     profileImage: true,
+        //     contact: true,
+        //   },
+        // },
+        // superAdmin: {
+        //   select: {
+        //     firstName: true,
+        //     lastName: true,
+        //     middleName: true,
+        //     profileImage: true,
+        //     contact: true,
+        //   },
+        // },
+      },
+    })
+  );
 
   return user;
 }

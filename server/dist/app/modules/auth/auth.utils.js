@@ -19,7 +19,8 @@ exports.isPasswordMatch = isPasswordMatch;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const crypto_1 = __importDefault(require("crypto"));
 const config_1 = __importDefault(require("../../../config"));
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 function hashPassword(password) {
     return __awaiter(this, void 0, void 0, function* () {
         return bcrypt_1.default.hash(password, Number(config_1.default.bcrypt_salt_rounds));
@@ -27,7 +28,7 @@ function hashPassword(password) {
 }
 function isUserExist(email) {
     return __awaiter(this, void 0, void 0, function* () {
-        const user = yield prisma_1.prisma.user.findUnique({
+        const user = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.user.findUnique({
             where: { email },
             select: {
                 id: true,
@@ -81,7 +82,7 @@ function isUserExist(email) {
                 //   },
                 // },
             },
-        });
+        }));
         return user;
     });
 }

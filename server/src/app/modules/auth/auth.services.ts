@@ -7,7 +7,11 @@ import config from '../../../config';
 import ApiError from '../../../errors/handleApiError';
 import { EmailHelper } from '../../../helpers/emailSender';
 import { jwtHelpers } from '../../../helpers/jwt';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import {
+  executeSafeQuery,
+  executeSafeTransaction,
+} from '../../../lib/transactionManager';
 import {
   IChangePassword,
   IForgotPasswordPayload,
@@ -69,13 +73,16 @@ const loginUserHandler = async (
   if (!user.emailVerified) {
     const { verificationToken, hashedToken } = createEmailVerificationToken();
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    await prisma.user.update({
-      where: { userId: user.userId },
-      data: {
-        emailVerificationToken: hashedToken,
-        emailVerificationExpires: verificationExpires,
-      },
-    });
+
+    await executeSafeQuery(() =>
+      prisma.user.update({
+        where: { userId: user.userId },
+        data: {
+          emailVerificationToken: hashedToken,
+          emailVerificationExpires: verificationExpires,
+        },
+      })
+    );
 
     await sendVerificationEmail(userEmail, verificationToken);
   }
@@ -123,9 +130,11 @@ const forgotPasswordHandler = async (
 ): Promise<void> => {
   const { email } = payload;
 
-  const user = await prisma.user.findFirst({
-    where: { email },
-  });
+  const user = await executeSafeQuery(() =>
+    prisma.user.findFirst({
+      where: { email },
+    })
+  );
 
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -135,13 +144,15 @@ const forgotPasswordHandler = async (
   const { resetToken, hashedToken } = createPasswordResetToken();
   const passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-  await prisma.user.update({
-    where: { userId: user.userId },
-    data: {
-      passwordResetToken: hashedToken,
-      passwordResetExpires,
-    },
-  });
+  await executeSafeQuery(() =>
+    prisma.user.update({
+      where: { userId: user.userId },
+      data: {
+        passwordResetToken: hashedToken,
+        passwordResetExpires,
+      },
+    })
+  );
 
   // Create reset URL
   const resetURL = `${config.frontend_url}/reset-password?token=${resetToken}`;
@@ -162,13 +173,16 @@ const forgotPasswordHandler = async (
     });
   } catch (error) {
     // If email fails, reset the token fields
-    await prisma.user.update({
-      where: { userId: user.userId },
-      data: {
-        passwordResetToken: null,
-        passwordResetExpires: null,
-      },
-    });
+    await executeSafeQuery(() =>
+      prisma.user.update({
+        where: { userId: user.userId },
+        data: {
+          passwordResetToken: null,
+          passwordResetExpires: null,
+        },
+      })
+    );
+
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       'Error sending password reset email'
@@ -179,56 +193,58 @@ const forgotPasswordHandler = async (
 const resetPasswordHandler = async (
   payload: IResetPasswordPayload
 ): Promise<void> => {
-  const { token, newPassword } = payload;
+  return await executeSafeTransaction(async (tx) => {
+    const { token, newPassword } = payload;
 
-  // Hash the token for comparison
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    // Hash the token for comparison
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-  const user = await prisma.user.findFirst({
-    where: {
-      passwordResetToken: hashedToken,
-      passwordResetExpires: {
-        gt: new Date(),
+    const user = await tx.user.findFirst({
+      where: {
+        passwordResetToken: hashedToken,
+        passwordResetExpires: {
+          gt: new Date(),
+        },
       },
-    },
-  });
+    });
 
-  if (!user) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      'Invalid or expired password reset token!'
-    );
-  }
+    if (!user) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Invalid or expired password reset token!'
+      );
+    }
 
-  // Validate password complexity
-  if (newPassword.length < 8) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      'Password must be at least 8 characters long'
-    );
-  }
+    // Validate password complexity
+    if (newPassword.length < 8) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Password must be at least 8 characters long'
+      );
+    }
 
-  const hashedPassword = await hashPassword(newPassword);
+    const hashedPassword = await hashPassword(newPassword);
 
-  await prisma.user.update({
-    where: { userId: user.userId },
-    data: {
-      password: hashedPassword,
-      passwordResetToken: null,
-      passwordResetExpires: null,
-      passwordChangedAt: new Date(),
-      needsPasswordChange: false,
-    },
-  });
+    await tx.user.update({
+      where: { userId: user.userId },
+      data: {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+        passwordChangedAt: new Date(),
+        needsPasswordChange: false,
+      },
+    });
 
-  // Send confirmation email
-  await EmailHelper.sendEmail({
-    email: user.email,
-    subject: 'Password Reset Successful',
-    html: `
-      <p>Your password has been successfully reset.</p>
-      <p>If you didn't perform this action, please contact support immediately.</p>
-    `,
+    // Send confirmation email
+    await EmailHelper.sendEmail({
+      email: user.email,
+      subject: 'Password Reset Successful',
+      html: `
+        <p>Your password has been successfully reset.</p>
+        <p>If you didn't perform this action, please contact support immediately.</p>
+      `,
+    });
   });
 };
 
@@ -257,32 +273,34 @@ const setAuthCookies = (
 };
 
 const verifyEmail = async (token: string): Promise<void> => {
-  // Hash the incoming token so you can compare with what is stored in the database
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  return await executeSafeTransaction(async (tx) => {
+    // Hash the incoming token so you can compare with what is stored in the database
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-  // Find the user with a matching emailVerificationToken that hasn't expired
-  const user = await prisma.user.findFirst({
-    where: {
-      emailVerificationToken: hashedToken,
-      emailVerificationExpires: { gt: new Date() },
-    },
-  });
+    // Find the user with a matching emailVerificationToken that hasn't expired
+    const user = await tx.user.findFirst({
+      where: {
+        emailVerificationToken: hashedToken,
+        emailVerificationExpires: { gt: new Date() },
+      },
+    });
 
-  if (!user) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      'Invalid or expired verification token'
-    );
-  }
+    if (!user) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Invalid or expired verification token'
+      );
+    }
 
-  // Update the user record to mark email as verified and clear the verification token
-  await prisma.user.update({
-    where: { userId: user.userId },
-    data: {
-      emailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
-    },
+    // Update the user record to mark email as verified and clear the verification token
+    await tx.user.update({
+      where: { userId: user.userId },
+      data: {
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationExpires: null,
+      },
+    });
   });
 };
 
@@ -306,143 +324,149 @@ const sendVerificationEmail = async (
 const getCurrentUser = async (
   userId: string
 ): Promise<Partial<User> | null> => {
-  const user = await prisma.user.findUnique({
-    where: { userId },
-    select: {
-      userId: true,
-      username: true,
-      email: true,
-      role: true,
-      emailVerified: true,
-      developerId: true,
-      managerId: true,
-      adminId: true,
-      superAdminId: true,
-      developer: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
+  return await executeSafeQuery(() =>
+    prisma.user.findUnique({
+      where: { userId },
+      select: {
+        userId: true,
+        username: true,
+        email: true,
+        role: true,
+        emailVerified: true,
+        developerId: true,
+        managerId: true,
+        adminId: true,
+        superAdminId: true,
+        developer: {
+          select: {
+            firstName: true,
+            lastName: true,
+            middleName: true,
+            profileImage: true,
+            contact: true,
+          },
         },
-      },
-      manager: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
+        manager: {
+          select: {
+            firstName: true,
+            lastName: true,
+            middleName: true,
+            profileImage: true,
+            contact: true,
+          },
         },
-      },
-      admin: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
+        admin: {
+          select: {
+            firstName: true,
+            lastName: true,
+            middleName: true,
+            profileImage: true,
+            contact: true,
+          },
         },
-      },
-      superAdmin: {
-        select: {
-          firstName: true,
-          lastName: true,
-          middleName: true,
-          profileImage: true,
-          contact: true,
+        superAdmin: {
+          select: {
+            firstName: true,
+            lastName: true,
+            middleName: true,
+            profileImage: true,
+            contact: true,
+          },
         },
-      },
-      authoredTasks: {
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          priority: true,
-          dueDate: true,
+        authoredTasks: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            priority: true,
+            dueDate: true,
+          },
         },
-      },
-      assignedTasks: {
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          priority: true,
-          dueDate: true,
+        assignedTasks: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            priority: true,
+            dueDate: true,
+          },
         },
-      },
-      ownedTeams: {
-        select: {
-          id: true,
-          name: true,
+        ownedTeams: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
-      },
-      assignedTeams: {
-        select: {
-          id: true,
-          team: {
-            select: {
-              id: true,
-              name: true,
+        assignedTeams: {
+          select: {
+            id: true,
+            team: {
+              select: {
+                id: true,
+                name: true,
+              },
             },
           },
         },
-      },
-      Project: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          startDate: true,
-          endDate: true,
+        Project: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            startDate: true,
+            endDate: true,
+          },
         },
       },
-    },
-  });
-
-  return user;
+    })
+  );
 };
 
 const changePasswordHandler = async (
   user: JwtPayload | null,
   payload: IChangePassword
 ): Promise<void> => {
-  const { oldPassword, newPassword } = payload;
+  return await executeSafeTransaction(async (tx) => {
+    const { oldPassword, newPassword } = payload;
 
-  const existingUser = await isUserExist(user?.email);
-  if (!existingUser) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
-  }
+    if (!user?.email) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated');
+    }
 
-  const isOldPasswordValid = await isPasswordMatch(
-    oldPassword,
-    existingUser.password!
-  );
-  if (!isOldPasswordValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect');
-  }
+    const existingUser = await isUserExist(user.email);
+    if (!existingUser) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
+    }
 
-  const isNewPasswordSame = await isPasswordMatch(
-    newPassword,
-    existingUser.password!
-  );
-  if (isNewPasswordSame) {
-    throw new ApiError(
-      httpStatus.CONFLICT,
-      'New password cannot be the same as the old password'
+    const isOldPasswordValid = await isPasswordMatch(
+      oldPassword,
+      existingUser.password!
     );
-  }
+    if (!isOldPasswordValid) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect');
+    }
 
-  // Hash the new password and update the user record
-  const hashedNewPassword = await hashPassword(newPassword);
-  await prisma.user.update({
-    where: { userId: user?.userId },
-    data: {
-      password: hashedNewPassword,
-      needsPasswordChange: false,
-      passwordChangedAt: new Date(),
-    },
+    const isNewPasswordSame = await isPasswordMatch(
+      newPassword,
+      existingUser.password!
+    );
+    if (isNewPasswordSame) {
+      throw new ApiError(
+        httpStatus.CONFLICT,
+        'New password cannot be the same as the old password'
+      );
+    }
+
+    // Hash the new password and update the user record
+    const hashedNewPassword = await hashPassword(newPassword);
+    await tx.user.update({
+      where: { userId: user.userId },
+      data: {
+        password: hashedNewPassword,
+        needsPasswordChange: false,
+        passwordChangedAt: new Date(),
+      },
+    });
   });
 };
 

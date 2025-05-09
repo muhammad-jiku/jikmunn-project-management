@@ -4,10 +4,14 @@ import ApiError from '../../../errors/handleApiError';
 import { paginationHelpers } from '../../../helpers/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import {
+  executeSafeQuery,
+  executeSafeTransaction,
+} from '../../../lib/transactionManager';
 
 const insertIntoDB = async (payload: ProjectTeam) => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if project exists
     const project = await tx.project.findUnique({
       where: { id: payload.projectId },
@@ -73,21 +77,24 @@ const getAllFromDB = async (
 ): Promise<IGenericResponse<ProjectTeam[]>> => {
   const { limit, page, skip } = paginationHelpers.calculatePagination(options);
 
-  const projectTeams = await prisma.projectTeam.findMany({
-    skip,
-    take: limit,
-    include: {
-      project: true,
-      team: {
+  const [projectTeams, total] = await Promise.all([
+    executeSafeQuery(() =>
+      prisma.projectTeam.findMany({
+        skip,
+        take: limit,
         include: {
-          members: true,
-          owner: true,
+          project: true,
+          team: {
+            include: {
+              members: true,
+              owner: true,
+            },
+          },
         },
-      },
-    },
-  });
-
-  const total = await prisma.projectTeam.count();
+      })
+    ),
+    executeSafeQuery(() => prisma.projectTeam.count()),
+  ]);
 
   return {
     meta: { total, page, limit },
@@ -96,18 +103,20 @@ const getAllFromDB = async (
 };
 
 const getByIdFromDB = async (id: number) => {
-  const projectTeam = await prisma.projectTeam.findUnique({
-    where: { id },
-    include: {
-      project: true,
-      team: {
-        include: {
-          members: true,
-          owner: true,
+  const projectTeam = await executeSafeQuery(() =>
+    prisma.projectTeam.findUnique({
+      where: { id },
+      include: {
+        project: true,
+        team: {
+          include: {
+            members: true,
+            owner: true,
+          },
         },
       },
-    },
-  });
+    })
+  );
 
   if (!projectTeam) {
     throw new ApiError(
@@ -120,34 +129,38 @@ const getByIdFromDB = async (id: number) => {
 };
 
 const getByProjectIdFromDB = async (projectId: number) => {
-  const projectTeams = await prisma.projectTeam.findMany({
-    where: { projectId },
-    include: {
-      team: {
-        include: {
-          members: true,
-          owner: true,
+  const projectTeams = await executeSafeQuery(() =>
+    prisma.projectTeam.findMany({
+      where: { projectId },
+      include: {
+        team: {
+          include: {
+            members: true,
+            owner: true,
+          },
         },
       },
-    },
-  });
+    })
+  );
 
   return projectTeams;
 };
 
 const getByTeamIdFromDB = async (teamId: number) => {
-  const projectTeams = await prisma.projectTeam.findMany({
-    where: { teamId },
-    include: {
-      project: true,
-    },
-  });
+  const projectTeams = await executeSafeQuery(() =>
+    prisma.projectTeam.findMany({
+      where: { teamId },
+      include: {
+        project: true,
+      },
+    })
+  );
 
   return projectTeams;
 };
 
 const updateOneInDB = async (id: number, payload: Partial<ProjectTeam>) => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if project team exists
     const existingProjectTeam = await tx.projectTeam.findUnique({
       where: { id },
@@ -232,7 +245,7 @@ const updateOneInDB = async (id: number, payload: Partial<ProjectTeam>) => {
 };
 
 const deleteByIdFromDB = async (id: number) => {
-  return await prisma.$transaction(async (tx) => {
+  return await executeSafeTransaction(async (tx) => {
     // Check if project team exists
     const projectTeam = await tx.projectTeam.findUnique({
       where: { id },

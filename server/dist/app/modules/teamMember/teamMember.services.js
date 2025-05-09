@@ -16,9 +16,10 @@ exports.TeamMemberServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const handleApiError_1 = __importDefault(require("../../../errors/handleApiError"));
 const pagination_1 = require("../../../helpers/pagination");
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if user exists
         const user = yield tx.user.findUnique({
             where: { userId: payload.userId },
@@ -63,53 +64,56 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
 });
 const getAllFromDB = (options) => __awaiter(void 0, void 0, void 0, function* () {
     const { limit, page, skip } = pagination_1.paginationHelpers.calculatePagination(options);
-    const teamMembers = yield prisma_1.prisma.teamMember.findMany({
-        skip,
-        take: limit,
-        include: {
-            team: true,
-            user: true,
-        },
-    });
-    const total = yield prisma_1.prisma.teamMember.count();
+    // Use safe query wrapper for both data fetch and count
+    const [teamMembers, total] = yield Promise.all([
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.teamMember.findMany({
+            skip,
+            take: limit,
+            include: {
+                team: true,
+                user: true,
+            },
+        })),
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.teamMember.count()),
+    ]);
     return {
         meta: { total, page, limit },
         data: teamMembers,
     };
 });
 const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const teamMember = yield prisma_1.prisma.teamMember.findUnique({
+    const teamMember = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.teamMember.findUnique({
         where: { id },
         include: {
             team: true,
             user: true,
         },
-    });
+    }));
     if (!teamMember) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Team member not found');
     }
     return teamMember;
 });
 const getByTeamIdFromDB = (teamId) => __awaiter(void 0, void 0, void 0, function* () {
-    const teamMembers = yield prisma_1.prisma.teamMember.findMany({
+    const teamMembers = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.teamMember.findMany({
         where: { teamId },
         include: {
             user: true,
         },
-    });
+    }));
     return teamMembers;
 });
 const getByUserIdFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const teamMembers = yield prisma_1.prisma.teamMember.findMany({
+    const teamMembers = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.teamMember.findMany({
         where: { userId },
         include: {
             team: true,
         },
-    });
+    }));
     return teamMembers;
 });
 const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if team member exists
         const existingMember = yield tx.teamMember.findUnique({
             where: { id },
@@ -177,7 +181,7 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
     }));
 });
 const deleteByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if team member exists
         const teamMember = yield tx.teamMember.findUnique({
             where: { id },

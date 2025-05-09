@@ -28,7 +28,8 @@ const cloudinary_1 = __importDefault(require("cloudinary"));
 const http_status_1 = __importDefault(require("http-status"));
 const handleApiError_1 = __importDefault(require("../../../errors/handleApiError"));
 const pagination_1 = require("../../../helpers/pagination");
-const prisma_1 = require("../../../shared/prisma");
+const prisma_1 = require("../../../lib/prisma");
+const transactionManager_1 = require("../../../lib/transactionManager");
 const user_utils_1 = require("../user/user.utils");
 const admin_constants_1 = require("./admin.constants");
 // Get all admins
@@ -56,15 +57,18 @@ const getAllFromDB = (filters, paginationOptions) => __awaiter(void 0, void 0, v
         });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const admins = yield prisma_1.prisma.admin.findMany({
-        where: whereConditions,
-        skip,
-        take: limit,
-        orderBy: paginationOptions.sortBy && paginationOptions.sortOrder
-            ? { [paginationOptions.sortBy]: paginationOptions.sortOrder }
-            : undefined,
-    });
-    const total = yield prisma_1.prisma.admin.count({ where: whereConditions });
+    // Use safe query wrapper for both data fetch and count
+    const [admins, total] = yield Promise.all([
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.admin.findMany({
+            where: whereConditions,
+            skip,
+            take: limit,
+            orderBy: paginationOptions.sortBy && paginationOptions.sortOrder
+                ? { [paginationOptions.sortBy]: paginationOptions.sortOrder }
+                : undefined,
+        })),
+        (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.admin.count({ where: whereConditions })),
+    ]);
     return {
         meta: {
             total,
@@ -76,9 +80,9 @@ const getAllFromDB = (filters, paginationOptions) => __awaiter(void 0, void 0, v
 });
 // Get a single admin by ID
 const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.prisma.admin.findUnique({
+    const result = yield (0, transactionManager_1.executeSafeQuery)(() => prisma_1.prisma.admin.findUnique({
         where: { adminId: id },
-    });
+    }));
     if (!result) {
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Sorry, the admin does not exist!');
     }
@@ -86,82 +90,88 @@ const getByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 // Update a admin by ID
 const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    // First check if the admin exists
-    const existingadmin = yield prisma_1.prisma.admin.findUnique({
-        where: { adminId: id },
-    });
-    if (!existingadmin) {
-        throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Admin not found!');
-    }
-    // If a new profile image is provided (and not an empty string)
-    if (payload.profileImage &&
-        typeof payload.profileImage === 'string' &&
-        payload.profileImage.startsWith('data:image')) {
-        // If the existing admin has a profile image, destroy it on Cloudinary
-        if (existingadmin.profileImage &&
-            typeof existingadmin.profileImage === 'object') {
-            const imageId = existingadmin.profileImage.public_id;
-            if (imageId) {
-                yield cloudinary_1.default.v2.uploader.destroy(imageId);
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        // First check if the admin exists
+        const existingAdmin = yield tx.admin.findUnique({
+            where: { adminId: id },
+        });
+        if (!existingAdmin) {
+            throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Admin not found!');
+        }
+        // If a new profile image is provided (and not an empty string)
+        if (payload.profileImage &&
+            typeof payload.profileImage === 'string' &&
+            payload.profileImage.startsWith('data:image')) {
+            // If the existing admin has a profile image, destroy it on Cloudinary
+            if (existingAdmin.profileImage &&
+                typeof existingAdmin.profileImage === 'object') {
+                const imageId = existingAdmin.profileImage.public_id;
+                if (imageId) {
+                    yield cloudinary_1.default.v2.uploader.destroy(imageId);
+                }
+            }
+            // Validate the new base64 image (throws error if invalid)
+            const isValidImage = yield (0, user_utils_1.validateBase64Image)(payload.profileImage);
+            if (!isValidImage) {
+                throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Image file is too large. Maximum allowed size is 2 MB.');
+            }
+            // Upload the new image
+            const myCloud = yield cloudinary_1.default.v2.uploader.upload(payload.profileImage, {
+                folder: 'jikmunn-project-management/avatars',
+                width: 150,
+                crop: 'scale',
+                resource_type: 'image',
+                allowed_formats: ['jpg', 'jpeg', 'png'],
+                transformation: [{ quality: 'auto' }],
+                use_filename: true,
+                unique_filename: false,
+                overwrite: true,
+                chunk_size: 6000000, // 6MB chunks for large uploads
+                timeout: 60000, // 60 seconds timeout
+                invalidate: true, // Ensure old cached versions are replaced
+            });
+            // Update the admin record with the new profile image details
+            const result = yield tx.admin.update({
+                where: { adminId: id },
+                data: Object.assign(Object.assign({}, payload), { profileImage: {
+                        public_id: myCloud.public_id,
+                        url: myCloud.secure_url,
+                    } }),
+            });
+            if (!result) {
+                throw new handleApiError_1.default(http_status_1.default.CONFLICT, 'Sorry, failed to update!');
+            }
+            return result;
+        }
+        else {
+            // If profileImage is in the payload but is not a base64 string,
+            // remove it to prevent unwanted updates to the existing image
+            if (payload.profileImage) {
+                delete payload.profileImage;
             }
         }
-        // Validate the new base64 image (throws error if invalid)
-        const isValidImage = yield (0, user_utils_1.validateBase64Image)(payload.profileImage);
-        if (!isValidImage) {
-            throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Image file is too large. Maximum allowed size is 2 MB.');
-        }
-        // Upload the new image
-        const myCloud = yield cloudinary_1.default.v2.uploader.upload(payload.profileImage, {
-            folder: 'jikmunn-project-management/avatars',
-            width: 150,
-            crop: 'scale',
-            resource_type: 'image',
-            allowed_formats: ['jpg', 'jpeg', 'png'],
-            transformation: [{ quality: 'auto' }],
-            use_filename: true,
-            unique_filename: false,
-            overwrite: true,
-            chunk_size: 6000000, // 6MB chunks for large uploads
-            timeout: 60000, // 60 seconds timeout
-            invalidate: true, // Ensure old cached versions are replaced
-        });
-        // Update the admin record with the new profile image details
-        const result = yield prisma_1.prisma.admin.update({
+        // If no new image is provided, update without changing the profile image
+        const result = yield tx.admin.update({
             where: { adminId: id },
-            data: Object.assign(Object.assign({}, payload), { profileImage: {
-                    public_id: myCloud.public_id,
-                    url: myCloud.secure_url,
-                } }),
+            data: payload,
         });
         if (!result) {
             throw new handleApiError_1.default(http_status_1.default.CONFLICT, 'Sorry, failed to update!');
         }
         return result;
-    }
-    else {
-        // If profileImage is in the payload but is not a base64 string,
-        // remove it to prevent unwanted updates to the existing image
-        if (payload.profileImage) {
-            delete payload.profileImage;
-        }
-    }
-    // If no new image is provided, update without changing the profile image
-    const result = yield prisma_1.prisma.admin.update({
-        where: { adminId: id },
-        data: payload,
-    });
-    if (!result) {
-        throw new handleApiError_1.default(http_status_1.default.CONFLICT, 'Sorry, failed to update!');
-    }
-    return result;
+    }));
 });
 // Delete a admin by ID
 const deleteByIdFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, transactionManager_1.executeSafeTransaction)((tx) => __awaiter(void 0, void 0, void 0, function* () {
         // Find the admin by adminId, including the related user
         const admin = yield tx.admin.findUnique({
-            where: { adminId: id },
-            include: { user: true },
+            where: {
+                adminId: id,
+            },
+            include: {
+                user: true,
+            },
         });
         if (!admin) {
             throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Sorry, the admin does not exist!');

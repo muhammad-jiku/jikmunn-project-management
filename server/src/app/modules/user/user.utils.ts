@@ -1,5 +1,6 @@
 import { UserRole } from '@prisma/client';
-import { prisma } from '../../../shared/prisma';
+import { prisma } from '../../../lib/prisma';
+import { executeSafeQuery } from '../../../lib/transactionManager';
 
 const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB in bytes
 const MAX_BASE64_LENGTH = Math.ceil((MAX_FILE_SIZE_BYTES * 4) / 3);
@@ -19,17 +20,19 @@ export const validateBase64Image = async (
 };
 
 export const findLastDeveloperId = async (): Promise<string | undefined> => {
-  const lastDeveloper = await prisma.user.findFirst({
-    where: {
-      role: UserRole.DEVELOPER, // Correct usage with enum
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      developerId: true,
-    },
-  });
+  const lastDeveloper = await executeSafeQuery(() =>
+    prisma.user.findFirst({
+      where: {
+        role: UserRole.DEVELOPER, // Correct usage with enum
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        developerId: true,
+      },
+    })
+  );
 
   return lastDeveloper?.developerId
     ? lastDeveloper?.developerId.substring(2)
@@ -45,17 +48,19 @@ export const generateDeveloperId = async (): Promise<string> => {
 };
 
 export const findLastManagerId = async (): Promise<string | undefined> => {
-  const lastManager = await prisma.user.findFirst({
-    where: {
-      role: UserRole.MANAGER, // Correct usage with enum
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      managerId: true,
-    },
-  });
+  const lastManager = await executeSafeQuery(() =>
+    prisma.user.findFirst({
+      where: {
+        role: UserRole.MANAGER, // Correct usage with enum
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        managerId: true,
+      },
+    })
+  );
 
   return lastManager?.managerId
     ? lastManager?.managerId.substring(2)
@@ -71,17 +76,19 @@ export const generateManagerId = async (): Promise<string> => {
 };
 
 export const findLastAdminId = async (): Promise<string | undefined> => {
-  const lastAdmin = await prisma.user.findFirst({
-    where: {
-      role: UserRole.ADMIN, // Correct usage with enum
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      adminId: true,
-    },
-  });
+  const lastAdmin = await executeSafeQuery(() =>
+    prisma.user.findFirst({
+      where: {
+        role: UserRole.ADMIN, // Correct usage with enum
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        adminId: true,
+      },
+    })
+  );
 
   return lastAdmin?.adminId ? lastAdmin?.adminId.substring(2) : undefined;
 };
@@ -95,17 +102,19 @@ export const generateAdminId = async (): Promise<string> => {
 };
 
 export const findLastSuperAdminId = async (): Promise<string | undefined> => {
-  const lastSuperAdmin = await prisma.user.findFirst({
-    where: {
-      role: UserRole.SUPER_ADMIN, // Correct usage with enum
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      superAdminId: true,
-    },
-  });
+  const lastSuperAdmin = await executeSafeQuery(() =>
+    prisma.user.findFirst({
+      where: {
+        role: UserRole.SUPER_ADMIN, // Correct usage with enum
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        superAdminId: true,
+      },
+    })
+  );
 
   return lastSuperAdmin?.superAdminId
     ? lastSuperAdmin?.superAdminId.substring(3)
