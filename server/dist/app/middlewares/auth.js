@@ -20,15 +20,17 @@ const jwt_1 = require("../../helpers/jwt");
 const auth = (...requiredRoles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let token;
-        // Check Authorization header first
+        // Check Authorization header first and if not found, check cookies fallback for token
         if (req.headers.authorization &&
             req.headers.authorization.startsWith('Bearer ')) {
             token = req.headers.authorization.split(' ')[1];
         }
-        // Fallback: check for token in cookies
         else if (req.cookies && req.cookies.accessToken) {
             token = req.cookies.accessToken;
         }
+        console.log('req.headers', req.headers.authorization); // debugging log
+        console.log('req.cookies', req.cookies); // debugging log
+        console.log('token', token); // debugging log
         if (!token) {
             throw new handleApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized access');
         }
