@@ -40,13 +40,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         if (!ownerExists) {
             throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Project owner (manager) does not exist!');
         }
-        // // Ensure the auto-increment sequence for tblproject is set correctly
-        // await tx.$executeRaw`
-        //   SELECT setval(
-        //     pg_get_serial_sequence('tblproject', 'id'),
-        //     (SELECT COALESCE(MAX(id), 0) FROM tblproject) + 1
-        //   )
-        // `;
+        // Ensure the auto-increment sequence for tblproject is set correctly
+        yield tx.$executeRaw `
+      SELECT setval(
+        pg_get_serial_sequence('tblproject', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblproject) + 1
+      )
+    `;
         const result = yield tx.project.create({
             data: payload,
             include: {

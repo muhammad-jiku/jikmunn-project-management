@@ -53,13 +53,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         if (!projectExists) {
             throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Project does not exist!');
         }
-        // // Ensure the auto-increment sequence for tbltask is set correctly
-        // await tx.$executeRaw`
-        //   SELECT setval(
-        //     pg_get_serial_sequence('tbltask', 'id'),
-        //     (SELECT COALESCE(MAX(id), 0) FROM tbltask) + 1
-        //   )
-        // `;
+        // Ensure the auto-increment sequence for tbltask is set correctly
+        yield tx.$executeRaw `
+      SELECT setval(
+        pg_get_serial_sequence('tbltask', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tbltask) + 1
+      )
+    `;
         const result = yield tx.task.create({
             data: payload,
             include: {
@@ -332,6 +332,13 @@ const updateTaskStatusInDB = (taskId, status) => __awaiter(void 0, void 0, void 
                     TaskAssignment: true,
                 },
             });
+            // Ensure the auto-increment sequence for tbltaskassignment is set correctly
+            yield tx.$executeRaw `
+        SELECT setval(
+          pg_get_serial_sequence('tbltaskassignment', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tbltaskassignment) + 1
+        )
+      `;
             // Create a task assignment record
             yield tx.taskAssignment.create({
                 data: {

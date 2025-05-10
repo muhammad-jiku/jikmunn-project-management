@@ -27,13 +27,13 @@ const insertIntoDB = async (payload: Project): Promise<Project | null> => {
       );
     }
 
-    // // Ensure the auto-increment sequence for tblproject is set correctly
-    // await tx.$executeRaw`
-    //   SELECT setval(
-    //     pg_get_serial_sequence('tblproject', 'id'),
-    //     (SELECT COALESCE(MAX(id), 0) FROM tblproject) + 1
-    //   )
-    // `;
+    // Ensure the auto-increment sequence for tblproject is set correctly
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tblproject', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblproject) + 1
+      )
+    `;
 
     const result = await tx.project.create({
       data: payload,

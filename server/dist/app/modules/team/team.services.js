@@ -43,13 +43,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         if (!ownerExists) {
             throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'Team owner must be a manager and must exist!');
         }
-        // // Ensure the auto-increment sequence for tblteam is set correctly
-        // await tx.$executeRaw`
-        //   SELECT setval(
-        //     pg_get_serial_sequence('tblteam', 'id'),
-        //     (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
-        //   )
-        // `;
+        // Ensure the auto-increment sequence for tblteam is set correctly
+        yield tx.$executeRaw `
+      SELECT setval(
+        pg_get_serial_sequence('tblteam', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
+      )
+    `;
         // Create the team
         const team = yield tx.team.create({
             data: teamData,
@@ -65,13 +65,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
                     throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, `User with ID ${member.userId} not found!`);
                 }
             }
-            // // Ensure the auto-increment sequence for tblteammember is set correctly
-            // await tx.$executeRaw`
-            //   SELECT setval(
-            //     pg_get_serial_sequence('tblteammember', 'id'),
-            //     (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
-            //   )
-            // `;
+            // Ensure the auto-increment sequence for tblteammember is set correctly
+            yield tx.$executeRaw `
+        SELECT setval(
+          pg_get_serial_sequence('tblteammember', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+        )
+      `;
             // Create team members
             yield Promise.all(members.map((member) => tx.teamMember.create({
                 data: {
@@ -83,13 +83,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         // Add team owner as a member if not already included
         const ownerAlreadyMember = members === null || members === void 0 ? void 0 : members.some((m) => m.userId === teamData.teamOwnerId);
         if (!ownerAlreadyMember) {
-            // // Ensure the auto-increment sequence for tblteammember is set correctly
-            // await tx.$executeRaw`
-            //   SELECT setval(
-            //     pg_get_serial_sequence('tblteammember', 'id'),
-            //     (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
-            //   )
-            // `;
+            // Ensure the auto-increment sequence for tblteammember is set correctly
+            yield tx.$executeRaw `
+        SELECT setval(
+          pg_get_serial_sequence('tblteammember', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+        )
+      `;
             yield tx.teamMember.create({
                 data: {
                     teamId: team.id,
@@ -108,13 +108,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
                     throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, `Project with ID ${project.projectId} not found!`);
                 }
             }
-            // // Ensure the auto-increment sequence for tblprojectteam is set correctly
-            // await tx.$executeRaw`
-            //   SELECT setval(
-            //     pg_get_serial_sequence('tblprojectteam', 'id'),
-            //     (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
-            //   )
-            // `;
+            // Ensure the auto-increment sequence for tblprojectteam is set correctly
+            yield tx.$executeRaw `
+        SELECT setval(
+          pg_get_serial_sequence('tblprojectteam', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
+        )
+      `;
             // Create project teams
             yield Promise.all(projects.map((project) => tx.projectTeam.create({
                 data: {
@@ -258,6 +258,13 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
                         },
                     });
                     if (!existingMember) {
+                        // Ensure the auto-increment sequence for tblteammember is set correctly
+                        yield tx.$executeRaw `
+    SELECT setval(
+      pg_get_serial_sequence('tblteammember', 'id'),
+      (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+    )
+  `;
                         // Add new member
                         yield tx.teamMember.create({
                             data: {
@@ -301,6 +308,13 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
                         },
                     });
                     if (!existingProjectTeam) {
+                        // Ensure the auto-increment sequence for tblprojectteam is set correctly
+                        yield tx.$executeRaw `
+    SELECT setval(
+      pg_get_serial_sequence('tblprojectteam', 'id'),
+      (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
+    )
+  `;
                         // Add new project team
                         yield tx.projectTeam.create({
                             data: {
@@ -332,6 +346,13 @@ const updateOneInDB = (id, payload) => __awaiter(void 0, void 0, void 0, functio
                 },
             });
             if (!ownerIsMember) {
+                // Ensure the auto-increment sequence for tblteammember is set correctly
+                yield tx.$executeRaw `
+          SELECT setval(
+              pg_get_serial_sequence('tblteammember', 'id'),
+              (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+          )
+        `;
                 // Add new owner as a member
                 yield tx.teamMember.create({
                     data: {

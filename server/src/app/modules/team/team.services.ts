@@ -35,13 +35,13 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
       );
     }
 
-    // // Ensure the auto-increment sequence for tblteam is set correctly
-    // await tx.$executeRaw`
-    //   SELECT setval(
-    //     pg_get_serial_sequence('tblteam', 'id'),
-    //     (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
-    //   )
-    // `;
+    // Ensure the auto-increment sequence for tblteam is set correctly
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tblteam', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblteam) + 1
+      )
+    `;
 
     // Create the team
     const team = await tx.team.create({
@@ -64,13 +64,13 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
         }
       }
 
-      // // Ensure the auto-increment sequence for tblteammember is set correctly
-      // await tx.$executeRaw`
-      //   SELECT setval(
-      //     pg_get_serial_sequence('tblteammember', 'id'),
-      //     (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
-      //   )
-      // `;
+      // Ensure the auto-increment sequence for tblteammember is set correctly
+      await tx.$executeRaw`
+        SELECT setval(
+          pg_get_serial_sequence('tblteammember', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+        )
+      `;
 
       // Create team members
       await Promise.all(
@@ -91,13 +91,13 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
     );
 
     if (!ownerAlreadyMember) {
-      // // Ensure the auto-increment sequence for tblteammember is set correctly
-      // await tx.$executeRaw`
-      //   SELECT setval(
-      //     pg_get_serial_sequence('tblteammember', 'id'),
-      //     (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
-      //   )
-      // `;
+      // Ensure the auto-increment sequence for tblteammember is set correctly
+      await tx.$executeRaw`
+        SELECT setval(
+          pg_get_serial_sequence('tblteammember', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+        )
+      `;
 
       await tx.teamMember.create({
         data: {
@@ -123,13 +123,13 @@ const insertIntoDB = async (payload: TeamCreatePayload): Promise<Team> => {
         }
       }
 
-      // // Ensure the auto-increment sequence for tblprojectteam is set correctly
-      // await tx.$executeRaw`
-      //   SELECT setval(
-      //     pg_get_serial_sequence('tblprojectteam', 'id'),
-      //     (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
-      //   )
-      // `;
+      // Ensure the auto-increment sequence for tblprojectteam is set correctly
+      await tx.$executeRaw`
+        SELECT setval(
+          pg_get_serial_sequence('tblprojectteam', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
+        )
+      `;
 
       // Create project teams
       await Promise.all(
@@ -315,6 +315,14 @@ const updateOneInDB = async (
           });
 
           if (!existingMember) {
+            // Ensure the auto-increment sequence for tblteammember is set correctly
+            await tx.$executeRaw`
+    SELECT setval(
+      pg_get_serial_sequence('tblteammember', 'id'),
+      (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+    )
+  `;
+
             // Add new member
             await tx.teamMember.create({
               data: {
@@ -368,6 +376,13 @@ const updateOneInDB = async (
           });
 
           if (!existingProjectTeam) {
+            // Ensure the auto-increment sequence for tblprojectteam is set correctly
+            await tx.$executeRaw`
+    SELECT setval(
+      pg_get_serial_sequence('tblprojectteam', 'id'),
+      (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
+    )
+  `;
             // Add new project team
             await tx.projectTeam.create({
               data: {
@@ -402,6 +417,14 @@ const updateOneInDB = async (
       });
 
       if (!ownerIsMember) {
+        // Ensure the auto-increment sequence for tblteammember is set correctly
+        await tx.$executeRaw`
+          SELECT setval(
+              pg_get_serial_sequence('tblteammember', 'id'),
+              (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+          )
+        `;
+
         // Add new owner as a member
         await tx.teamMember.create({
           data: {

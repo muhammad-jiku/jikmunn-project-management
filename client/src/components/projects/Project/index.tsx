@@ -6,25 +6,14 @@ import ListView from '@/components/projects/views/ListView';
 import TableView from '@/components/projects/views/TableView';
 import TimelineView from '@/components/projects/views/TimeLineView';
 import ModalNewTask from '@/components/shared/modals/tasks/ModalNewTask';
-import { use, useState } from 'react';
-
-type Params = {
-  id: string;
-};
+import { useState } from 'react';
 
 type Props = {
-  // params might be a Promise or an object
-  params: Promise<Params> | Params;
+  params: { id: string };
 };
 
 const ProjectComp = ({ params }: Props) => {
-  // If params is a Promise, unwrap it using the experimental use() hook.
-  const resolvedParams: Params =
-    typeof (params as Promise<Params>).then === 'function'
-      ? use(params as Promise<Params>)
-      : (params as Params);
-
-  const { id } = resolvedParams;
+  const { id } = params;
 
   const [activeTab, setActiveTab] = useState<string>('Board');
   const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState<boolean>(false);

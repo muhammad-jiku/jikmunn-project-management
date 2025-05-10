@@ -41,13 +41,13 @@ const insertIntoDB = async (payload: Task): Promise<Task | null> => {
       throw new ApiError(httpStatus.NOT_FOUND, 'Project does not exist!');
     }
 
-    // // Ensure the auto-increment sequence for tbltask is set correctly
-    // await tx.$executeRaw`
-    //   SELECT setval(
-    //     pg_get_serial_sequence('tbltask', 'id'),
-    //     (SELECT COALESCE(MAX(id), 0) FROM tbltask) + 1
-    //   )
-    // `;
+    // Ensure the auto-increment sequence for tbltask is set correctly
+    await tx.$executeRaw`
+      SELECT setval(
+        pg_get_serial_sequence('tbltask', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tbltask) + 1
+      )
+    `;
 
     const result = await tx.task.create({
       data: payload,
@@ -383,6 +383,14 @@ const updateTaskStatusInDB = async (
           TaskAssignment: true,
         },
       });
+
+      // Ensure the auto-increment sequence for tbltaskassignment is set correctly
+      await tx.$executeRaw`
+        SELECT setval(
+          pg_get_serial_sequence('tbltaskassignment', 'id'),
+          (SELECT COALESCE(MAX(id), 0) FROM tbltaskassignment) + 1
+        )
+      `;
 
       // Create a task assignment record
       await tx.taskAssignment.create({

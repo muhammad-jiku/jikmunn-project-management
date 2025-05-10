@@ -45,13 +45,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         if (existingProjectTeam) {
             throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'Team is already assigned to this project');
         }
-        // // Ensure the auto-increment sequence for tblprojectteam is set correctly
-        // await tx.$executeRaw`
-        //   SELECT setval(
-        //     pg_get_serial_sequence('tblprojectteam', 'id'),
-        //     (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
-        //   )
-        // `;
+        // Ensure the auto-increment sequence for tblprojectteam is set correctly
+        yield tx.$executeRaw `
+      SELECT setval(
+        pg_get_serial_sequence('tblprojectteam', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblprojectteam) + 1
+      )
+    `;
         // Create project team assignment
         const projectTeam = yield tx.projectTeam.create({
             data: payload,

@@ -22,7 +22,7 @@ import {
   GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { Edit, PlusSquare, Trash2 } from 'lucide-react';
-import { use, useState } from 'react';
+import { useState } from 'react';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -30,13 +30,8 @@ interface TabPanelProps {
   value: number;
 }
 
-type Params = {
-  id: string;
-};
-
 type Props = {
-  // params might be a Promise or an object
-  params: Promise<Params> | Params;
+  params: { id: string };
 };
 
 function TabPanel(props: TabPanelProps) {
@@ -64,13 +59,7 @@ const CustomToolbar = () => (
 );
 
 const TeamComp = ({ params }: Props) => {
-  // If params is a Promise, unwrap it using the experimental use() hook.
-  const resolvedParams: Params =
-    typeof (params as Promise<Params>).then === 'function'
-      ? use(params as Promise<Params>)
-      : (params as Params);
-
-  const { id } = resolvedParams;
+  const { id } = params;
   const teamId = Number(id);
   const isDarkMode = useAppSelector((state) => state?.global?.isDarkMode);
   const globalUser = useAppSelector((state) => state?.global?.user?.data);
@@ -189,10 +178,7 @@ const TeamComp = ({ params }: Props) => {
 
     return {
       ...member,
-      username: user
-        ? `${user.username}`
-        : // ? `${ownerManager.firstName} ${ownerManager.middleName ? ownerManager.middleName + ' ' : ''}${ownerManager.lastName}`
-          'N/A',
+      username: user ? `${user.username}` : 'N/A',
       email: user ? `${user.email}` : 'N/A',
       role: user
         ? `${
@@ -282,10 +268,7 @@ const TeamComp = ({ params }: Props) => {
 
     return {
       ...projectTeam,
-      projectName: project
-        ? `${project.title}`
-        : // ? `${ownerManager.firstName} ${ownerManager.middleName ? ownerManager.middleName + ' ' : ''}${ownerManager.lastName}`
-          'N/A',
+      projectName: project ? `${project.title}` : 'N/A',
       projectId: project ? `${projectTeam.projectId}` : 'N/A',
       projectOwnerId: project ? `${project.projectOwnerId}` : 'N/A',
     };
@@ -364,9 +347,7 @@ const TeamComp = ({ params }: Props) => {
         {teamMembers?.data && teamMembers?.data?.length > 0 ? (
           <div style={{ height: 600, width: '100%' }}>
             <DataGrid
-              // rows={teamMembers?.data}
-              // columns={memberColumns}
-              rows={memberRows}
+              rows={memberRows || []}
               columns={getMemberColumns()}
               pagination
               slots={{
@@ -398,9 +379,7 @@ const TeamComp = ({ params }: Props) => {
         {projectTeams?.data && projectTeams?.data?.length > 0 ? (
           <div style={{ height: 600, width: '100%' }}>
             <DataGrid
-              // rows={projectTeams?.data}
-              // columns={projectTeamColumns}
-              rows={projectTeamRows}
+              rows={projectTeamRows || []}
               columns={getProjectTeamColumns()}
               pagination
               slots={{

@@ -44,13 +44,13 @@ const insertIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* ()
         if (existingMember) {
             throw new handleApiError_1.default(http_status_1.default.BAD_REQUEST, 'User is already a member of this team');
         }
-        // // Ensure the auto-increment sequence for tblteammember is set correctly
-        // await tx.$executeRaw`
-        //   SELECT setval(
-        //     pg_get_serial_sequence('tblteammember', 'id'),
-        //     (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
-        //   )
-        // `;
+        // Ensure the auto-increment sequence for tblteammember is set correctly
+        yield tx.$executeRaw `
+      SELECT setval(
+        pg_get_serial_sequence('tblteammember', 'id'),
+        (SELECT COALESCE(MAX(id), 0) FROM tblteammember) + 1
+      )
+    `;
         // Create team member
         const teamMember = yield tx.teamMember.create({
             data: payload,
