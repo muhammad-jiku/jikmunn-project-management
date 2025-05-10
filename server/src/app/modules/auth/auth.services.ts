@@ -96,12 +96,20 @@ const loginUserHandler = async (
 };
 
 const refreshTokenHandler = async (
-  payload: string
+  req: RequestWithCookies, // Use the correct type directly
+  res: Response
 ): Promise<IRefreshTokenResponse> => {
+  // No need for casting
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Refresh token not found');
+  }
+
   let verifiedToken;
   try {
     verifiedToken = jwtHelpers.verifyToken(
-      payload,
+      refreshToken,
       config.jwt.refresh_secret as Secret
     );
   } catch (err) {
@@ -119,6 +127,19 @@ const refreshTokenHandler = async (
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
+
+  // Update the access token cookie
+  const isProduction = process.env.NODE_ENV === 'production';
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'),
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  };
+
+  res.cookie('accessToken', newAccessToken, cookieOptions);
+  // Don't set refresh token again - just reuse the existing one
 
   return {
     accessToken: newAccessToken,
@@ -255,20 +276,35 @@ const setAuthCookies = (
 ): void => {
   const isProduction = process.env.NODE_ENV === 'production';
 
-  res.cookie('accessToken', accessToken, {
+  // Common cookie options
+  const cookieOptions = {
     httpOnly: true,
-    secure: isProduction, // secure only in production (HTTPS)
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    secure: isProduction, // true in production for HTTPS
+    sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'), // 'none' allows cross-site cookies in production
     path: '/',
-  });
-
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    path: '/auth/refresh-token',
+  };
+
+  // Set access token cookie
+  res.cookie('accessToken', accessToken, cookieOptions);
+
+  // Set refresh token cookie - only set once with consistent path
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
+  // // Set refresh token cookie - only set once with the path of '/auth/refresh-token'
+  // res.cookie('refreshToken', refreshToken, {
+  //   httpOnly: true,
+  //   secure: isProduction,
+  //   sameSite: 'lax',
+  //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  //   path: '/auth/refresh-token',
+  // });
+
+  // For debugging
+  console.log('Cookies set:', {
+    accessToken: !!accessToken,
+    refreshToken: !!refreshToken,
+    options: cookieOptions,
   });
 };
 
@@ -471,22 +507,28 @@ const changePasswordHandler = async (
 };
 
 const logoutHandler = async (res: Response): Promise<void> => {
-  // Clear cookies using res.clearCookie for convenience
-  res.clearCookie('accessToken', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    // expires: new Date(0), // Force expiration
-  });
+  const isProduction = process.env.NODE_ENV === 'production';
 
-  res.clearCookie('refreshToken', {
+  // Common options for clearing cookies
+  const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/auth/refresh-token',
-    // expires: new Date(0), // Force expiration
-  });
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'),
+    path: '/',
+  };
+
+  // Clear cookies properly
+  res.clearCookie('accessToken', cookieOptions);
+  res.clearCookie('refreshToken', cookieOptions);
+
+  // // Optionally, you can also clear the cookie to expire immediately in '/auth/refresh-token' path
+  // res.clearCookie('refreshToken', {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === 'production',
+  //   sameSite: 'lax',
+  //   path: '/auth/refresh-token',
+  //   // expires: new Date(0), // Force expiration
+  // });
 
   res.status(200).json({ message: 'Signed out successfully!' });
 };

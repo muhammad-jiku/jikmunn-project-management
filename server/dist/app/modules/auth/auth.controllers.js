@@ -25,7 +25,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthControllers = void 0;
 const http_status_1 = __importDefault(require("http-status"));
-const config_1 = __importDefault(require("../../../config"));
 const handleApiError_1 = __importDefault(require("../../../errors/handleApiError"));
 const catchAsync_1 = require("../../../shared/catchAsync");
 const sendResponse_1 = require("../../../shared/sendResponse");
@@ -34,14 +33,9 @@ const loginUserHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
     try {
         const logInData = yield req.body;
         const result = yield auth_services_1.AuthServices.loginUserHandler(logInData, res);
-        const { refreshToken } = result, othersData = __rest(result, ["refreshToken"]);
-        // Set refresh token into cookie
-        const cookieOptions = {
-            secure: config_1.default.env === 'production',
-            httpOnly: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        };
-        res.cookie('refreshToken', refreshToken, cookieOptions);
+        const { refreshToken, accessToken } = result, othersData = __rest(result, ["refreshToken", "accessToken"]);
+        // DO NOT set cookies here - already set in AuthServices.loginUserHandler
+        // This was causing duplicate cookies to be set
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,
@@ -55,15 +49,8 @@ const loginUserHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
 }));
 const refreshTokenHandler = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { refreshToken } = req.cookies;
-        const result = yield auth_services_1.AuthServices.refreshTokenHandler(refreshToken);
-        // Set refresh token into cookie
-        const cookieOptions = {
-            secure: config_1.default.env === 'production',
-            httpOnly: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        };
-        res.cookie('refreshToken', refreshToken, cookieOptions);
+        const result = yield auth_services_1.AuthServices.refreshTokenHandler(req, res);
+        // DO NOT set cookies here - already set in AuthServices.refreshTokenHandler
         (0, sendResponse_1.sendResponse)(res, {
             statusCode: http_status_1.default.OK,
             success: true,

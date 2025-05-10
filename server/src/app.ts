@@ -10,18 +10,19 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import routes from './app/routes';
 
 const app: Application = express();
-// const corsOptions = {
-//   origin: 'http://localhost:3000', // Specify your frontend's origin
-//   credentials: true, // Allow cookies and credentials
-// };
+
+// cors options
+// This is a simple CORS configuration.
 const corsOptions = {
-  origin: true,
-  // origin: 'http://localhost:3000/',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  credentials: true,
+  origin:
+    process.env.NODE_ENV === 'production'
+      ? [process.env.FRONTEND_URL as string]
+      : 'http://localhost:3000',
+  credentials: true, // Important for cookies
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-//
 // parser and middleware
 app.use(cors(corsOptions));
 app.use(cookieParser());

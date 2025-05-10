@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import config from '../../../config';
 import ApiError from '../../../errors/handleApiError';
 import { catchAsync } from '../../../shared/catchAsync';
 import { sendResponse } from '../../../shared/sendResponse';
@@ -12,16 +11,10 @@ const loginUserHandler = catchAsync(
     try {
       const logInData = await req.body;
       const result = await AuthServices.loginUserHandler(logInData, res);
-      const { refreshToken, ...othersData } = result;
+      const { refreshToken, accessToken, ...othersData } = result;
 
-      // Set refresh token into cookie
-      const cookieOptions = {
-        secure: config.env === 'production',
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      };
-
-      res.cookie('refreshToken', refreshToken, cookieOptions);
+      // DO NOT set cookies here - already set in AuthServices.loginUserHandler
+      // This was causing duplicate cookies to be set
 
       sendResponse<ILoginUserResponse>(res, {
         statusCode: httpStatus.OK,
@@ -38,17 +31,9 @@ const loginUserHandler = catchAsync(
 const refreshTokenHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { refreshToken } = req.cookies;
-      const result = await AuthServices.refreshTokenHandler(refreshToken);
+      const result = await AuthServices.refreshTokenHandler(req, res);
 
-      // Set refresh token into cookie
-      const cookieOptions = {
-        secure: config.env === 'production',
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      };
-
-      res.cookie('refreshToken', refreshToken, cookieOptions);
+      // DO NOT set cookies here - already set in AuthServices.refreshTokenHandler
 
       sendResponse<IRefreshTokenResponse>(res, {
         statusCode: httpStatus.OK,

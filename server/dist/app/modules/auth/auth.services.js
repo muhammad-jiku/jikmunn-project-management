@@ -58,10 +58,17 @@ const loginUserHandler = (payload, res) => __awaiter(void 0, void 0, void 0, fun
         needsPasswordChange,
     };
 });
-const refreshTokenHandler = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const refreshTokenHandler = (req, // Use the correct type directly
+res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    // No need for casting
+    const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
+    if (!refreshToken) {
+        throw new handleApiError_1.default(http_status_1.default.UNAUTHORIZED, 'Refresh token not found');
+    }
     let verifiedToken;
     try {
-        verifiedToken = jwt_1.jwtHelpers.verifyToken(payload, config_1.default.jwt.refresh_secret);
+        verifiedToken = jwt_1.jwtHelpers.verifyToken(refreshToken, config_1.default.jwt.refresh_secret);
     }
     catch (err) {
         throw new handleApiError_1.default(http_status_1.default.FORBIDDEN, 'Invalid Refresh Token');
@@ -72,6 +79,17 @@ const refreshTokenHandler = (payload) => __awaiter(void 0, void 0, void 0, funct
         throw new handleApiError_1.default(http_status_1.default.NOT_FOUND, 'User does not exist!');
     }
     const newAccessToken = jwt_1.jwtHelpers.createToken({ userId, username, email, role }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
+    // Update the access token cookie
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    };
+    res.cookie('accessToken', newAccessToken, cookieOptions);
+    // Don't set refresh token again - just reuse the existing one
     return {
         accessToken: newAccessToken,
     };
@@ -166,19 +184,31 @@ const resetPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, func
 });
 const setAuthCookies = (res, accessToken, refreshToken) => {
     const isProduction = process.env.NODE_ENV === 'production';
-    res.cookie('accessToken', accessToken, {
+    // Common cookie options
+    const cookieOptions = {
         httpOnly: true,
-        secure: isProduction, // secure only in production (HTTPS)
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        secure: isProduction, // true in production for HTTPS
+        sameSite: isProduction ? 'none' : 'lax', // 'none' allows cross-site cookies in production
         path: '/',
-    });
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        path: '/auth/refresh-token',
+    };
+    // Set access token cookie
+    res.cookie('accessToken', accessToken, cookieOptions);
+    // Set refresh token cookie - only set once with consistent path
+    res.cookie('refreshToken', refreshToken, cookieOptions);
+    // // Set refresh token cookie - only set once with the path of '/auth/refresh-token'
+    // res.cookie('refreshToken', refreshToken, {
+    //   httpOnly: true,
+    //   secure: isProduction,
+    //   sameSite: 'lax',
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    //   path: '/auth/refresh-token',
+    // });
+    // For debugging
+    console.log('Cookies set:', {
+        accessToken: !!accessToken,
+        refreshToken: !!refreshToken,
+        options: cookieOptions,
     });
 };
 const verifyEmail = (token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -345,21 +375,25 @@ const changePasswordHandler = (user, payload) => __awaiter(void 0, void 0, void 
     }));
 });
 const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
-    // Clear cookies using res.clearCookie for convenience
-    res.clearCookie('accessToken', {
+    const isProduction = process.env.NODE_ENV === 'production';
+    // Common options for clearing cookies
+    const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         path: '/',
-        // expires: new Date(0), // Force expiration
-    });
-    res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/auth/refresh-token',
-        // expires: new Date(0), // Force expiration
-    });
+    };
+    // Clear cookies properly
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
+    // // Optionally, you can also clear the cookie to expire immediately in '/auth/refresh-token' path
+    // res.clearCookie('refreshToken', {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: 'lax',
+    //   path: '/auth/refresh-token',
+    //   // expires: new Date(0), // Force expiration
+    // });
     res.status(200).json({ message: 'Signed out successfully!' });
 });
 exports.AuthServices = {

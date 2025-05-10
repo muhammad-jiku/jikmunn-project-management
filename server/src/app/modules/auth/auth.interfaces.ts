@@ -4,7 +4,7 @@ export interface ILoginUser {
 }
 
 export interface ILoginUserResponse {
-  accessToken: string;
+  accessToken?: string;
   refreshToken?: string;
   needsEmailVerification: boolean;
   needsPasswordChange: boolean;

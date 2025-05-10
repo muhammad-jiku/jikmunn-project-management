@@ -9,35 +9,52 @@ export const auth =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       let token;
+      // Cast the request to our custom interface
+      const reqWithCookies = req as RequestWithCookies;
 
-      // Check Authorization header first and if not found, check cookies fallback for token
+      // Check for token in this order: 1. Authorization header, 2. Cookies
       if (
         req.headers.authorization &&
         req.headers.authorization.startsWith('Bearer ')
       ) {
         token = req.headers.authorization.split(' ')[1];
-      } else if (req.cookies && req.cookies.accessToken) {
-        token = req.cookies.accessToken;
+      } else if (reqWithCookies.cookies && reqWithCookies.cookies.accessToken) {
+        token = reqWithCookies.cookies.accessToken;
       }
-      console.log('req.headers', req.headers.authorization); // debugging log
-      console.log('req.cookies', req.cookies); // debugging log
-      console.log('token', token); // debugging log
+
       if (!token) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
       }
-      const verifiedUser = jwtHelpers.verifyToken(
-        token,
-        config.jwt.secret as string
-      );
 
-      // Check if the verified user has one of the required roles
-      if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {
-        throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden access');
+      try {
+        const verifiedUser = jwtHelpers.verifyToken(
+          token,
+          config.jwt.secret as string
+        );
+
+        // Check if the verified user has one of the required roles
+        if (
+          requiredRoles.length &&
+          !requiredRoles.includes(verifiedUser.role)
+        ) {
+          throw new ApiError(httpStatus.FORBIDDEN, 'Forbidden access');
+        }
+
+        req.user = verifiedUser;
+        next();
+      } catch (jwtError) {
+        // If token verification fails, try to renew using refresh token
+        const reqWithCookies = req as RequestWithCookies;
+        const refreshToken = reqWithCookies.cookies?.refreshToken;
+
+        if (!refreshToken) {
+          throw new ApiError(httpStatus.UNAUTHORIZED, 'Authentication failed');
+        }
+
+        // You might want to implement automatic token refresh here
+        // For now, just throw unauthorized
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Token expired');
       }
-
-      req.user = verifiedUser;
-
-      next();
     } catch (error) {
       next(error);
     }
