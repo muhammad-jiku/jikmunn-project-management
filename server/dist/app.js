@@ -16,11 +16,30 @@ const routes_1 = __importDefault(require("./app/routes"));
 const app = (0, express_1.default)();
 // cors options
 // This is a simple CORS configuration.
+// const corsOptions = {
+//   origin:
+//     process.env.NODE_ENV === 'production'
+//       ? [process.env.FRONTEND_URL as string]
+//       : 'http://localhost:3000',
+//   credentials: true, // Important for cookies
+//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// };
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production'
-        ? [process.env.FRONTEND_URL]
-        : 'http://localhost:3000',
-    credentials: true, // Important for cookies
+    origin: (origin, callback) => {
+        const allowedOrigins = process.env.NODE_ENV === 'production'
+            ? [process.env.FRONTEND_URL]
+            : ['http://localhost:3000'];
+        // Allow requests with no origin (like mobile apps, curl requests, etc)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            console.log(`Blocked CORS request from: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };

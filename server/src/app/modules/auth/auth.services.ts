@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import crypto from 'crypto';
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 import httpStatus from 'http-status';
 import { JwtPayload, Secret } from 'jsonwebtoken';
 import config from '../../../config';
@@ -275,21 +275,29 @@ const setAuthCookies = (
   refreshToken: string
 ): void => {
   const isProduction = process.env.NODE_ENV === 'production';
-  const frontendDomain = new URL(config.frontend_url as string).hostname;
-  const cookieDomain = isProduction
-    ? frontendDomain.includes('localhost')
-      ? undefined
-      : `.${frontendDomain.split('.').slice(-2).join('.')}`
-    : undefined;
 
-  console.log('Frontend Domain:', frontendDomain);
+  // Simpler, more reliable domain extraction
+  let cookieDomain;
+  if (isProduction && config.frontend_url) {
+    try {
+      const frontendDomain = new URL(config.frontend_url).hostname;
+      // Don't use a dot prefix for domains - modern browsers handle this automatically
+      cookieDomain =
+        frontendDomain === 'localhost' ? undefined : frontendDomain;
+    } catch (error) {
+      console.error('Error parsing frontend URL:', error);
+      cookieDomain = undefined;
+    }
+  }
+
   console.log('Cookie Domain:', cookieDomain);
 
   // Common cookie options
-  const cookieOptions = {
+  const cookieOptions: CookieOptions = {
     httpOnly: true,
     secure: isProduction, // true in production for HTTPS
-    sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'), // 'none' allows cross-site cookies in production
+    // sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'), // 'none' allows cross-site cookies in production
+    sameSite: isProduction ? 'none' : 'lax', // Explicitly typed as SameSiteOptions
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     domain: cookieDomain,
@@ -314,8 +322,10 @@ const setAuthCookies = (
   console.log('Cookies set:', {
     accessToken: !!accessToken,
     refreshToken: !!refreshToken,
-    options: cookieOptions,
-    cookieDomain,
+    options: {
+      ...cookieOptions,
+      domain: cookieDomain,
+    },
   });
 };
 
@@ -519,18 +529,29 @@ const changePasswordHandler = async (
 
 const logoutHandler = async (res: Response): Promise<void> => {
   const isProduction = process.env.NODE_ENV === 'production';
-  const frontendDomain = new URL(config.frontend_url as string).hostname;
-  const cookieDomain = isProduction
-    ? frontendDomain.includes('localhost')
-      ? undefined
-      : `.${frontendDomain.split('.').slice(-2).join('.')}`
-    : undefined;
 
-  // Common options for clearing cookies
-  const cookieOptions = {
+  // Simpler, more reliable domain extraction
+  let cookieDomain;
+  if (isProduction && config.frontend_url) {
+    try {
+      const frontendDomain = new URL(config.frontend_url).hostname;
+      // Don't use a dot prefix for domains - modern browsers handle this automatically
+      cookieDomain =
+        frontendDomain === 'localhost' ? undefined : frontendDomain;
+    } catch (error) {
+      console.error('Error parsing frontend URL:', error);
+      cookieDomain = undefined;
+    }
+  }
+
+  console.log('Cookie Domain:', cookieDomain);
+
+  // Common cookie options
+  const cookieOptions: CookieOptions = {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'),
+    secure: isProduction, // true in production for HTTPS
+    // sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'), // 'none' allows cross-site cookies in production
+    sameSite: isProduction ? 'none' : 'lax', // Explicitly typed as SameSiteOptions
     path: '/',
     domain: cookieDomain,
   };
