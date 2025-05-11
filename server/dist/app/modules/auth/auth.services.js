@@ -207,7 +207,7 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
         sameSite: isProduction ? 'none' : 'lax', // Explicitly typed as SameSiteOptions
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        domain: cookieDomain,
+        // domain: cookieDomain,
     };
     // Set access token cookie
     res.cookie('accessToken', accessToken, cookieOptions);
@@ -415,7 +415,7 @@ const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
         // sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'), // 'none' allows cross-site cookies in production
         sameSite: isProduction ? 'none' : 'lax', // Explicitly typed as SameSiteOptions
         path: '/',
-        domain: cookieDomain,
+        // domain: cookieDomain,
     };
     // Clear cookies properly
     res.clearCookie('accessToken', cookieOptions);
