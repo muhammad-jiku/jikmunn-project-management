@@ -1,6 +1,6 @@
 import TeamComp from '@/components/teams/Team';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 async function getTeam(id: string) {
@@ -9,17 +9,32 @@ async function getTeam(id: string) {
     const reqHeaders = await headers();
     const cookie = reqHeaders.get('cookie') || '';
 
+    // Get cookies explicitly rather than relying on header forwarding
+    const cookieStore = await cookies();
+    const authCookie = cookieStore.get('accessToken')?.value;
+
+    console.log('cookies', authCookie, cookie);
+
+    if (!cookie || !authCookie) {
+      console.error('No auth cookie found when fetching team');
+      return null;
+    }
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}teams/${id}`,
       {
-        cache: 'no-store',
         // Forward the cookie so that the protected API can authenticate
-        headers: { cookie },
+        cache: 'no-store',
+        headers: {
+          // cookie,
+          Cookie: `accessToken=${authCookie}`,
+          Authorization: `Bearer ${authCookie}`, // Add explicit auth header as fallback
+        },
       }
     );
 
     if (!res.ok) {
-      // Instead of throwing an error, return null
+      console.error(`Error fetching team: ${res.status} ${res.statusText}`);
       return null;
     }
 
@@ -82,12 +97,16 @@ type Props = {
 const TeamPage = async ({ params }: Props) => {
   // Await the params object to resolve any Promise
   const resolvedParams = await params;
+  console.log('resolved params', resolvedParams);
   const teamId = resolvedParams.id;
+  console.log('team id', teamId);
 
   const team = await getTeam(teamId);
+  console.log('team', team);
 
   // Only call notFound() in the component itself, not in generateMetadata
   if (!team) {
+    console.error(`Team with ID ${teamId} not found or error fetching data`);
     notFound();
   }
 

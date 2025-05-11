@@ -1,6 +1,6 @@
 import ProjectComp from '@/components/projects/Project';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 async function getProject(id: string) {
@@ -9,17 +9,32 @@ async function getProject(id: string) {
     const reqHeaders = await headers();
     const cookie = reqHeaders.get('cookie') || '';
 
+    // Get cookies explicitly rather than relying on header forwarding
+    const cookieStore = await cookies();
+    const authCookie = cookieStore.get('accessToken')?.value;
+
+    console.log('cookies', authCookie, cookie);
+
+    if (!cookie || !authCookie) {
+      console.error('No auth cookie found when fetching project');
+      return null;
+    }
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
       {
-        cache: 'no-store',
         // Forward the cookie so that the protected API can authenticate
-        headers: { cookie },
+        cache: 'no-store',
+        headers: {
+          // cookie,
+          Cookie: `accessToken=${authCookie}`,
+          Authorization: `Bearer ${authCookie}`, // Add explicit auth header as fallback
+        },
       }
     );
 
     if (!res.ok) {
-      // Instead of throwing an error, return null
+      console.error(`Error fetching project: ${res.status} ${res.statusText}`);
       return null;
     }
 
@@ -82,12 +97,18 @@ type Props = {
 const ProjectPage = async ({ params }: Props) => {
   // Await the params object to resolve any Promise
   const resolvedParams = await params;
+  console.log('resolved params', resolvedParams);
   const projectId = resolvedParams.id;
+  console.log('project id', projectId);
 
   const project = await getProject(projectId);
+  console.log('project', project);
 
   // Only call notFound() in the component itself, not in generateMetadata
   if (!project) {
+    console.error(
+      `Project with ID ${projectId} not found or error fetching data`
+    );
     notFound();
   }
 

@@ -140,14 +140,14 @@ const Sidebar = () => {
         <nav className='z-10 w-full'>
           <SidebarLink icon={Home} label='Home' href='/' />
           {/* <SidebarLink icon={Search} label='Search' href='/search' /> */}
-          {hasActionUserPermission && (
+          {globalUser && hasActionUserPermission && (
             <>
               <SidebarLink icon={Briefcase} label='Timeline' href='/timeline' />
               <SidebarLink icon={FolderCog} label='Projects' href='/projects' />
               <SidebarLink icon={UsersRound} label='Teams' href='/teams' />
             </>
           )}
-          {hasActionAuthorityPermission && (
+          {globalUser && hasActionAuthorityPermission && (
             <>
               <SidebarLink icon={Users} label='Developers' href='/developers' />
               <SidebarLink icon={Users} label='Managers' href='/managers' />
@@ -164,7 +164,7 @@ const Sidebar = () => {
         </nav>
 
         {/* PRIORITIES LINKS */}
-        {hasActionUserPermission && (
+        {globalUser && hasActionUserPermission && (
           <button
             onClick={() => setShowPriority((prev) => !prev)}
             className='flex w-full items-center justify-between px-8 py-3 text-gray-500'
@@ -178,7 +178,7 @@ const Sidebar = () => {
           </button>
         )}
 
-        {hasActionUserPermission && showPriority && (
+        {globalUser && hasActionUserPermission && showPriority && (
           <>
             <SidebarLink
               icon={AlertCircle}
