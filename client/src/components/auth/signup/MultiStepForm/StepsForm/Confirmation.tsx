@@ -516,33 +516,38 @@ const Confirmation: React.FC = () => {
               </Grid>
             </Paper>
 
-            {signupError && (
-              <Typography variant='body2' color='error' sx={{ mt: 2 }}>
-                {signupError}
-              </Typography>
-            )}
-
             {developerError && (
               <Typography variant='body2' color='error' sx={{ mt: 2 }}>
-                {(developerError as any).data?.message || ''}
+                {/* {(developerError as any).data?.message || ''} */}
+                Something wrong with the data providation!{' '}
               </Typography>
             )}
 
             {managerError && (
               <Typography variant='body2' color='error' sx={{ mt: 2 }}>
-                {(managerError as any).data?.message || ''}
+                {/* {(managerError as any).data?.message || ''} */}
+                Something wrong with the data providation!{' '}
               </Typography>
             )}
 
             {adminError && (
               <Typography variant='body2' color='error' sx={{ mt: 2 }}>
-                {(adminError as any).data?.message || ''}
+                {/* {(adminError as any).data?.message || ''} */}
+                Something wrong with the data providation!{' '}
               </Typography>
             )}
 
             {superAdminError && (
               <Typography variant='body2' color='error' sx={{ mt: 2 }}>
-                {(superAdminError as any).data?.message || ''}
+                {/* {(superAdminError as any).data?.message || ''} */}
+                Something wrong with the data providation!{' '}
+              </Typography>
+            )}
+
+            {signupError && (
+              <Typography variant='body2' color='error' sx={{ mt: 2 }}>
+                {/* {signupError} */}
+                Something went wrong, Please try again!
               </Typography>
             )}
 

@@ -251,7 +251,7 @@ const SignInForm: React.FC = () => {
               </Grid>
               {error && (
                 <Typography variant='body2' color='error' sx={{ mt: 2 }}>
-                  {(error as any).data?.message ||
+                  {(error as any).data &&
                     'Something went wrong, Please try again!'}
                 </Typography>
               )}

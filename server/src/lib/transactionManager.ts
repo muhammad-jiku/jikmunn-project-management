@@ -1,184 +1,141 @@
 import { PrismaClient } from '@prisma/client';
 import { prisma } from './prisma';
 
-/**
- * This utility provides enhanced transaction support with automatic retry and error recovery
- * specifically designed to address prepared statement errors in development and production.
- */
+const MAX_RETRIES = process.env.NODE_ENV === 'production' ? 5 : 3;
+const INITIAL_DELAY_MS = 200;
+const RESET_COOLDOWN_MS = 30000;
 
-// Store connection state information
+// Updated type definition for Prisma transaction client
+type PrismaTxClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
+
 const connectionState = {
-  lastReset: Date.now(),
-  consecutiveErrors: 0,
+  lastReset: 0,
+  errorCount: 0,
   isResetting: false,
 };
 
-/**
- * Execute a function within a transaction with prepared statement error handling
- * @param transactionFn Function to execute within the transaction
- * @returns Result of the transaction
- */
 export async function executeSafeTransaction<T>(
-  transactionFn: (
-    tx: Omit<
-      PrismaClient,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
-    >
-  ) => Promise<T>
+  fn: (tx: PrismaTxClient) => Promise<T>
 ): Promise<T> {
-  try {
-    // Try to execute the transaction normally
-    return await prisma.$transaction(transactionFn);
-  } catch (error) {
-    // Check if this is a prepared statement error that we can recover from
-    if (isPreparedStatementError(error)) {
-      console.warn(
-        'Detected prepared statement error, attempting recovery:',
-        (error as Error).message
-      ); // debugging log
+  let attempt = 0;
+  let lastError: Error = new Error('Initial error');
 
-      // Increment consecutive error count
-      connectionState.consecutiveErrors++;
+  while (attempt < MAX_RETRIES) {
+    try {
+      return await prisma.$transaction(async (tx) => fn(tx), {
+        maxWait: 5000,
+        timeout: 15000,
+      });
+    } catch (error) {
+      lastError = error as Error;
 
-      // If we're seeing too many errors, perform full connection reset
-      if (
-        connectionState.consecutiveErrors >= 3 &&
-        !connectionState.isResetting
-      ) {
-        await resetConnection();
+      if (shouldRetry(error)) {
+        attempt++;
+        const delay = getBackoffDelay(attempt);
+        console.warn(`Transaction retry #${attempt} in ${delay}ms`);
+        await delayExecution(delay);
+        continue;
       }
-
-      // Add a small delay before retry to allow connections to stabilize
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // Retry the transaction once after recovery attempt
-      try {
-        return await prisma.$transaction(transactionFn);
-      } catch (retryError) {
-        console.error(
-          'Transaction retry failed after recovery attempt:',
-          (retryError as Error).message
-        ); // debugging log
-
-        throw retryError;
-      }
-    } else {
-      // For non-connection errors, just throw normally
       throw error;
     }
   }
+
+  await handleRetryExhausted();
+  throw lastError;
 }
 
-/**
- * Enhanced query wrapper to handle prepared statement errors for non-transaction queries
- * @param queryFn Function that executes a Prisma query
- * @returns Result of the query
- */
 export async function executeSafeQuery<T>(
-  queryFn: () => Promise<T>
+  fn: () => Promise<T>,
+  context?: string
 ): Promise<T> {
-  try {
-    // Try to execute the query normally
-    return await queryFn();
-  } catch (error) {
-    // Check if this is a prepared statement error that we can recover from
-    if (isPreparedStatementError(error)) {
-      console.warn(
-        'Detected prepared statement error in query, attempting recovery:',
-        (error as Error).message
-      ); // debugging log
+  let attempt = 0;
+  let lastError: Error = new Error('Initial error');
 
-      // Increment consecutive error count
-      connectionState.consecutiveErrors++;
+  while (attempt < MAX_RETRIES) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
 
-      // If we're seeing too many errors, perform full connection reset
-      if (
-        connectionState.consecutiveErrors >= 3 &&
-        !connectionState.isResetting
-      ) {
-        await resetConnection();
+      if (shouldRetry(error)) {
+        attempt++;
+        const delay = getBackoffDelay(attempt);
+        console.warn(
+          `Query retry #${attempt} in ${delay}ms${context ? ` [${context}]` : ''}`
+        );
+        await delayExecution(delay);
+        continue;
       }
-
-      // Add a small delay before retry
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // Retry the query once after recovery
-      try {
-        return await queryFn();
-      } catch (retryError) {
-        console.error(
-          'Query retry failed after recovery attempt:',
-          (retryError as Error).message
-        ); // debugging log
-
-        throw retryError;
-      }
-    } else {
-      // For non-connection errors, just throw normally
       throw error;
     }
   }
+
+  await handleRetryExhausted();
+  throw lastError;
 }
 
-/**
- * Reset the database connection when experiencing persistent issues
- */
-async function resetConnection(): Promise<void> {
-  // Prevent multiple simultaneous resets
-  if (connectionState.isResetting) {
-    return;
+// Helper functions
+function shouldRetry(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+
+  const retryCodes = new Set([
+    '26000', // Prepared statement does not exist
+    '42P05', // Prepared statement already exists
+    '08S01', // Connection exception
+    '57P01', // Admin shutdown
+    '57P02', // Shutdown in progress
+    '57P03', // Cannot connect now
+  ]);
+
+  const message = error.message.toLowerCase();
+
+  return (
+    Array.from(retryCodes).some((code) => message.includes(code)) ||
+    message.includes('connection') ||
+    message.includes('pool') ||
+    message.includes('pgbouncer')
+  );
+}
+
+function getBackoffDelay(attempt: number): number {
+  const jitter = Math.random() * 100;
+  return Math.min(INITIAL_DELAY_MS * Math.pow(2, attempt), 5000) + jitter;
+}
+
+async function delayExecution(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function handleRetryExhausted(): Promise<void> {
+  connectionState.errorCount++;
+
+  if (
+    connectionState.errorCount >= 3 &&
+    Date.now() - connectionState.lastReset > RESET_COOLDOWN_MS
+  ) {
+    await resetConnection();
   }
+}
+
+async function resetConnection(): Promise<void> {
+  if (connectionState.isResetting) return;
 
   connectionState.isResetting = true;
+  console.log('[DB] Initiating connection reset...');
 
   try {
-    console.log(
-      'Resetting database connection to recover from statement errors...'
-    ); // debugging log
-
-    // Disconnect from database
     await prisma.$disconnect();
-
-    // Short delay to ensure connections are fully closed
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Reconnect
+    await delayExecution(1000);
     await prisma.$connect();
-
-    // Reset error count after successful reset
-    connectionState.consecutiveErrors = 0;
+    connectionState.errorCount = 0;
     connectionState.lastReset = Date.now();
-
-    console.log('Database connection reset successful'); // debugging log
+    console.log('[DB] Connection reset successful');
   } catch (error) {
-    console.error('Failed to reset database connection:', error); // debugging log
+    console.error('[DB] Connection reset failed:', error);
   } finally {
     connectionState.isResetting = false;
   }
-}
-
-/**
- * Check if an error is related to prepared statements or connection issues
- */
-function isPreparedStatementError(error: unknown): boolean {
-  if (!(error instanceof Error)) {
-    return false;
-  }
-
-  const errorMessage = error.message.toLowerCase();
-  const errorStack = error.stack?.toLowerCase() || '';
-
-  // Check for specific PostgreSQL error codes and messages
-  return (
-    // Prepared statement does not exist
-    errorMessage.includes('prepared statement') ||
-    errorMessage.includes('code: "26000"') ||
-    // Prepared statement already exists
-    errorMessage.includes('code: "42p05"') ||
-    // Generic connector errors that might be related
-    (errorMessage.includes('connector') &&
-      errorMessage.includes('statement')) ||
-    // Check the stack trace for transaction-related errors
-    (errorStack.includes('transaction') && errorStack.includes('prisma'))
-  );
 }
