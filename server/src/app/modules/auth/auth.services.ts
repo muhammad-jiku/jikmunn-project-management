@@ -275,6 +275,15 @@ const setAuthCookies = (
   refreshToken: string
 ): void => {
   const isProduction = process.env.NODE_ENV === 'production';
+  const frontendDomain = new URL(config.frontend_url as string).hostname;
+  const cookieDomain = isProduction
+    ? frontendDomain.includes('localhost')
+      ? undefined
+      : `.${frontendDomain.split('.').slice(-2).join('.')}`
+    : undefined;
+
+  console.log('Frontend Domain:', frontendDomain);
+  console.log('Cookie Domain:', cookieDomain);
 
   // Common cookie options
   const cookieOptions = {
@@ -283,6 +292,7 @@ const setAuthCookies = (
     sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'), // 'none' allows cross-site cookies in production
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    domain: cookieDomain,
   };
 
   // Set access token cookie
@@ -305,6 +315,7 @@ const setAuthCookies = (
     accessToken: !!accessToken,
     refreshToken: !!refreshToken,
     options: cookieOptions,
+    cookieDomain,
   });
 };
 
@@ -508,6 +519,12 @@ const changePasswordHandler = async (
 
 const logoutHandler = async (res: Response): Promise<void> => {
   const isProduction = process.env.NODE_ENV === 'production';
+  const frontendDomain = new URL(config.frontend_url as string).hostname;
+  const cookieDomain = isProduction
+    ? frontendDomain.includes('localhost')
+      ? undefined
+      : `.${frontendDomain.split('.').slice(-2).join('.')}`
+    : undefined;
 
   // Common options for clearing cookies
   const cookieOptions = {
@@ -515,6 +532,7 @@ const logoutHandler = async (res: Response): Promise<void> => {
     secure: isProduction,
     sameSite: isProduction ? 'none' : ('lax' as 'none' | 'lax'),
     path: '/',
+    domain: cookieDomain,
   };
 
   // Clear cookies properly

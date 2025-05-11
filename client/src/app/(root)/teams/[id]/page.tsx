@@ -1,46 +1,41 @@
+export const dynamic = 'force-dynamic'; // Disable static rendering
+
 import TeamComp from '@/components/teams/Team';
 import { Metadata } from 'next';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 async function getTeam(id: string) {
   try {
-    // Get the cookies from the incoming request headers
-    const reqHeaders = await headers();
-    const cookie = reqHeaders.get('cookie') || '';
-
-    // Get cookies explicitly rather than relying on header forwarding
     const cookieStore = await cookies();
-    const authCookie = cookieStore.get('accessToken')?.value;
+    const cookieString = await cookieStore.toString();
 
-    console.log('cookies', authCookie, cookie);
+    console.log('Team API Cookies:', cookieString);
 
-    if (!cookie || !authCookie) {
-      console.error('No auth cookie found when fetching team');
+    if (!cookieString) {
+      console.error('No cookies found when fetching team');
       return null;
     }
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}teams/${id}`,
       {
-        // Forward the cookie so that the protected API can authenticate
         cache: 'no-store',
         headers: {
-          // cookie,
-          Cookie: `accessToken=${authCookie}`,
-          Authorization: `Bearer ${authCookie}`, // Add explicit auth header as fallback
+          Cookie: cookieString,
+          Authorization: `Bearer ${cookieStore.get('accessToken')?.value || ''}`,
         },
       }
     );
 
     if (!res.ok) {
-      console.error(`Error fetching team: ${res.status} ${res.statusText}`);
+      console.error(`Team API Error: ${res.status} ${res.statusText}`);
       return null;
     }
 
     return res.json();
   } catch (error) {
-    console.error('Error fetching team:', error);
+    console.error('Team Fetch Error:', error);
     return null;
   }
 }
@@ -56,36 +51,24 @@ export async function generateMetadata({
     const teamId = resolvedParams.id;
 
     const team = await getTeam(teamId);
-
-    // If team is null, return default metadata
-    if (!team?.data) {
-      return {
-        title: 'Team - Project Management Dashboard',
-        description: 'Team details',
-      };
-    }
+    console.log('Team Data:', team);
 
     return {
-      title: `${team.data.name} - Project Management Dashboard`,
-      description: team.data.description || 'Team details',
+      title: team?.data?.name
+        ? `${team.data.name} - Project Management Dashboard`
+        : 'Team Details',
+      description: team?.data?.description || 'Team management details',
       openGraph: {
-        title: `${team.data.name} - Project Management Dashboard`,
-        description: team.data.description || 'Team details',
+        title: team?.data?.name || 'Team Details',
+        description: team?.data?.description || 'Team management details',
         url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}teams/${teamId}`,
-        type: 'website',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: `${team.data.name} - Project Management Dashboard`,
-        description: team.data.description || 'Team details',
       },
     };
   } catch (error) {
-    console.error('metadata error', error);
-    // Return default metadata instead of notFound()
+    console.error('Metadata Generation Error:', error);
     return {
-      title: 'Team - Project Management Dashboard',
-      description: 'Team details',
+      title: 'Team Details',
+      description: 'Team management details',
     };
   }
 }
@@ -94,23 +77,18 @@ type Props = {
   params: { id: string } | Promise<{ id: string }>;
 };
 
-const TeamPage = async ({ params }: Props) => {
+export default async function TeamPage({ params }: Props) {
   // Await the params object to resolve any Promise
   const resolvedParams = await params;
-  console.log('resolved params', resolvedParams);
   const teamId = resolvedParams.id;
-  console.log('team id', teamId);
 
   const team = await getTeam(teamId);
-  console.log('team', team);
+  console.log('Team Data:', team);
 
-  // Only call notFound() in the component itself, not in generateMetadata
-  if (!team) {
-    console.error(`Team with ID ${teamId} not found or error fetching data`);
+  if (!team?.data) {
+    console.error(`Team ${teamId} not found`);
     notFound();
   }
 
   return <TeamComp params={{ id: teamId }} />;
-};
-
-export default TeamPage;
+}

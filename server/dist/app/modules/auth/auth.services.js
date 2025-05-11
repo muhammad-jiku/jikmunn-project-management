@@ -184,6 +184,14 @@ const resetPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, func
 });
 const setAuthCookies = (res, accessToken, refreshToken) => {
     const isProduction = process.env.NODE_ENV === 'production';
+    const frontendDomain = new URL(config_1.default.frontend_url).hostname;
+    const cookieDomain = isProduction
+        ? frontendDomain.includes('localhost')
+            ? undefined
+            : `.${frontendDomain.split('.').slice(-2).join('.')}`
+        : undefined;
+    console.log('Frontend Domain:', frontendDomain);
+    console.log('Cookie Domain:', cookieDomain);
     // Common cookie options
     const cookieOptions = {
         httpOnly: true,
@@ -191,6 +199,7 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
         sameSite: isProduction ? 'none' : 'lax', // 'none' allows cross-site cookies in production
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        domain: cookieDomain,
     };
     // Set access token cookie
     res.cookie('accessToken', accessToken, cookieOptions);
@@ -209,6 +218,7 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
         accessToken: !!accessToken,
         refreshToken: !!refreshToken,
         options: cookieOptions,
+        cookieDomain,
     });
 };
 const verifyEmail = (token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -376,12 +386,19 @@ const changePasswordHandler = (user, payload) => __awaiter(void 0, void 0, void 
 });
 const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
     const isProduction = process.env.NODE_ENV === 'production';
+    const frontendDomain = new URL(config_1.default.frontend_url).hostname;
+    const cookieDomain = isProduction
+        ? frontendDomain.includes('localhost')
+            ? undefined
+            : `.${frontendDomain.split('.').slice(-2).join('.')}`
+        : undefined;
     // Common options for clearing cookies
     const cookieOptions = {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
         path: '/',
+        domain: cookieDomain,
     };
     // Clear cookies properly
     res.clearCookie('accessToken', cookieOptions);
