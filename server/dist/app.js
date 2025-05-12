@@ -15,7 +15,7 @@ const globalErrorHandler_1 = __importDefault(require("./app/middlewares/globalEr
 const routes_1 = __importDefault(require("./app/routes"));
 const app = (0, express_1.default)();
 // TRUST PROXY – must come before any rate-limit or CORS
-//    On Vercel you generally trust the first proxy hop:
+// On Vercel you generally trust the first proxy hop:
 app.set('trust proxy', 1);
 // cors options
 // This is a simple CORS configuration.
