@@ -5,15 +5,65 @@ import { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
+// async function getProject(id: string) {
+//   try {
+//     const cookieStore = await cookies();
+//     const cookieString = await cookieStore.toString();
+
+//     console.log('Project API Cookies:', cookieString);
+
+//     if (!cookieString) {
+//       console.error('No cookies found when fetching project');
+//       return null;
+//     }
+
+//     const res = await fetch(
+//       `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
+//       {
+//         cache: 'no-store',
+//         headers: {
+//           Cookie: cookieString,
+//           Authorization: `Bearer ${cookieStore.get('accessToken')?.value || ''}`,
+//         },
+//       }
+//     );
+
+//     if (!res.ok) {
+//       console.error(`Project API Error: ${res.status} ${res.statusText}`);
+//       return null;
+//     }
+
+//     return res.json();
+//   } catch (error) {
+//     console.error('Project Fetch Error:', error);
+//     return null;
+//   }
+// }
+
 async function getProject(id: string) {
   try {
     const cookieStore = await cookies();
-    const cookieString = await cookieStore.toString();
 
-    console.log('Project API Cookies:', cookieString);
+    // Don't use toString() on cookieStore, it doesn't work as expected
+    const accessToken = cookieStore.get('accessToken')?.value;
+    const refreshToken = cookieStore.get('refreshToken')?.value;
 
-    if (!cookieString) {
-      console.error('No cookies found when fetching project');
+    // Create a proper cookie string
+    const cookieString = [
+      accessToken ? `accessToken=${accessToken}` : '',
+      refreshToken ? `refreshToken=${refreshToken}` : '',
+    ]
+      .filter(Boolean)
+      .join('; ');
+
+    console.log('Project API Cookie Status:', {
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken,
+      hasCookieString: !!cookieString,
+    });
+
+    if (!accessToken) {
+      console.error('No access token found when fetching project');
       return null;
     }
 
@@ -23,7 +73,7 @@ async function getProject(id: string) {
         cache: 'no-store',
         headers: {
           Cookie: cookieString,
-          Authorization: `Bearer ${cookieStore.get('accessToken')?.value || ''}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       }
     );

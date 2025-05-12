@@ -185,13 +185,32 @@ const resetPasswordHandler = (payload) => __awaiter(void 0, void 0, void 0, func
 const setAuthCookies = (res, accessToken, refreshToken) => {
     const isProduction = process.env.NODE_ENV === 'production';
     // Simpler, more reliable domain extraction
+    // let cookieDomain;
+    // if (isProduction && config.frontend_url) {
+    //   try {
+    //     const frontendDomain = new URL(config.frontend_url).hostname;
+    //     // Don't use a dot prefix for domains - modern browsers handle this automatically
+    //     cookieDomain =
+    //       frontendDomain === 'localhost' ? undefined : frontendDomain;
+    //   } catch (error) {
+    //     console.error('Error parsing frontend URL:', error);
+    //     cookieDomain = undefined;
+    //   }
+    // }
+    // Improved domain extraction
     let cookieDomain;
     if (isProduction && config_1.default.frontend_url) {
         try {
-            const frontendDomain = new URL(config_1.default.frontend_url).hostname;
-            // Don't use a dot prefix for domains - modern browsers handle this automatically
-            cookieDomain =
-                frontendDomain === 'localhost' ? undefined : frontendDomain;
+            const frontendURL = new URL(config_1.default.frontend_url);
+            const hostname = frontendURL.hostname;
+            console.log('Frontend URL:', config_1.default.frontend_url);
+            console.log('Hostname:', hostname);
+            // Don't set domain for localhost
+            if (hostname !== 'localhost') {
+                // For production, use the actual domain
+                cookieDomain = hostname;
+            }
+            console.log('Cookie Domain:', cookieDomain);
         }
         catch (error) {
             console.error('Error parsing frontend URL:', error);
@@ -209,6 +228,10 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         // domain: cookieDomain,
     };
+    // Only add domain in production and when it's a valid domain
+    if (isProduction && cookieDomain && cookieDomain !== 'localhost') {
+        cookieOptions.domain = cookieDomain;
+    }
     // Set access token cookie
     res.cookie('accessToken', accessToken, cookieOptions);
     // Set refresh token cookie - only set once with consistent path
@@ -225,7 +248,7 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
     console.log('Cookies set:', {
         accessToken: !!accessToken,
         refreshToken: !!refreshToken,
-        options: Object.assign(Object.assign({}, cookieOptions), { domain: cookieDomain }),
+        options: cookieOptions,
     });
 };
 const verifyEmail = (token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -393,21 +416,39 @@ const changePasswordHandler = (user, payload) => __awaiter(void 0, void 0, void 
 });
 const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
     const isProduction = process.env.NODE_ENV === 'production';
-    // Simpler, more reliable domain extraction
+    // // Simpler, more reliable domain extraction
+    // let cookieDomain;
+    // if (isProduction && config.frontend_url) {
+    //   try {
+    //     const frontendDomain = new URL(config.frontend_url).hostname;
+    //     // Don't use a dot prefix for domains - modern browsers handle this automatically
+    //     cookieDomain =
+    //       frontendDomain === 'localhost' ? undefined : frontendDomain;
+    //   } catch (error) {
+    //     console.error('Error parsing frontend URL:', error);
+    //     cookieDomain = undefined;
+    //   }
+    // }
+    // Improved domain extraction - same as setAuthCookies
     let cookieDomain;
     if (isProduction && config_1.default.frontend_url) {
         try {
-            const frontendDomain = new URL(config_1.default.frontend_url).hostname;
-            // Don't use a dot prefix for domains - modern browsers handle this automatically
-            cookieDomain =
-                frontendDomain === 'localhost' ? undefined : frontendDomain;
+            const frontendURL = new URL(config_1.default.frontend_url);
+            const hostname = frontendURL.hostname;
+            console.log('Frontend URL:', config_1.default.frontend_url);
+            console.log('Hostname:', hostname);
+            // Don't set domain for localhost
+            if (hostname !== 'localhost') {
+                // For production, use the actual domain
+                cookieDomain = hostname;
+            }
+            console.log('Cookie Domain:', cookieDomain);
         }
         catch (error) {
             console.error('Error parsing frontend URL:', error);
             cookieDomain = undefined;
         }
     }
-    console.log('Cookie Domain:', cookieDomain);
     // Common cookie options
     const cookieOptions = {
         httpOnly: true,
@@ -417,6 +458,10 @@ const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
         path: '/',
         // domain: cookieDomain,
     };
+    // Only add domain in production and when it's a valid domain
+    if (isProduction && cookieDomain && cookieDomain !== 'localhost') {
+        cookieOptions.domain = cookieDomain;
+    }
     // Clear cookies properly
     res.clearCookie('accessToken', cookieOptions);
     res.clearCookie('refreshToken', cookieOptions);
