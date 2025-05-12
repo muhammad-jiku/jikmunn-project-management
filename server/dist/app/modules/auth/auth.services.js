@@ -208,7 +208,7 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
             // Don't set domain for localhost
             if (hostname !== 'localhost') {
                 // For production, use the actual domain
-                cookieDomain = hostname;
+                cookieDomain = `.${hostname}`;
             }
             console.log('Cookie Domain:', cookieDomain);
         }
@@ -440,7 +440,7 @@ const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
             // Don't set domain for localhost
             if (hostname !== 'localhost') {
                 // For production, use the actual domain
-                cookieDomain = hostname;
+                cookieDomain = `.${hostname}`;
             }
             console.log('Cookie Domain:', cookieDomain);
         }
