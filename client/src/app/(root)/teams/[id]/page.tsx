@@ -71,6 +71,7 @@ async function getTeam(id: string) {
       `${process.env.NEXT_PUBLIC_API_BASE_URL}teams/${id}`,
       {
         cache: 'no-store',
+        credentials: 'include',
         headers: {
           Cookie: cookieString,
           Authorization: `Bearer ${accessToken}`,

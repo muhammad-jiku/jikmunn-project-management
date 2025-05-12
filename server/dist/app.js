@@ -14,6 +14,9 @@ const dbConnectionMiddleware_1 = require("./app/middlewares/dbConnectionMiddlewa
 const globalErrorHandler_1 = __importDefault(require("./app/middlewares/globalErrorHandler"));
 const routes_1 = __importDefault(require("./app/routes"));
 const app = (0, express_1.default)();
+// TRUST PROXY – must come before any rate-limit or CORS
+//    On Vercel you generally trust the first proxy hop:
+app.set('trust proxy', 1);
 // cors options
 // This is a simple CORS configuration.
 const corsOptions = {
@@ -42,17 +45,18 @@ const corsOptions = {
 //   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 // };
-// parser and middleware
 app.use((0, cors_1.default)(corsOptions));
+// cookie parsers and security
 app.use((0, cookie_parser_1.default)());
 app.use((0, helmet_1.default)());
 app.use(helmet_1.default.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 app.use((0, morgan_1.default)('common'));
+// body parsers
 app.use(express_1.default.json({ limit: '20mb' }));
 app.use(express_1.default.urlencoded({ limit: '20mb', extended: true }));
 app.use(body_parser_1.default.json({ limit: '20mb' }));
 app.use(body_parser_1.default.urlencoded({ limit: '20mb', extended: true }));
-// api initialization
+// api route initialization
 app.use('/api/v1', dbConnectionMiddleware_1.ensureDatabaseConnection, routes_1.default);
 // global error handler
 app.use(globalErrorHandler_1.default);

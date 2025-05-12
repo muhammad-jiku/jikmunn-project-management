@@ -71,6 +71,7 @@ async function getProject(id: string) {
       `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
       {
         cache: 'no-store',
+        credentials: 'include',
         headers: {
           Cookie: cookieString,
           Authorization: `Bearer ${accessToken}`,
