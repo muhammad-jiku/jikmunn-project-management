@@ -14,19 +14,26 @@ async function getProject(id: string) {
   console.log('base url', process.env.NEXT_PUBLIC_API_BASE_URL);
   console.log('id', id);
 
+  // const res = await fetch(
+  //   `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
+  //   {
+  //     cache: 'no-store',
+  //     // Forward the cookie so that the protected API can authenticate
+  //     headers: {
+  //       cookie,
+  //     },
+  //   }
+  // );
+  // if (!res.ok) {
+  //   throw new Error('Failed to fetch project data');
+  // }
+  // return res.json();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
-    {
-      cache: 'no-store',
-      // Forward the cookie so that the protected API can authenticate
-      headers: {
-        cookie,
-      },
-    }
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects/${id}`,
+    { credentials: 'include' }
   );
-  if (!res.ok) {
-    throw new Error('Failed to fetch project data');
-  }
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Failed to fetch project');
   return res.json();
 }
 
@@ -74,18 +81,18 @@ export default async function ProjectPage({ params }: Props) {
   const resolvedParams = await params;
   const projectId = resolvedParams?.id;
 
-  try {
-    // Fetch project data
-    const project = await getProject(projectId);
-    console.log('Project Data:', project);
+  // try {
+  // Fetch project data
+  const project = await getProject(projectId);
+  console.log('Project Data:', project);
 
-    if (!project) {
-      notFound();
-    }
-
-    return <ProjectComp params={{ id: projectId }} />;
-  } catch (error) {
-    console.error('Error fetching project data:', error);
+  if (!project) {
     notFound();
   }
+
+  return <ProjectComp params={{ id: projectId }} />;
+  // } catch (error) {
+  //   console.error('Error fetching project data:', error);
+  //   notFound();
+  // }
 }

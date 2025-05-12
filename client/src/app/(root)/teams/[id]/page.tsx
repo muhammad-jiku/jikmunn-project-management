@@ -14,19 +14,26 @@ async function getTeam(id: string) {
   console.log('base url', process.env.NEXT_PUBLIC_API_BASE_URL);
   console.log('id', id);
 
+  // const res = await fetch(
+  //   `${process.env.NEXT_PUBLIC_API_BASE_URL}teams/${id}`,
+  //   {
+  //     cache: 'no-store',
+  //     // Forward the cookie so that the protected API can authenticate
+  //     headers: {
+  //       cookie,
+  //     },
+  //   }
+  // );
+  // if (!res.ok) {
+  //   throw new Error('Failed to fetch team data');
+  // }
+  // return res.json();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}teams/${id}`,
-    {
-      cache: 'no-store',
-      // Forward the cookie so that the protected API can authenticate
-      headers: {
-        cookie,
-      },
-    }
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/teams/${id}`,
+    { credentials: 'include' }
   );
-  if (!res.ok) {
-    throw new Error('Failed to fetch team data');
-  }
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Failed to fetch team');
   return res.json();
 }
 
@@ -74,18 +81,18 @@ export default async function TeamPage({ params }: Props) {
   const resolvedParams = await params;
   const teamId = resolvedParams?.id;
 
-  try {
-    // Fetch team data
-    const team = await getTeam(teamId);
-    console.log('Team Data:', team);
+  // try {
+  // Fetch team data
+  const team = await getTeam(teamId);
+  console.log('Team Data:', team);
 
-    if (!team) {
-      notFound();
-    }
-
-    return <TeamComp params={{ id: teamId }} />;
-  } catch (error) {
-    console.error('Error fetching team data:', error);
+  if (!team) {
     notFound();
   }
+
+  return <TeamComp params={{ id: teamId }} />;
+  // } catch (error) {
+  //   console.error('Error fetching team data:', error);
+  //   notFound();
+  // }
 }
