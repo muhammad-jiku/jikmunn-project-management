@@ -1,8 +1,6 @@
 export const dynamic = 'force-dynamic'; // Disable static rendering
 
 import ProjectComp from '@/components/projects/Project';
-import { fetchProjectData } from '@/lib/serverSideFetch';
-import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 
 // async function getProject(id: string) {
@@ -76,35 +74,35 @@ type Props = {
   params: { id: string } | Promise<{ id: string }>;
 };
 
-export async function generateMetadata(
-  { params }: Props,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const resolvedParams = await params;
+// export async function generateMetadata(
+//   { params }: Props,
+//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//   parent: ResolvingMetadata
+// ): Promise<Metadata> {
+//   const resolvedParams = await params;
 
-  // Fetch project data
-  try {
-    const project = await fetchProjectData(Number(resolvedParams.id));
+//   // Fetch project data
+//   try {
+//     const project = await fetchProjectData(Number(resolvedParams.id));
 
-    if (!project || !project.data) {
-      return {
-        title: 'Project Not Found',
-      };
-    }
+//     if (!project || !project.data) {
+//       return {
+//         title: 'Project Not Found',
+//       };
+//     }
 
-    return {
-      title: `${project.data.title} | Project Management Dashboard`,
-      description: project.data.description || 'Project details and management',
-    };
-  } catch (error) {
-    console.error('Error fetching project metadata:', error);
-    return {
-      title: 'Project Details',
-      description: 'Project management dashboard',
-    };
-  }
-}
+//     return {
+//       title: `${project.data.title} | Project Management Dashboard`,
+//       description: project.data.description || 'Project details and management',
+//     };
+//   } catch (error) {
+//     console.error('Error fetching project metadata:', error);
+//     return {
+//       title: 'Project Details',
+//       description: 'Project management dashboard',
+//     };
+//   }
+// }
 
 export default async function ProjectPage({ params }: Props) {
   // Await the params object to resolve any Promise
@@ -113,12 +111,12 @@ export default async function ProjectPage({ params }: Props) {
 
   try {
     // Fetch project data
-    const project = await fetchProjectData(Number(resolvedParams.id));
-    console.log('Project Data:', project);
+    // const project = await fetchProjectData(Number(resolvedParams.id));
+    // console.log('Project Data:', project);
 
-    if (!project.success) {
-      notFound();
-    }
+    // if (!project.success) {
+    //   notFound();
+    // }
 
     return <ProjectComp params={{ id: projectId }} />;
   } catch (error) {

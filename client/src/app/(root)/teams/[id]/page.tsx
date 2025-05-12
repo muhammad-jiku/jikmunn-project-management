@@ -1,8 +1,6 @@
 export const dynamic = 'force-dynamic'; // Disable static rendering
 
 import TeamComp from '@/components/teams/Team';
-import { fetchTeamData } from '@/lib/serverSideFetch';
-import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 
 // async function getTeam(id: string) {
@@ -76,35 +74,35 @@ type Props = {
   params: { id: string } | Promise<{ id: string }>;
 };
 
-export async function generateMetadata(
-  { params }: Props,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const resolvedParams = await params;
+// export async function generateMetadata(
+//   { params }: Props,
+//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//   parent: ResolvingMetadata
+// ): Promise<Metadata> {
+//   const resolvedParams = await params;
 
-  // Fetch team data
-  try {
-    const team = await fetchTeamData(Number(resolvedParams.id));
+//   // Fetch team data
+//   try {
+//     const team = await fetchTeamData(Number(resolvedParams.id));
 
-    if (!team || !team.data) {
-      return {
-        title: 'Team Not Found',
-      };
-    }
+//     if (!team || !team.data) {
+//       return {
+//         title: 'Team Not Found',
+//       };
+//     }
 
-    return {
-      title: `${team.data.name} | Project Management Dashboard`,
-      description: team.data.description || 'Team details and management',
-    };
-  } catch (error) {
-    console.error('Error fetching project metadata:', error);
-    return {
-      title: 'Team Details',
-      description: 'Project management dashboard',
-    };
-  }
-}
+//     return {
+//       title: `${team.data.name} | Project Management Dashboard`,
+//       description: team.data.description || 'Team details and management',
+//     };
+//   } catch (error) {
+//     console.error('Error fetching project metadata:', error);
+//     return {
+//       title: 'Team Details',
+//       description: 'Project management dashboard',
+//     };
+//   }
+// }
 
 export default async function TeamPage({ params }: Props) {
   // Await the params object to resolve any Promise
@@ -113,12 +111,12 @@ export default async function TeamPage({ params }: Props) {
 
   try {
     // Fetch team data
-    const team = await fetchTeamData(Number(teamId));
-    console.log('Team Data:', team);
+    // const team = await fetchTeamData(Number(teamId));
+    // console.log('Team Data:', team);
 
-    if (!team.success) {
-      notFound();
-    }
+    // if (!team.success) {
+    //   notFound();
+    // }
 
     return <TeamComp params={{ id: teamId }} />;
   } catch (error) {
