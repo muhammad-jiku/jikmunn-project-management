@@ -1,60 +1,103 @@
-import { headers } from 'next/headers';
+import { cookies } from 'next/headers';
 
-export async function serverSideFetch<T>(
-  url: string,
-  options: RequestInit = {}
-): Promise<T> {
+/**
+ * Fetches project data by ID from the API with authentication
+ */
+export async function fetchProjectData(id: number) {
   try {
-    // Retrieve server-side cookies
-    const headerStore = await headers();
-    const accessToken =
-      headerStore.get('X-Access-Token') || // From middleware
-      headerStore.get('Authorization')?.replace('Bearer ', '') || // Direct Authorization header
-      process.env.FALLBACK_ACCESS_TOKEN; // Fallback environment token
-    console.log('Access Token:', accessToken);
-    console.log('Header Store:', headerStore);
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    console.log('apiBaseUrl', apiBaseUrl);
 
-    // Prepare headers with authentication
-    const finalHeaders = new Headers(options.headers);
-    console.log('Headers:', finalHeaders);
-
-    if (accessToken) {
-      finalHeaders.set('Authorization', `Bearer ${accessToken}`);
+    if (!apiBaseUrl) {
+      throw new Error('API base URL is not defined in environment variables');
     }
 
-    console.log('backend url:', process.env.NEXT_PUBLIC_API_BASE_URL);
-    console.log('Server-Side Fetch Debug:', {
-      url,
-      accessToken: accessToken ? 'Token Present' : 'No Token',
-      headers: Object.fromEntries(finalHeaders.entries()),
+    // Get all cookies to forward them to the API
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join('; ');
+
+    // Make the API request with cookies
+    const response = await fetch(`${apiBaseUrl}/projects/${id}`, {
+      headers: {
+        Cookie: cookieHeader,
+      },
+      // This ensures cookies are handled properly
+      credentials: 'include',
+      // Cache control
+      next: { revalidate: 60 },
     });
-    // Perform fetch with combined options
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`,
-      {
-        ...options,
-        headers: finalHeaders,
-        credentials: 'include',
-        cache: 'no-store', // Ensure fresh data
-      }
-    );
-    console.log('Response:', response);
+    console.log('projects response', response);
 
-    // Handle non-successful responses
     if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Fetch Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorBody,
-      });
-
-      throw new Error(`API request failed: ${response.status} - ${errorBody}`);
+      if (response.status === 404) {
+        return null; // Project not found
+      }
+      // Handle unauthorized access (token expired or invalid)
+      if (response.status === 401) {
+        // You might want to handle token refresh here
+        // or just return null to show not found
+        return null;
+      }
+      throw new Error(`Failed to fetch project: ${response.statusText}`);
     }
 
-    return response.json();
+    return await response.json();
   } catch (error) {
-    console.error('Complete Fetch Error:', error);
+    console.error('Error fetching project data:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches team data by ID from the API with authentication
+ */
+export async function fetchTeamData(id: number) {
+  try {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    console.log('apiBaseUrl', apiBaseUrl);
+
+    if (!apiBaseUrl) {
+      throw new Error('API base URL is not defined in environment variables');
+    }
+
+    // Get all cookies to forward them to the API
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join('; ');
+
+    // Make the API request with cookies
+    const response = await fetch(`${apiBaseUrl}/teams/${id}`, {
+      headers: {
+        Cookie: cookieHeader,
+      },
+      // This ensures cookies are handled properly
+      credentials: 'include',
+      // Cache control
+      next: { revalidate: 60 },
+    });
+    console.log('teams response', response);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null; // Team not found
+      }
+      // Handle unauthorized access (token expired or invalid)
+      if (response.status === 401) {
+        // You might want to handle token refresh here
+        // or just return null to show not found
+        return null;
+      }
+      throw new Error(`Failed to fetch team: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching team data:', error);
     throw error;
   }
 }
