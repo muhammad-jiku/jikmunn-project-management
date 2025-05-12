@@ -276,28 +276,12 @@ const setAuthCookies = (
 ): void => {
   const isProduction = process.env.NODE_ENV === 'production';
 
-  // Simpler, more reliable domain extraction
-  // let cookieDomain;
-  // if (isProduction && config.frontend_url) {
-  //   try {
-  //     const frontendDomain = new URL(config.frontend_url).hostname;
-  //     // Don't use a dot prefix for domains - modern browsers handle this automatically
-  //     cookieDomain =
-  //       frontendDomain === 'localhost' ? undefined : frontendDomain;
-  //   } catch (error) {
-  //     console.error('Error parsing frontend URL:', error);
-  //     cookieDomain = undefined;
-  //   }
-  // }
   // Improved domain extraction
   let cookieDomain;
   if (isProduction && config.frontend_url) {
     try {
       const frontendURL = new URL(config.frontend_url);
       const hostname = frontendURL.hostname;
-
-      console.log('Frontend URL:', config.frontend_url);
-      console.log('Hostname:', hostname);
 
       // Don't set domain for localhost
       if (hostname !== 'localhost') {
@@ -306,14 +290,14 @@ const setAuthCookies = (
         // cookieDomain = `.${hostname}`;
       }
 
-      console.log('Cookie Domain:', cookieDomain);
+      console.log('Cookie Domain:', cookieDomain); // debugging log
     } catch (error) {
-      console.error('Error parsing frontend URL:', error);
+      console.error('Error parsing frontend URL:', error); // debugging log
       cookieDomain = undefined;
     }
   }
 
-  console.log('Cookie Domain:', cookieDomain);
+  // console.log('Cookie Domain:', cookieDomain); // debugging log
 
   // Common cookie options
   const cookieOptions: CookieOptions = {
@@ -332,22 +316,12 @@ const setAuthCookies = (
   // Set refresh token cookie - only set once with consistent path
   res.cookie('refreshToken', refreshToken, cookieOptions);
 
-  // // Set refresh token cookie - only set once with the path of '/auth/refresh-token'
-  // res.cookie('refreshToken', refreshToken, {
-  //   httpOnly: true,
-  //   secure: isProduction,
-  //   sameSite: 'lax',
-  //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  //   path: '/auth/refresh-token',
-  // });
-
-  // For debugging
-  console.log('Cookies set:', {
-    accessToken: !!accessToken,
-    refreshToken: !!refreshToken,
-    options: cookieOptions,
-    domain: cookieDomain,
-  });
+  // console.log('Cookies set:', {
+  //   accessToken: !!accessToken,
+  //   refreshToken: !!refreshToken,
+  //   options: cookieOptions,
+  //   domain: cookieDomain,
+  // }); // debugging logs
 };
 
 const verifyEmail = async (token: string): Promise<void> => {
@@ -551,28 +525,12 @@ const changePasswordHandler = async (
 const logoutHandler = async (res: Response): Promise<void> => {
   const isProduction = process.env.NODE_ENV === 'production';
 
-  // // Simpler, more reliable domain extraction
-  // let cookieDomain;
-  // if (isProduction && config.frontend_url) {
-  //   try {
-  //     const frontendDomain = new URL(config.frontend_url).hostname;
-  //     // Don't use a dot prefix for domains - modern browsers handle this automatically
-  //     cookieDomain =
-  //       frontendDomain === 'localhost' ? undefined : frontendDomain;
-  //   } catch (error) {
-  //     console.error('Error parsing frontend URL:', error);
-  //     cookieDomain = undefined;
-  //   }
-  // }
   // Improved domain extraction - same as setAuthCookies
   let cookieDomain;
   if (isProduction && config.frontend_url) {
     try {
       const frontendURL = new URL(config.frontend_url);
       const hostname = frontendURL.hostname;
-
-      console.log('Frontend URL:', config.frontend_url);
-      console.log('Hostname:', hostname);
 
       // Don't set domain for localhost
       if (hostname !== 'localhost') {
@@ -581,9 +539,9 @@ const logoutHandler = async (res: Response): Promise<void> => {
         // cookieDomain = `.${hostname}`;
       }
 
-      console.log('Cookie Domain:', cookieDomain);
+      console.log('Cookie Domain:', cookieDomain); // debugging log
     } catch (error) {
-      console.error('Error parsing frontend URL:', error);
+      console.error('Error parsing frontend URL:', error); // debugging log
       cookieDomain = undefined;
     }
   }
@@ -602,16 +560,9 @@ const logoutHandler = async (res: Response): Promise<void> => {
   res.clearCookie('accessToken', cookieOptions);
   res.clearCookie('refreshToken', cookieOptions);
 
-  // // Optionally, you can also clear the cookie to expire immediately in '/auth/refresh-token' path
-  // res.clearCookie('refreshToken', {
-  //   httpOnly: true,
-  //   secure: process.env.NODE_ENV === 'production',
-  //   sameSite: 'lax',
-  //   path: '/auth/refresh-token',
-  //   // expires: new Date(0), // Force expiration
-  // });
-
-  res.status(200).json({ message: 'Signed out successfully!' });
+  res.status(200).json({
+    message: 'Signed out successfully!',
+  });
 };
 
 export const AuthServices = {

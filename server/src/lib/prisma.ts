@@ -34,12 +34,12 @@ if (process.env.NODE_ENV === 'development') {
   // Add query logging
   prisma.$on('query' as never, (e: any) => {
     if (e.duration > 500) {
-      console.log(`[SLOW QUERY] ${e.query} (${e.duration}ms)`);
+      console.log(`[SLOW QUERY] ${e.query} (${e.duration}ms)`); // debugging log
     }
   });
 
   const cleanup = async () => {
-    console.log('[DB] Cleaning up Prisma connection...');
+    console.log('[DB] Cleaning up Prisma connection...'); // debugging log
     await prisma.$disconnect();
   };
 

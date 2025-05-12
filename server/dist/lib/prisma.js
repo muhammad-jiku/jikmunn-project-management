@@ -37,11 +37,11 @@ if (process.env.NODE_ENV === 'development') {
     // Add query logging
     exports.prisma.$on('query', (e) => {
         if (e.duration > 500) {
-            console.log(`[SLOW QUERY] ${e.query} (${e.duration}ms)`);
+            console.log(`[SLOW QUERY] ${e.query} (${e.duration}ms)`); // debugging log
         }
     });
     const cleanup = () => __awaiter(void 0, void 0, void 0, function* () {
-        console.log('[DB] Cleaning up Prisma connection...');
+        console.log('[DB] Cleaning up Prisma connection...'); // debugging log
         yield exports.prisma.$disconnect();
     });
     process.on('beforeExit', cleanup);

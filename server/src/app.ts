@@ -26,25 +26,6 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
-// const corsOptions = {
-//   origin: (origin: any, callback: any) => {
-//     const allowedOrigins =
-//       process.env.NODE_ENV === 'production'
-//         ? [process.env.FRONTEND_URL]
-//         : ['http://localhost:3000'];
-
-//     // Allow requests with no origin (like mobile apps, curl requests, etc)
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       console.log(`Blocked CORS request from: ${origin}`);
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// };
 
 app.use(cors(corsOptions));
 

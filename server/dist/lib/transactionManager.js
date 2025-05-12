@@ -36,7 +36,7 @@ function executeSafeTransaction(fn) {
                 if (shouldRetry(error)) {
                     attempt++;
                     const delay = getBackoffDelay(attempt);
-                    console.warn(`Transaction retry #${attempt} in ${delay}ms`);
+                    console.warn(`Transaction retry #${attempt} in ${delay}ms`); // debugging log
                     yield delayExecution(delay);
                     continue;
                 }
@@ -60,7 +60,7 @@ function executeSafeQuery(fn, context) {
                 if (shouldRetry(error)) {
                     attempt++;
                     const delay = getBackoffDelay(attempt);
-                    console.warn(`Query retry #${attempt} in ${delay}ms${context ? ` [${context}]` : ''}`);
+                    console.warn(`Query retry #${attempt} in ${delay}ms${context ? ` [${context}]` : ''}`); // debugging log
                     yield delayExecution(delay);
                     continue;
                 }
@@ -112,17 +112,17 @@ function resetConnection() {
         if (connectionState.isResetting)
             return;
         connectionState.isResetting = true;
-        console.log('[DB] Initiating connection reset...');
+        console.log('[DB] Initiating connection reset...'); // debugging log
         try {
             yield prisma_1.prisma.$disconnect();
             yield delayExecution(1000);
             yield prisma_1.prisma.$connect();
             connectionState.errorCount = 0;
             connectionState.lastReset = Date.now();
-            console.log('[DB] Connection reset successful');
+            console.log('[DB] Connection reset successful'); // debugging log
         }
         catch (error) {
-            console.error('[DB] Connection reset failed:', error);
+            console.error('[DB] Connection reset failed:', error); // debugging log
         }
         finally {
             connectionState.isResetting = false;

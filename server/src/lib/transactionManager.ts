@@ -35,7 +35,7 @@ export async function executeSafeTransaction<T>(
       if (shouldRetry(error)) {
         attempt++;
         const delay = getBackoffDelay(attempt);
-        console.warn(`Transaction retry #${attempt} in ${delay}ms`);
+        console.warn(`Transaction retry #${attempt} in ${delay}ms`); // debugging log
         await delayExecution(delay);
         continue;
       }
@@ -65,7 +65,7 @@ export async function executeSafeQuery<T>(
         const delay = getBackoffDelay(attempt);
         console.warn(
           `Query retry #${attempt} in ${delay}ms${context ? ` [${context}]` : ''}`
-        );
+        ); // debugging log
         await delayExecution(delay);
         continue;
       }
@@ -124,7 +124,7 @@ async function resetConnection(): Promise<void> {
   if (connectionState.isResetting) return;
 
   connectionState.isResetting = true;
-  console.log('[DB] Initiating connection reset...');
+  console.log('[DB] Initiating connection reset...'); // debugging log
 
   try {
     await prisma.$disconnect();
@@ -132,9 +132,9 @@ async function resetConnection(): Promise<void> {
     await prisma.$connect();
     connectionState.errorCount = 0;
     connectionState.lastReset = Date.now();
-    console.log('[DB] Connection reset successful');
+    console.log('[DB] Connection reset successful'); // debugging log
   } catch (error) {
-    console.error('[DB] Connection reset failed:', error);
+    console.error('[DB] Connection reset failed:', error); // debugging log
   } finally {
     connectionState.isResetting = false;
   }
