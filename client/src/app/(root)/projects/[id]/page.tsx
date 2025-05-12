@@ -30,7 +30,12 @@ export async function generateMetadata({
       },
     };
   } catch (error) {
-    console.error('Metadata Generation Error:', error);
+    console.error('Comprehensive Metadata Error:', {
+      error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+    });
+
     return {
       title: 'Project Details',
       description: 'Project management details',
