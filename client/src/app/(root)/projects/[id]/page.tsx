@@ -29,7 +29,7 @@ async function getProject(id: string) {
   // }
   // return res.json();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/projects/${id}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
     { credentials: 'include' }
   );
   if (res.status === 404) return null;
