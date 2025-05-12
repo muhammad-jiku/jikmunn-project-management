@@ -1,44 +1,62 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export const dynamic = 'force-dynamic'; // Disable static rendering
 
 import ProjectComp from '@/components/projects/Project';
-import { serverSideGetProject } from '@/lib/serverSideApiHelpers';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+
+async function getProject(id: string) {
+  // Get the cookies from the incoming request headers
+  const reqHeaders = await headers();
+  const cookie = reqHeaders.get('cookie') || '';
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
+    {
+      cache: 'no-store',
+      // Forward the cookie so that the protected API can authenticate
+      headers: {
+        cookie,
+      },
+    }
+  );
+  if (!res.ok) {
+    throw new Error('Failed to fetch project data');
+  }
+  return res.json();
+}
 
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string } | Promise<{ id: string }>;
+  params: Promise<{ id: string }> | { id: string };
 }): Promise<Metadata> {
+  // Await the params so you get the resolved object.
+  const resolvedParams = await params;
   try {
-    // Await the params object to resolve any Promise
-    const resolvedParams = await params;
-    const projectId = Number(resolvedParams?.id);
-
-    // Fetch project data using server-side helper
-    const { data: project } = await serverSideGetProject(projectId);
-
+    const project = await getProject(resolvedParams.id);
+    console.log('project', project);
     return {
-      title:
-        `${project?.title} - Project Management Dashboard` || 'Project Details',
-      description: project?.description || 'Project management details',
+      title: `${project?.data?.title} - Project Management Dashboard`,
+      description: project?.data?.description || 'Project details',
       openGraph: {
-        title: project?.title || 'Project Details',
-        description: project?.description || 'Project management details',
-        url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}projects/${projectId}`,
+        title: `${project?.data?.title} - Project Management Dashboard`,
+        description: project?.data?.description || 'Project details',
+        url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}projects/${resolvedParams.id}`,
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${project?.data?.title} - Project Management Dashboard`,
+        description: project?.data?.description || 'Project details',
       },
     };
   } catch (error) {
-    console.error('Comprehensive Metadata Error:', {
-      error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : 'No stack trace',
-    });
+    console.error('metadata error', error);
 
     return {
-      title: 'Project Details',
-      description: 'Project management details',
+      title: 'Project Management Dashboard',
+      description: 'Manage your projects effectively.',
     };
   }
 }
@@ -50,19 +68,20 @@ type Props = {
 export default async function ProjectPage({ params }: Props) {
   // Await the params object to resolve any Promise
   const resolvedParams = await params;
-  const projectId = Number(resolvedParams?.id);
+  const projectId = resolvedParams?.id;
 
   try {
     // Fetch project data
-    const { data: project } = await serverSideGetProject(projectId);
+    const project = await getProject(projectId);
     console.log('Project Data:', project);
 
     if (!project) {
       notFound();
     }
 
-    return <ProjectComp params={{ id: String(projectId) }} />;
+    return <ProjectComp params={{ id: projectId }} />;
   } catch (error) {
+    console.error('Error fetching project data:', error);
     notFound();
   }
 }
