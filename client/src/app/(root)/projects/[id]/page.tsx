@@ -9,6 +9,10 @@ async function getProject(id: string) {
   // Get the cookies from the incoming request headers
   const reqHeaders = await headers();
   const cookie = reqHeaders.get('cookie') || '';
+  console.log('reqHeaders', reqHeaders);
+  console.log('cookie', cookie);
+  console.log('base url', process.env.NEXT_PUBLIC_API_BASE_URL);
+  console.log('id', id);
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}projects/${id}`,
