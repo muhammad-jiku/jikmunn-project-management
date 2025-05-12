@@ -326,11 +326,6 @@ const setAuthCookies = (
     // domain: cookieDomain,
   };
 
-  // Only add domain in production and when it's a valid domain
-  if (isProduction && cookieDomain && cookieDomain !== 'localhost') {
-    cookieOptions.domain = cookieDomain;
-  }
-
   // Set access token cookie
   res.cookie('accessToken', accessToken, cookieOptions);
 
@@ -351,6 +346,7 @@ const setAuthCookies = (
     accessToken: !!accessToken,
     refreshToken: !!refreshToken,
     options: cookieOptions,
+    domain: cookieDomain,
   });
 };
 
@@ -601,11 +597,6 @@ const logoutHandler = async (res: Response): Promise<void> => {
     path: '/',
     // domain: cookieDomain,
   };
-
-  // Only add domain in production and when it's a valid domain
-  if (isProduction && cookieDomain && cookieDomain !== 'localhost') {
-    cookieOptions.domain = cookieDomain;
-  }
 
   // Clear cookies properly
   res.clearCookie('accessToken', cookieOptions);

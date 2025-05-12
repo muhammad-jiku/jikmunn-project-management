@@ -229,10 +229,6 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         // domain: cookieDomain,
     };
-    // Only add domain in production and when it's a valid domain
-    if (isProduction && cookieDomain && cookieDomain !== 'localhost') {
-        cookieOptions.domain = cookieDomain;
-    }
     // Set access token cookie
     res.cookie('accessToken', accessToken, cookieOptions);
     // Set refresh token cookie - only set once with consistent path
@@ -250,6 +246,7 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
         accessToken: !!accessToken,
         refreshToken: !!refreshToken,
         options: cookieOptions,
+        domain: cookieDomain,
     });
 };
 const verifyEmail = (token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -460,10 +457,6 @@ const logoutHandler = (res) => __awaiter(void 0, void 0, void 0, function* () {
         path: '/',
         // domain: cookieDomain,
     };
-    // Only add domain in production and when it's a valid domain
-    if (isProduction && cookieDomain && cookieDomain !== 'localhost') {
-        cookieOptions.domain = cookieDomain;
-    }
     // Clear cookies properly
     res.clearCookie('accessToken', cookieOptions);
     res.clearCookie('refreshToken', cookieOptions);
